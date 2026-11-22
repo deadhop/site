@@ -115,7 +115,7 @@ lifetime longer than `DEADHOP_DEFAULT_EXPIRY_SECS`.
   the public invoices key: it serves `get_info`, `create_invoice` and `get_invoice`, it is
   the one apps and customers use, and the only one that is announced. `admin.nsec` /
   `admin.pubkey` is the administration key: it serves every tool to operators only and is
-  never announced (`deadhop pubkey admin` prints it). Settings can give a relay or a proxy
+  never announced (`deadhop pubkey admin` prints it). The Network tab can give a relay or a proxy
   to some keys only; the default is every key. A key with no relay or no proxy is refused,
   and the administration key keeps one relay from `DEADHOP_RELAYS`. The service refuses to
   start if a key file is readable by others.
@@ -142,7 +142,7 @@ deadhop
 ## Proxies
 
 Relay connections (and only those) can go through a list of proxies. In the dashboard
-the list is under **Settings**: *Create proxy* adds one, and the order is set with the
+the list is under **Network**: *Create proxy* adds one, and the order is set with the
 drag handle or the up and down arrows. From the environment, `DEADHOP_PROXY` is the first
 proxy and `DEADHOP_PROXIES` adds more.
 
@@ -173,7 +173,7 @@ it recovers by itself.
 
 **Transparent proxy.** If you have set up a transparent proxy yourself (the host's
 routing, a Tor gateway, a VPN), tell the service with `DEADHOP_TRANSPARENT_PROXY=true`
-or the toggle in Settings. It then does not probe or use any proxy, and the privacy audit
+or the toggle on the Network tab. It then does not probe or use any proxy, and the privacy audit
 reports that it cannot check the path. There is no check on purpose: there are too many
 ways to build one, and nothing in this process could tell them apart. The list stays
 saved but inactive. A wrong claim leaks the address, so `DEADHOP_PROXY_LOCKED` covers it.
