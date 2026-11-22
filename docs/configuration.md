@@ -9,7 +9,7 @@ All configuration is environment variables. Nothing has a network-reaching defau
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `DEADHOP_RELAYS` | required | Comma-separated `wss://` relay URLs |
+| `DEADHOP_RELAYS` | required | Comma-separated `wss://` relay URLs. On mainnet plain `ws://` is accepted only for a relay on this machine, or on Tor (`.onion`), I2P (`.i2p`) or FIPS (`.fips`), which encrypt the connection themselves; those need a proxy that can reach them |
 | `DEADHOP_ELECTRUM` | required | Electrum server: `host:port` (plain TCP) or `tls://host:port` |
 | `DEADHOP_ELECTRUM_CERT_SHA256` | none | Pin the server's TLS certificate: SHA-256 fingerprint(s), comma-separated |
 | `DEADHOP_XPUB` | see below | Your wallet's BIP-84 **account** key (`xpub`/`zpub`, or `tpub`/`vpub` on test networks). Unset: one is generated (Compose) |
