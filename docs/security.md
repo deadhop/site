@@ -237,8 +237,11 @@ These are not bugs to fix later so much as properties of the design. Decide on e
      environment only, and nothing remote can change them.
    - **A check before every signature:** it signs only after checking that the transaction
      spends its own coins to the approved scripts and loses no more than the allowed cost.
-   - **No destination, no connections:** without `DEADHOP_WALLET_DESTINATION` it makes no
-     connection at all.
+   - **Nothing to sweep to, no keys and no connections:** without a destination
+     (`DEADHOP_WALLET_DESTINATION`, or in payjoin mode `DEADHOP_WALLET_PAYJOIN_URI_FILE`) it
+     does not read the phrase and makes no connection.
+   - **The PayJoin URI file is a destination:** whoever can write it decides where the whole
+     balance goes. Keep it on the host, mounted read-only into the container.
 
    Leave the profile off to keep every key offline, or use your own `DEADHOP_XPUB` and
    sweep from a wallet you control. CoinJoin peers see the output address registered with

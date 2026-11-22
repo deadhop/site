@@ -14,6 +14,7 @@ All configuration is environment variables. Nothing has a network-reaching defau
 | `DEADHOP_ELECTRUM_CERT_SHA256` | none | Pin the server's TLS certificate: SHA-256 fingerprint(s), comma-separated |
 | `DEADHOP_XPUB` | see below | Your wallet's BIP-84 **account** key (`xpub`/`zpub`, or `tpub`/`vpub` on test networks). Unset: one is generated (Compose) |
 | `DEADHOP_XPUB_FILE` | none | Read the account key from this file when `DEADHOP_XPUB` is unset (the wallet service writes it) |
+| `DEADHOP_INDEX_FILE` | none | Write the next unused address index here after every poll, for the sweeping wallet's scan (Compose sets it) |
 | `DEADHOP_NETWORK` | `bitcoin` | `bitcoin`, `testnet`, `signet` or `regtest` |
 | `DEADHOP_ADMINS` | none | Comma-separated operator public keys (hex or `npub`) |
 | `DEADHOP_PUBLIC_INVOICING` | `false` | Let non-operators create invoices (with proof of work) |
