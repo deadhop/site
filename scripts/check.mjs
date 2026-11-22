@@ -125,7 +125,16 @@ expect(existsSync(join(dist, 'llms-full.txt')) && statSync(join(dist, 'llms-full
 
 const sitemap = existsSync(join(dist, 'sitemap.xml')) ? readFileSync(join(dist, 'sitemap.xml'), 'utf8') : '';
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-expect(locs.length === pages.length, '/sitemap.xml', `lists ${locs.length} URLs for ${pages.length} pages`);
+// /lud16-lnaddr/ is published but not linked from the main site yet: it is
+// left out of the sitemap and llms.txt, and no main page links to it.
+const unlinked = (f) => relative(dist, f).startsWith('lud16-lnaddr');
+const listed = pages.filter((f) => !unlinked(f));
+expect(locs.length === listed.length, '/sitemap.xml', `lists ${locs.length} URLs for ${listed.length} pages`);
+expect(!sitemap.includes('lud16-lnaddr') && !llms.includes('lud16-lnaddr'), '/sitemap.xml', 'lists /lud16-lnaddr/, which is not linked yet');
+for (const f of listed) {
+  expect(!readFileSync(f, 'utf8').includes('lud16-lnaddr'), '/' + relative(dist, f), 'links to /lud16-lnaddr/, which is not linked yet');
+}
+expect(exists(`${BASE}lud16-lnaddr/`) && exists(`${BASE}lud16-lnaddr/docs/`), '/lud16-lnaddr/', 'the lnaddr page or its docs are missing');
 for (const loc of locs) expect(loc.startsWith(SITE) && exists(new URL(loc).pathname), '/sitemap.xml', `unresolved ${loc}`);
 
 // Every Markdown twin starts with a single top-level heading.
