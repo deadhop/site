@@ -24,11 +24,17 @@ Up to `limits.concurrent` (8) backend calls run at once. Requests beyond that wa
 ## What it costs
 
 - Each binary is about 8 MB, statically linked, and starts in milliseconds.
-- In the test suite (a local relay and a local backend), a full wallet flow takes a few milliseconds, almost all of it in the backend. In production the time is your relays' round trip plus your backend's invoice time. The `test` command prints both:
+- Measured with the default relays (`relay.contextvm.org` and `relay2.contextvm.org`), a gateway and a node on the same home connection, and a local backend:
 
 ```text
-  timing     lookup 2 ms, invoice 310 ms over ContextVM
+lookup 0.000433s   invoice 0.198533s
+lookup 0.000496s   invoice 0.274767s
+lookup 0.000370s   invoice 0.278624s
+lookup 0.000930s   invoice 0.167624s
+lookup 0.000635s   invoice 0.281922s
 ```
+
+  Lookups are answered from the cache in under a millisecond. An invoice is one round trip through the relays, 170 to 280 ms here, plus your backend's own time. With an in-process relay (the test suite) the whole flow takes a few milliseconds. The `test` command prints the same split for your setup.
 
 ## Tuning
 

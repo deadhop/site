@@ -16,7 +16,7 @@ LNADDR_NODE_BACKEND_SECRET_FILE=/lnd/data/chain/bitcoin/mainnet/invoice.macaroon
 LNADDR_NODE_BACKEND_TLS_CERT_FILE=/lnd/tls.cert
 ```
 
-`invoice.macaroon` only allows invoice methods. It is binary; the node reads it as hex for the `Grpc-Metadata-macaroon` header. The node calls `POST /v1/invoices` with `value_msat`, `description_hash` and `expiry`.
+`invoice.macaroon` only allows invoice methods. It is binary; the node reads it as hex for the `Grpc-Metadata-macaroon` header. The node calls `POST /v1/invoices` with `value_msat`, `description_hash`, `expiry` and `private: true`, so invoices carry route hints for private channels: a home node often has no public channel, and without hints nobody could route to it.
 
 ## Core Lightning (clnrest)
 
@@ -33,7 +33,7 @@ LNADDR_NODE_BACKEND_SECRET_FILE=/secrets/rune
 LNADDR_NODE_BACKEND_TLS_CERT_FILE=/cln/bitcoin/clnrest/server.pem   # or the SHA-256
 ```
 
-The node calls `POST /v1/invoice` with `amount_msat`, a unique `label`, the metadata as `description` and `deschashonly: true`, so the invoice carries only its hash.
+The node calls `POST /v1/invoice` with `amount_msat`, a unique `label`, the metadata as `description` and `deschashonly: true`, so the invoice carries only its hash. Core Lightning adds route hints for private channels when the node has no public ones.
 
 ## phoenixd
 
@@ -53,7 +53,7 @@ LNADDR_NODE_BACKEND_URL=https://lnbits.example.com
 LNADDR_NODE_BACKEND_SECRET_FILE=/secrets/lnbits-invoice-key
 ```
 
-Use the wallet's **invoice/read key**, not the admin key. The node calls `POST /api/v1/payments` with `out: false` and a `description_hash`. LNbits takes whole satoshis, like phoenixd.
+Use the wallet's **invoice/read key**, not the admin key. The node calls `POST /api/v1/payments` with `out: false` and a `description_hash`, and reads the invoice from `bolt11` (or `payment_request`, for older versions). LNbits takes whole satoshis, like phoenixd.
 
 ## Plain http and pinning
 

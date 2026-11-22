@@ -10,7 +10,7 @@ description: The threat model of deadhop lnaddr. What a compromised gateway, rel
 | Compromised | Can | Cannot |
 | --- | --- | --- |
 | **The gateway host** | serve its own invoices instead of yours (any LNURL-pay server can: wallets trust the server they fetch from); ask your node for invoices within the node's own limits; see payers' IP addresses and comments | spend anything; reach your node's network; change the node's backend, credential, allowed keys or relays; read your node's address |
-| **A relay** | delay or drop messages (another relay still carries them); see that two keys exchange messages | read them (NIP-44 encrypted, gift-wrapped); forge them (signed); replay them (ephemeral, and the node refuses requests more than 5 minutes from its clock) |
+| **A relay** | delay or drop messages (another relay still carries them); see that two keys exchange messages; resend a captured request within 5 minutes, which makes the node create one more unpaid invoice (within its rate limits) and sends the answer to the gateway, not to the relay | read them (NIP-44 encrypted, gift-wrapped); forge them (signed); store them (ephemeral events); resend one older than 5 minutes (the node checks the signed timestamp) |
 | **The gateway's admin key** | change addresses and limits, if remote settings are switched on | anything else; with remote settings off (the default), nothing |
 | **The node's host** | everything the invoice credential allows: make invoices | spend, with an invoice-only credential |
 
@@ -45,5 +45,5 @@ Using an invoice-only credential matters most. See [Lightning backends](./backen
 ## Known limits
 
 - LNURL-pay trusts the HTTPS server. Whoever controls your domain's TLS or the gateway host can hand out other invoices. Pin your node's key on the gateway (`payee`) so the gateway at least refuses invoices your node did not sign.
-- Comments and payer IPs pass through the gateway. Run it somewhere you trust as much as your web server.
+- Comments and payer IPs pass through the gateway. Run it somewhere you trust as much as your web server. Comments end up in the node's log (one escaped line per invoice) and nowhere else.
 - Not tested against a live LND, Core Lightning, phoenixd or LNbits in CI. The backend clients are tested against fakes that follow each API's documentation and sign real invoices.
