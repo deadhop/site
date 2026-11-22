@@ -26,7 +26,9 @@ NIP-98.
 
 The service is given an account public key, never a seed or private key. Anything that needs
 to spend (sweeps, PayJoin, CoinJoin) belongs in a separate signer process, so a compromised
-payment service still cannot move funds.
+payment service still cannot move funds. That process is `deadhop-wallet`, an optional
+container of its own. It reads the recovery phrase the offline wallet service made, and takes
+its destination and limits from the host only.
 
 ## Zero-confirmation is informational
 

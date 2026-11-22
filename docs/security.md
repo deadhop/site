@@ -226,6 +226,25 @@ These are not bugs to fix later so much as properties of the design. Decide on e
    the balance small and sweep it to your own wallet regularly. For larger amounts, set
    `DEADHOP_XPUB` to a wallet whose keys never touch the host.
 
+11. **The sweeper holds the spending keys on a networked process.** The optional
+   `sweeper` service (`deadhop-wallet`, compose profile `sweep`) reads the recovery phrase,
+   read-only, so that it can sign. Unlike the offline `wallet` service, it has network
+   access: Electrum, and the PayJoin receiver or the CoinJoin relay. A compromise of that
+   container can spend the balance. To limit what it could do:
+   - **Its own container:** it is separate from the payment service, with a read-only root,
+     no capabilities and no inbound port.
+   - **Host-only settings:** the destination, mode, threshold and fee cap come from the host
+     environment only, and nothing remote can change them.
+   - **A check before every signature:** it signs only after checking that the transaction
+     spends its own coins to the approved scripts and loses no more than the allowed cost.
+   - **No destination, no connections:** without `DEADHOP_WALLET_DESTINATION` it makes no
+     connection at all.
+
+   Leave the profile off to keep every key offline, or use your own `DEADHOP_XPUB` and
+   sweep from a wallet you control. CoinJoin peers see the output address registered with
+   the pool, and the pool's relay sees when messages are sent. Use `DEADHOP_WALLET_PROXY`
+   (Tor) to hide your IP from the relay and from PayJoin receivers.
+
 ## Remote management
 
 Operators can now run the service from the dashboard: health and payment statistics,
@@ -236,7 +255,7 @@ this, including a live proxy check and a privacy audit. That is new attack surfa
 
 | Rule | How |
 | --- | --- |
-| Nothing that decides where money goes is remote | The xpub, network, Electrum server, data directory and the operator keys in `DEADHOP_ADMINS` can only be changed on the host. The PayJoin/CoinJoin policy has no destination field and is never executed by this service. |
+| Nothing that decides where money goes is remote | The xpub, network, Electrum server, data directory and the operator keys in `DEADHOP_ADMINS` can only be changed on the host. The PayJoin/CoinJoin policy has no destination field and is never executed by this service; the optional sweeper (`deadhop-wallet`) takes its destination, mode, threshold and fee cap from the host environment only. |
 | Every change is a one-time, fresh, addressed request | Each state-changing tool needs a signed request event addressed to this service, inside the freshness window, and never used before. Used ids are stored in SQLite, so the check survives restarts. |
 | Management does not share a key with the public | There is one key per purpose. The public invoices key serves only `get_info`, `create_invoice` and `get_invoice`; the administration key serves every tool to operators only (anyone else is refused), is never announced and never shown to the public, so a relay watching the public key learns nothing about management traffic. Each key has its own relay connections and, with several proxies, its own proxy; relays and proxies can be given to some keys only. A save that would leave a key with no relay or no proxy is refused (a key with no proxy would connect unprotected), and the administration key must keep a relay from `DEADHOP_RELAYS`, the way back in. |
 | Every change is recorded | An audit log (who, what, when) is kept in the database and survives wipes. Proxy passwords are masked in it and in every view. |
