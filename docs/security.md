@@ -271,8 +271,8 @@ It still cannot spend funds, change the receiving wallet, change the Electrum se
 read the service's private key, or remove the operators configured on the host.
 
 **Proxy scope.** Only relay connections use a proxy (`socks5://`, `https://` or
-`http://`, with optional credentials). Up to 8 can be listed; failover, round robin and
-chaos choose among the reachable ones, and what happens when none is reachable is a
+`http://`, with optional credentials). Up to 8 can be listed; by default only the first
+is used (strategy off), or failover, round robin and chaos choose among the reachable ones, and what happens when none is reachable is a
 setting that defaults to the kill switch: no relay connection at all (see
 [configuration](configuration.md)). The other policies connect straight, so they
 are an operator's explicit trade of privacy for availability. Passwords stay hidden in
