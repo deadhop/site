@@ -33,6 +33,7 @@ All configuration is environment variables. Nothing has a network-reaching defau
 | `DEADHOP_POLL_SECS` | `10` | Chain polling interval |
 | `DEADHOP_LATE_GRACE_SECS` | `86400` | How long expired invoices are still watched |
 | `DEADHOP_DATA_DIR` | `data` | Database and the service's Nostr key (created `0700`) |
+| `DEADHOP_PUBLIC_DIR` | none | A directory shared with the dashboard (`/public` in `compose.yaml`). The service writes `relays.json` there: the `wss://` relays each key listens on now, without `.onion`, `.i2p` or `.fips` addresses. The dashboard adds them to its own list |
 | `DEADHOP_ANNOUNCE` | `false` | Publish public ContextVM discovery announcements |
 | `DEADHOP_NAME` | `deadhop` | Name shown in the dashboard |
 | `DEADHOP_PROXY` | none | A proxy for relay connections only: `socks5://`, `https://` or `http://`, optionally `user:pass@`. The first entry of the proxy list |
