@@ -5,7 +5,7 @@ description: Every deadhop relay setting, read from DEADHOP_RELAY_* environment 
 
 # Configuration
 
-Settings are read once, at startup, from environment variables. Run `deadhop-relay check` to see what the relay understood, without starting it.
+Settings are read once, at startup, from environment variables. Run `deadhop-relay check` to see what the relay understood, without starting it. An empty value counts as unset.
 
 ## Required
 
@@ -58,6 +58,10 @@ All names start with `DEADHOP_RELAY_`.
 | `TRUSTED_QUEUE_BYTES` | 64 MiB | 1 MiB–16 GiB | Outgoing queue for connections authenticated as a whitelisted key; past half of it, requests to that key are refused until it drains |
 
 A value outside its range stops the relay at startup with a message naming the variable.
+
+## Behind more than one proxy
+
+The relay believes only the last `X-Forwarded-For` entry, the one the nearest proxy added. When requests pass through two proxies (for example an edge proxy in front of a platform proxy), that entry is the first proxy's address, and every client looks the same. Per-address limits then act as limits for everyone together: raise `CONNECTIONS_PER_IP` and `PUBLIC_EVENTS_PER_MIN` to totals you are willing to accept, and keep the edge proxy's own rate limits on.
 
 ## Sizing for a small VPS
 
