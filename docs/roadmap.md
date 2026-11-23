@@ -7,12 +7,14 @@ description: What deadhop does not do yet, including automatic PayJoin or CoinJo
 
 Not built yet:
 
-- **Automatic PayJoin or CoinJoin sweep above a balance threshold.** The policy can already
-  be set from the dashboard and is reported as due; nothing carries it out yet. This limits what is lost
-  if the service is compromised and breaks the trail to where funds go. It needs spending
-  keys, which the service deliberately does not have. The safe shape is a separate signer
-  process (or a hardware-backed one) that the service can ask to sweep, so a compromised
-  payment service still cannot send funds anywhere it likes.
+- **Driving the sweeper from the dashboard.** The sweeping wallet
+  ([`deadhop-wallet`](https://github.com/sandwichfarm/deadhop/tree/main/wallet)) is built. It
+  makes a simple send, a PayJoin or a CoinJoin once the balance reaches a threshold, with its
+  destination and limits set on the host. The sweep policy in the dashboard is still a separate,
+  stored setting that the sweeper does not read.
+- **CoinJoin interoperability**: PSBT version 2 and the LSAG recovery phase of joinstr, and
+  rounds tested against joinstr's other clients. **PayJoin v2** (BIP-77, asynchronous, through
+  a directory).
 - **SPV verification**: merkle proofs against a header chain, to reduce trust in the Electrum
   server.
 - **Push notifications** of status changes instead of polling, and webhooks for shop back
