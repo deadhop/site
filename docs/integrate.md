@@ -22,7 +22,7 @@ Nostr relays. Two values identify the service:
 
 | Value | Where it comes from |
 | --- | --- |
-| `serverPubkey` | The service's public key (hex or `npub`). On the host: `deadhop pubkey`, or the `server.pubkey` file in its data directory. Behind the homelab tooling: `./homelab cvmpay pubkey`. It is also the `serverPubkey` in the dashboard's `config.json`. |
+| `serverPubkey` | The service's public key (hex or `npub`). On the host: `deadhop pubkey`, or the `server.pubkey` file in its data directory. It is also the `serverPubkey` in the dashboard's `config.json`. |
 | `relays` | Relays the service listens on (`DEADHOP_RELAYS`, or as changed in the dashboard). Your page needs **at least one** of them. |
 
 The service can be your own (self-hosted) or run by someone else (remote): the code is
