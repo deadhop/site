@@ -139,7 +139,7 @@ To let customers create invoices themselves, see [Who creates invoices](./instal
 
 ```sh
 git pull
-docker compose up -d --build
+docker compose up -d --build                    # add --profile sweep if you run the sweeper
 ```
 
 State lives in named volumes and survives rebuilds. The volumes keep the project's old name, `cvmpay-…`, on purpose: a renamed volume would start the service with an empty one, a new service key and a new wallet.

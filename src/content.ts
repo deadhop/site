@@ -90,7 +90,8 @@ export const paths: { title: string; body: string; kind: string; href: string }[
   { title: 'Payments should land on my hardware wallet', body: 'Give it your wallet’s account public key. Guides for Sparrow, Electrum, the Blockstream app, COLDCARD, Trezor and Ledger.', kind: 'How-to', href: '/docs/xpub/' },
   { title: 'I want a pay button on my website', body: 'Components for React, Solid and Svelte, or plain JavaScript, and checking each payment from your backend.', kind: 'How-to', href: '/docs/integrate.html' },
   { title: 'Nobody should know where it runs', body: 'Relay traffic through Tor or a VPN, the proxy locked against remote changes, and nothing listening.', kind: 'How-to', href: '/docs/hide.html' },
-  { title: 'I just want to see it work', body: 'The whole system on a throwaway test chain on your laptop: Rust, Node and Docker, no configuration. Pay an invoice minutes after the first build.', kind: 'Tutorial', href: '/docs/quickstart.html' },
+  { title: 'I want a Lightning address', body: 'you@yourdomain for the Lightning node you run at home, with no port open there. LND, Core Lightning, phoenixd or LNbits.', kind: 'Tutorial', href: '/docs/lnaddr/quickstart.html' },
+  { title: 'I just want to see it work', body: 'The whole system on a throwaway test chain on your laptop: Rust, Node, Docker and just, no configuration. Pay an invoice minutes after the first build.', kind: 'Tutorial', href: '/docs/quickstart.html' },
 ];
 
 // Real screenshots, taken on a regtest chain.

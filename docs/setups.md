@@ -15,7 +15,8 @@ You invoice customers yourself from the dashboard. One machine does everything.
 
 | Machine | Runs |
 | --- | --- |
-| Your node box | Bitcoin Core and Fulcrum or electrs (already there); deadhop with Compose: `wallet`, `deadhop`, `dashboard`; Caddy for HTTPS |
+| Your node box | Bitcoin Core and Fulcrum or electrs (already there); deadhop with Compose: `wallet`, `deadhop`, `dashboard` (for you, on the local network) |
+| A static host or small server | The dashboard again, over HTTPS, for customers' payment links. Not your home: a forwarded port would put your home address on every link |
 
 ```sh
 DEADHOP_ELECTRUM=192.168.1.20:50001       # the box's address on your network, not 127.0.0.1;
@@ -25,10 +26,10 @@ DEADHOP_NAME=Corner Bakery
 ```
 
 1. [Run it with Docker Compose](./deploy-compose.md), steps 1 to 7.
-2. [Host the dashboard](./dashboard.md#with-compose): Caddy in front of `127.0.0.1:8080`, on a public HTTPS address, so customers can open the [payment links](./dashboard.md#sending-an-invoice-to-a-customer) you send them.
+2. For customers: [Host the dashboard](./dashboard.md#anywhere-else) on a static host or small server with its `config.json`, so they can open the [payment links](./dashboard.md#sending-an-invoice-to-a-customer) you send. Or send the address and amount yourself.
 3. [Production checklist](./deployment.md).
 
-**Tested** on regtest with this `compose.yaml`, except Caddy.
+**Tested** on regtest with this `compose.yaml`, except hosting the dashboard elsewhere.
 
 ## 2. Straight to cold storage
 
@@ -123,22 +124,22 @@ Relays learn nothing about where the service runs. Combine with any setup above.
 
 | Machine | Runs |
 | --- | --- |
-| Your node box | deadhop, and Tor with its SOCKS port reachable from the service |
+| Your node box | deadhop, and Tor as a container next to it ([recipe](./hide.md#with-docker-compose-a-tor-container)) |
 | A static host, elsewhere | The dashboard, so its address is not the node's ([Host the dashboard](./dashboard.md#anywhere-else)) |
 | Optional, anywhere | Your own [relay as an onion service](./relay/networks.md) |
 
 ```sh
-DEADHOP_PROXY=socks5://<tor address>:9050
+DEADHOP_PROXY=socks5://tor:9050
 DEADHOP_PROXY_LOCKED=true                 # nobody can change it from the dashboard
 DEADHOP_PROXY_OFFLINE=kill_switch         # the default: no proxy, no relay connections
 DEADHOP_RELAYS=wss://relay.contextvm.org,ws://<your relay>.onion
 ```
 
-1. [Hide the service](./hide.md).
+1. [Hide the service](./hide.md): the Tor container and these settings **before the first start**.
 2. Optionally, setup 7 with the relay on Tor.
 3. Check the privacy score on the dashboard's Overview.
 
-**Not run** against a real Tor daemon. With Compose, `<tor address>` is a Tor container on the same Docker network or the host's address on your network; `127.0.0.1` would be the container itself.
+**Tested** on regtest: the Tor container, the kill switch while Tor starts, then the relays through Tor.
 
 ## 7. Your own relay next to public ones
 

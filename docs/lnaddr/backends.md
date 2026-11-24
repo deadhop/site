@@ -11,7 +11,7 @@ The node only ever creates invoices. Give it a credential that can do nothing el
 
 ```sh
 LNADDR_NODE_BACKEND=lnd
-LNADDR_NODE_BACKEND_URL=https://127.0.0.1:8080
+LNADDR_NODE_BACKEND_URL=https://127.0.0.1:8080          # lnaddr-node and LND on the same host, without Docker
 LNADDR_NODE_BACKEND_SECRET_FILE=/lnd/data/chain/bitcoin/mainnet/invoice.macaroon
 LNADDR_NODE_BACKEND_TLS_CERT_FILE=/lnd/tls.cert
 ```

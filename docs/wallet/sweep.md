@@ -13,6 +13,11 @@ The sweeper sends to a fresh address of your cold wallet every time, so it needs
 
 Use a different wallet from the one deadhop generated. That is the point.
 
+Two things differ from the wallet guides:
+
+- **The setting is `DEADHOP_WALLET_DESTINATION`**, not `DEADHOP_XPUB`. Leave `DEADHOP_XPUB` unset: it would tell deadhop to receive to that wallet instead, and there would be nothing to sweep.
+- **Check the key before money moves.** Watch it in [Sparrow](../xpub/sparrow.md) (an **xPub / Watch Only Wallet** keystore) and compare its first receive address with your cold wallet's own first receive address. They must match: the first sweep goes to the first unused address of that key.
+
 ## 2. Add three lines to `.env`
 
 ```sh

@@ -56,6 +56,10 @@ On **Invoices**, choose the drop and **Copy payment link**. The link opens the i
 
 For a customer to open that link, the dashboard must be reachable over HTTPS at a public address. That is only the static page: the service behind it still opens no port.
 
+**Do not publish it from home.** Forwarding a port on your router to the dashboard puts your home address on every payment link. Host the page somewhere else instead: a static host or a small server ([Anywhere else](#anywhere-else)). It talks to the service through the relays, so it can live anywhere.
+
+**Or send the payment details yourself.** Without a public dashboard, open the drop, **Copy address** and send it with the amount, or show the QR code. The service sees the payment either way; the customer just does not get the live status page.
+
 ## What the page does
 
 - It has a strict Content-Security-Policy and requests nothing but `config.json` and the relay websockets.

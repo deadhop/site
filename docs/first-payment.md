@@ -10,7 +10,7 @@ In this tutorial you run deadhop next to your own bitcoin node, invoice yourself
 We make the choices for you: Docker Compose, a generated wallet, the dashboard opened on the machine itself. Once it works, [Choose a setup](./install.md) shows the other ways.
 
 ::: tip Payments straight to your hardware wallet?
-Follow the same steps with your wallet's key: in step 3 add `DEADHOP_XPUB` from [your wallet's guide](./xpub/index.md), skip step 5, and in step 6 watch that key instead.
+Follow the same steps with your wallet's key: in step 3 add `DEADHOP_XPUB` from [your wallet's guide](./xpub/index.md), skip step 5, and in step 6 use your wallet as its guide says (or watch that key in Sparrow).
 :::
 
 ## What you need
@@ -115,7 +115,7 @@ Choose **Use browser extension** and approve. You see the operator Overview: the
 
 **Invoices → New invoice**. Amount `10000`, note `My first payment`, **Create invoice**. The drop shows a QR code and a fresh address, one that has never been used.
 
-For a customer you would send **Copy payment link**: it opens this invoice on its own page. That needs the dashboard on a public HTTPS address ([Host the dashboard](./dashboard.md#sending-an-invoice-to-a-customer)); for this tutorial, pay it yourself.
+For a customer you would send **Copy payment link**: it opens this invoice on its own page. That needs the dashboard on a public HTTPS address, hosted away from home ([Sending an invoice to a customer](./dashboard.md#sending-an-invoice-to-a-customer)); or send the address and amount yourself. For this tutorial, pay it yourself.
 
 ## 9. Pay it
 
@@ -133,7 +133,7 @@ Next:
 
 - Put the dashboard behind HTTPS: [Host the dashboard](./dashboard.md).
 - Move the balance to cold storage on its own: [Sweep to your cold wallet](./wallet/sweep.md).
-- Hide where it runs: [Hide the service](./hide.md).
+- Hide where it runs: [Hide the service](./hide.md). If the location must never show, set that up before step 4: relays see the address from the first connection.
 - Before you share it: [Production checklist](./deployment.md).
 
 ## Tested

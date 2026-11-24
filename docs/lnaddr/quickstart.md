@@ -50,9 +50,9 @@ docker run -d --name lnaddr-node --restart unless-stopped \
   deadhop-lnaddr-node
 ```
 
-It publishes no port. To confirm the backend works before pairing, run the same container with `check`. It makes a 1 sat test invoice and checks it.
+It publishes no port. To confirm the backend works before pairing, run the same image once with `check` (the same `-v` and `-e` options, `--rm` instead of `-d --name … --restart …`, and `check` at the end): it makes a 1 sat test invoice and checks it.
 
-- **Reaching LND.** `https://lnd:8080` is LND's REST port seen from this container: here LND runs in a container named `lnd` on a Docker network that `lnaddr-node` joins (add `--network <that network>`). Use your own address. LND must listen for REST there (`restlisten=0.0.0.0:8080` in `lnd.conf`), and its `tls.cert` must name that host (`tlsextradomain=lnd`, then let LND regenerate the certificate). `127.0.0.1` would be the container itself.
+- **Reaching LND.** `https://lnd:8080` is LND's REST port seen from this container: here LND runs in a container named `lnd` on a Docker network that `lnaddr-node` joins (add `--network <that network>`). Use your own address. LND must listen for REST on an address the container can reach (`restlisten=0.0.0.0:8080` in `lnd.conf`). The `tls.cert` you mount is pinned exactly, so its host name does not have to match. `127.0.0.1` would be the container itself.
 - **Relays.** Both sides use `wss://relay.contextvm.org` and `wss://relay2.contextvm.org` unless you set `LNADDR_NODE_RELAYS` and `LNADDR_GATEWAY_RELAYS` ([node](./node.md), [gateway](./gateway.md)).
 
 ## 4. Run the gateway
@@ -62,8 +62,11 @@ docker run -d --name lnaddr-gateway --restart unless-stopped \
   -v gateway-data:/data -p 127.0.0.1:8080:8080 \
   -e LNADDR_GATEWAY_DOMAIN=yourdomain.com \
   -e LNADDR_GATEWAY_NODE=npub1node… \
+  -e LNADDR_GATEWAY_TRUSTED_PROXIES=172.16.0.0/12 \
   deadhop-lnaddr-gateway
 ```
+
+`LNADDR_GATEWAY_TRUSTED_PROXIES` names your reverse proxy, so per-client rate limits see the real client address ([why](./reverse-proxies.md)). `172.16.0.0/12` covers Docker's default networks; use your proxy's address.
 
 Point your reverse proxy's `/.well-known/lnurlp/` at `127.0.0.1:8080` ([examples](./reverse-proxies.md)).
 

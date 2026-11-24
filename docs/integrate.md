@@ -212,7 +212,7 @@ npx jsr add @deadhop/client @deadhop/react     # JSR: the client, React and Soli
 deno add jsr:@deadhop/client
 ```
 
-`@deadhop/svelte` is only on npm: JSR can't host `.svelte` files. Every framework
+The packages are published on npm (and the client, React and Solid packages on JSR). `@deadhop/svelte` is only on npm: JSR can't host `.svelte` files. Every framework
 package re-exports `createDeadhop`, so the client needs no separate import.
 
 ## Checklist for agents and developers
