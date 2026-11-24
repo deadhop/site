@@ -4,7 +4,7 @@
 export const product = {
   name: 'deadhop',
   title: 'deadhop: on-chain bitcoin payments with no public server',
-  motto: 'Nothing to reach. Nothing to spend.',
+  motto: 'Dials out. Never listens.',
   tagline: 'Accept on-chain bitcoin payments without exposing a server.',
   summary:
     'deadhop creates bitcoin invoices, watches the chain and reports payments. Customers and operators reach it only through Nostr relays. It opens no ports and holds no spending keys.',
@@ -60,7 +60,7 @@ export const benefits: { title: string; body: string }[] = [
   { title: 'Strictly typed interface', body: 'Every tool has published JSON schemas. Unknown fields are rejected; the dashboard validates every response with strict schemas.' },
   { title: 'Proof of work and rate limits', body: 'NIP-13 work for public invoice creation, per-key and global budgets, open-invoice and daily caps.' },
   { title: 'Replay protection', body: 'Every invoice request must be fresh, addressed to this service and never seen before, operators included.' },
-  { title: 'Cannot spend', body: 'Watch-only BIP-84 wallet. A compromised host cannot move funds already received.' },
+  { title: 'Cannot spend', body: 'The payment service holds a watch-only BIP-84 key: taking it over cannot move funds received. With your own wallet’s key, nothing on the host can.' },
   { title: 'Verified payment data', body: 'Transactions are re-hashed against their ids, sums are capped, and one bad invoice cannot stall the others.' },
   { title: 'Small, tested code', body: 'One Rust binary, no HTTP stack, SQLite. 100% line and function coverage, plus end-to-end tests on regtest.' },
   { title: 'Remote control without remote risk', body: 'Operators manage relays, proxy, limits and keys from the dashboard. Every change is one-time, audited, and can never touch the wallet or the Electrum server.' },
@@ -83,11 +83,39 @@ export const components: { name: string; body: string }[] = [
 
 export const pricing = 'Self-hosted software. No fees, no custodian, no account.';
 
-export const docLinks: { href: string; title: string; body: string }[] = [
-  { href: '/docs/quickstart.html', title: 'Quick start', body: 'Run the full stack on regtest and pay an invoice.' },
-  { href: '/docs/how-it-works.html', title: 'How it works', body: 'Architecture, invoice states, who can create invoices.' },
-  { href: '/docs/configuration.html', title: 'Configuration', body: 'Every environment variable and its default.' },
-  { href: '/docs/deployment.html', title: 'Deployment', body: 'Service, dashboard and network placement.' },
-  { href: '/docs/api.html', title: 'Tools API', body: 'Invoicing and operator tools: inputs, outputs and errors.' },
-  { href: '/docs/security.html', title: 'Security', body: 'Threat model, findings and the risks you accept.' },
+// "Where do you start?": each card leads into the docs, and each of those
+// pages ends at its install page.
+export const paths: { title: string; body: string; kind: string; href: string }[] = [
+  { title: 'I sell things and want bitcoin for them', body: 'Run it next to your node, invoice a customer, and see the payment arrive in a wallet only you can spend from.', kind: 'Tutorial', href: '/docs/first-payment.html' },
+  { title: 'Payments should land on my hardware wallet', body: 'Give it your wallet’s account public key. Guides for Sparrow, Electrum, the Blockstream app, COLDCARD, Trezor and Ledger.', kind: 'How-to', href: '/docs/xpub/' },
+  { title: 'I want a pay button on my website', body: 'Components for React, Solid and Svelte, or plain JavaScript, and checking each payment from your backend.', kind: 'How-to', href: '/docs/integrate.html' },
+  { title: 'Nobody should know where it runs', body: 'Relay traffic through Tor or a VPN, the proxy locked against remote changes, and nothing listening.', kind: 'How-to', href: '/docs/hide.html' },
+  { title: 'I want a Lightning address', body: 'you@yourdomain for the Lightning node you run at home, with no port open there. LND, Core Lightning, phoenixd or LNbits.', kind: 'Tutorial', href: '/docs/lnaddr/quickstart.html' },
+  { title: 'I just want to see it work', body: 'The whole system on a throwaway test chain on your laptop: Rust, Node, Docker and just, no configuration. Pay an invoice minutes after the first build.', kind: 'Tutorial', href: '/docs/quickstart.html' },
+];
+
+// Real screenshots, taken on a regtest chain.
+export const shots = {
+  hero: { src: '/shots/payments-overview.webp', light: '/shots/payments-overview-light.webp', width: 1600, height: 1121, alt: 'The operator Overview: service running, relays connected, chain height, privacy score, and the totals received.' },
+  gallery: [
+    { src: '/shots/payments-checkout.webp', width: 900, height: 1000, alt: 'An invoice awaiting payment: amount, note, QR code and a fresh address.', caption: 'What your customer sees: one fresh address per invoice, a QR code, and the status as it changes.' },
+    { src: '/shots/payments-invoices.webp', width: 1600, height: 1121, alt: 'The Invoices tab: a list of drops with status, note and amount, and the selected one in detail.', caption: 'Every invoice, its address and its progress from created to seen to confirmed.' },
+    { src: '/shots/payments-paid-phone.webp', width: 520, height: 733, alt: 'A paid invoice on a phone.', caption: 'Paid. The page moves on its own; no refresh, no account.' },
+  ],
+};
+
+// What installing needs, said once on the landing page and in the docs.
+export const needs: string[] = [
+  'A bitcoin node with Fulcrum or electrs',
+  'Docker with Compose, or Rust and Node to build it',
+  'A Nostr key in your browser, to sign in',
+];
+
+export const docLinks: { href: string; title: string; body: string; kind: string }[] = [
+  { href: '/docs/install.html', title: 'Choose a setup', body: 'How it runs, where payments land, who creates invoices.', kind: 'How-to' },
+  { href: '/docs/first-payment.html', title: 'Your first real payment', body: 'From the source to a payment you can spend, on your own node.', kind: 'Tutorial' },
+  { href: '/docs/xpub/', title: 'Receive to your own wallet', body: 'Which key to give it, and a guide per wallet.', kind: 'How-to' },
+  { href: '/docs/how-it-works.html', title: 'How it works', body: 'Request path, proof of work, addresses, invoice states.', kind: 'Explanation' },
+  { href: '/docs/security.html', title: 'Security', body: 'Threat model, findings and the risks you accept.', kind: 'Explanation' },
+  { href: '/docs/configuration.html', title: 'Configuration', body: 'Every setting and its default.', kind: 'Reference' },
 ];

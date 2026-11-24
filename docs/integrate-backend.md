@@ -43,7 +43,7 @@ export const deadhop = createDeadhop({
 
 export async function startCheckout(orderId: string, amountSat: number): Promise<string> {
   const invoice = await deadhop.createInvoice({ amount_sat: amountSat, memo: `Order ${orderId}` });
-  await db.orders.update(orderId, { invoiceId: invoice.id });
+  await db.orders.update(orderId, { invoiceId: invoice.id, amountSat }); // db: your own order store
   return invoice.id; // send this to the page
 }
 ```
@@ -62,7 +62,8 @@ can watch the invoice; no key is needed.
 ## Check before you fulfil
 
 `onPaid` runs in the customer's browser, which they control. Before you ship, ask the
-service yourself:
+service yourself. Reading an invoice needs no key, so this works the same whether your
+backend or the browser created it:
 
 ```ts
 export async function isPaid(orderId: string): Promise<boolean> {

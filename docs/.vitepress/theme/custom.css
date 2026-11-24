@@ -92,3 +92,108 @@
 .VPNavScreenMenuLink.vp-external-link-icon::after {
   display: none;
 }
+
+/* What kind of document this is (scripts/docs-map.mjs), above the title. */
+.doc-kind {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font: 500 11px/1 var(--vp-font-family-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.doc-kind a {
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+}
+.doc-kind a:hover {
+  color: var(--vp-c-brand-1);
+}
+.doc-kind__tag {
+  padding: 4px 7px;
+  border-radius: 2px;
+  border: 1.5px solid var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+}
+.doc-kind__tag--tutorial {
+  background: #e8c547;
+  border-color: #e8c547;
+  color: #16191b;
+}
+.doc-kind__tag--howto {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+.doc-kind__tag--reference {
+  border-style: dashed;
+}
+
+/* Where the funnel goes from here: the product's install page. */
+.next-step {
+  margin: 48px 0 0;
+  padding: 18px 22px;
+  border: 1.5px dashed var(--vp-c-brand-1);
+  border-radius: 4px;
+}
+.next-step p {
+  margin: 0;
+}
+.next-step__kicker {
+  font: 500 11px/1.4 var(--vp-font-family-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-2);
+}
+.next-step__title {
+  font: 800 22px/1.3 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  margin: 4px 0 !important;
+}
+.next-step__title a {
+  text-decoration: none;
+  color: var(--vp-c-brand-1);
+}
+.next-step__body {
+  color: var(--vp-c-text-2);
+  font-size: 15px;
+}
+
+/* Cards for choosing a setup or a guide (install, docs home). */
+.vp-doc .choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.vp-doc .choices a {
+  display: block;
+  padding: 16px 18px;
+  border: 1.5px solid var(--vp-c-divider);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+}
+.vp-doc .choices a:hover {
+  border-color: var(--vp-c-brand-1);
+}
+.vp-doc .choices strong {
+  display: block;
+  font: 700 17px/1.3 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+  margin-bottom: 4px;
+}
+.vp-doc .choices span {
+  display: block;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+}
+.vp-doc .choices em {
+  display: inline-block;
+  margin-top: 8px;
+  font: 500 11px/1.5 var(--vp-font-family-mono);
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vp-c-brand-1);
+}

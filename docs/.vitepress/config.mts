@@ -1,18 +1,52 @@
+// One documentation site for every deadhop product, under /docs/. The
+// sidebars, the kind of each page (tutorial, how-to, explanation, reference)
+// and each product's install page come from scripts/docs-map.mjs.
 import { resolve } from 'node:path';
-import { defineConfig, type HeadConfig } from 'vitepress';
+import { defineConfig, type DefaultTheme, type HeadConfig } from 'vitepress';
 import { basePath, siteUrl } from '../../scripts/site-url.mjs';
+import { KINDS, PRODUCTS, htmlOf, pageOf, productOf } from '../../scripts/docs-map.mjs';
 
 const SITE = siteUrl();
 const BASE = `${basePath()}docs/`;
+const HOME = new URL(basePath(), SITE).href;
 const DESCRIPTION =
-  'Documentation for deadhop: self-hosted on-chain bitcoin invoicing over Nostr with no inbound ports, a watch-only wallet and proof of work against abuse.';
+  'Documentation for deadhop and its tools: on-chain payments with no open port, a Lightning address, a private relay and a sweeping wallet.';
 
-// "foo.md" -> "/docs/foo.html" (canonical) and "/docs/foo.md" (Markdown twin).
+const stemOf = (relativePath: string) => relativePath.replace(/\.md$/, '');
+
+// "relay/quickstart.md" -> "/docs/relay/quickstart.html" (canonical) and "/docs/relay/quickstart.md".
 function urls(relativePath: string) {
-  const stem = relativePath.replace(/\.md$/, '');
-  const html = stem === 'index' ? BASE : `${BASE}${stem}.html`;
-  return { html: new URL(html, SITE).href, md: `${BASE}${stem}.md` };
+  const stem = stemOf(relativePath);
+  return { html: new URL(`${BASE}${htmlOf(stem)}`, SITE).href, md: `${BASE}${stem}.md` };
 }
+
+const link = (path: string) => `/${htmlOf(path).replace(/\.html$/, '')}`;
+
+/** A product's sidebar: its docs home, then one group per kind of document. */
+function sidebar(product: (typeof PRODUCTS)[number]): DefaultTheme.SidebarItem[] {
+  const pages = product.pages.map(([path, kind, title, parent]) => ({ path, kind, title, parent }));
+  const home = pages[0];
+  const items = (kind: string) =>
+    pages
+      .filter((p) => p.kind === kind && !p.parent && p !== home)
+      .map((p) => {
+        const children = pages.filter((c) => c.parent === p.path).map((c) => ({ text: c.title, link: link(c.path) }));
+        return children.length ? { text: p.title, link: link(p.path), collapsed: true, items: children } : { text: p.title, link: link(p.path) };
+      });
+  return [
+    { text: product.label, items: [{ text: 'Overview', link: link(home.path) }] },
+    ...Object.entries(KINDS)
+      .map(([kind, k]) => ({ text: k.group, items: items(kind) }))
+      .filter((g) => g.items.length),
+  ];
+}
+
+const sidebars: DefaultTheme.SidebarMulti = {};
+for (const p of PRODUCTS) {
+  if (p.dir) sidebars[`/${p.dir}/`] = sidebar(p);
+}
+sidebars['/xpub/'] = sidebar(PRODUCTS[0]);
+sidebars['/'] = sidebar(PRODUCTS[0]);
 
 export default defineConfig({
   base: BASE,
@@ -24,7 +58,6 @@ export default defineConfig({
   cleanUrls: false,
   lastUpdated: false,
   appearance: true,
-  sitemap: { hostname: SITE + BASE },
   head: [
     ['link', { rel: 'icon', href: `${BASE}favicon.svg`, type: 'image/svg+xml' }],
     ['link', { rel: 'apple-touch-icon', href: `${basePath()}apple-touch-icon.png` }],
@@ -35,10 +68,30 @@ export default defineConfig({
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['link', { rel: 'alternate', type: 'text/plain', href: `${basePath()}llms.txt`, title: 'llms.txt' }],
   ],
+  // The kind, product and next step of every page come from the map, not from
+  // each file, so a page cannot claim to be something the sidebar says it is not.
+  transformPageData(pageData) {
+    const stem = stemOf(pageData.relativePath);
+    const page = pageOf(stem);
+    const product = productOf(stem);
+    if (!page || !product) return;
+    pageData.frontmatter.kind = page.kind;
+    pageData.frontmatter.kindLabel = KINDS[page.kind as keyof typeof KINDS].label;
+    pageData.frontmatter.product = product.label;
+    pageData.frontmatter.productName = product.name;
+    pageData.frontmatter.productPage = new URL(`${basePath()}${product.page.replace(/^\//, '')}`, SITE).pathname;
+    if (stem !== product.install) {
+      pageData.frontmatter.install = `${BASE}${htmlOf(product.install)}`;
+      pageData.frontmatter.installTitle = pageOf(product.install)!.title;
+    }
+    if (product.id !== 'payments') pageData.titleTemplate = `:title · ${product.name} docs`;
+  },
   transformHead({ pageData }): HeadConfig[] {
     if (pageData.isNotFound) return [['meta', { name: 'robots', content: 'noindex' }]];
     const { html, md } = urls(pageData.relativePath);
-    const title = pageData.title ? `${pageData.title} · deadhop docs` : 'deadhop docs';
+    const product = productOf(stemOf(pageData.relativePath));
+    const site = product && product.id !== 'payments' ? `${product.name} docs` : 'deadhop docs';
+    const title = pageData.title ? `${pageData.title} · ${site}` : site;
     const description = pageData.description || DESCRIPTION;
     const article = {
       '@context': 'https://schema.org',
@@ -47,8 +100,8 @@ export default defineConfig({
       description,
       url: html,
       inLanguage: 'en',
-      isPartOf: { '@type': 'WebSite', name: 'deadhop', url: new URL(basePath(), SITE).href },
-      about: { '@type': 'SoftwareApplication', name: 'deadhop', applicationCategory: 'FinanceApplication' },
+      isPartOf: { '@type': 'WebSite', name: 'deadhop', url: HOME },
+      about: { '@type': 'SoftwareApplication', name: product?.name ?? 'deadhop', applicationCategory: 'FinanceApplication' },
       encoding: { '@type': 'MediaObject', encodingFormat: 'text/markdown', contentUrl: new URL(md, SITE).href },
     };
     return [
@@ -65,53 +118,14 @@ export default defineConfig({
     logo: { light: '/mark.svg', dark: '/mark-fog.svg', alt: '' },
     siteTitle: 'deadhop',
     nav: [
-      { text: 'Home', link: new URL(basePath(), SITE).href, target: '_self' },
-      { text: 'Quick start', link: '/quickstart' },
-      { text: 'Security', link: '/security' },
+      { text: 'Home', link: HOME, target: '_self' },
+      {
+        text: 'Products',
+        items: PRODUCTS.map((p) => ({ text: p.label, link: link(p.pages[0][0]) })),
+      },
+      { text: 'Install', link: '/install' },
     ],
-    sidebar: [
-      {
-        text: 'Start',
-        items: [
-          { text: 'Overview', link: '/' },
-          { text: 'Quick start', link: '/quickstart' },
-          { text: 'How it works', link: '/how-it-works' },
-        ],
-      },
-      {
-        text: 'Operate',
-        items: [
-          { text: 'Configuration', link: '/configuration' },
-          { text: 'Deployment', link: '/deployment' },
-          { text: 'Tools API', link: '/api' },
-        ],
-      },
-      {
-        text: 'Build',
-        items: [
-          { text: 'Integrate into your app', link: '/integrate' },
-          { text: 'React', link: '/integrate-react' },
-          { text: 'Solid', link: '/integrate-solid' },
-          { text: 'Svelte 5', link: '/integrate-svelte5' },
-          { text: 'Svelte 4', link: '/integrate-svelte4' },
-          { text: 'Plain JavaScript', link: '/integrate-javascript' },
-          { text: 'Backend', link: '/integrate-backend' },
-        ],
-      },
-      {
-        text: 'Trust',
-        items: [
-          { text: 'Security', link: '/security' },
-          { text: 'Testing', link: '/testing' },
-          { text: 'Design decisions', link: '/design' },
-          { text: 'Roadmap', link: '/roadmap' },
-        ],
-      },
-      {
-        text: 'For agents',
-        items: [{ text: 'Markdown and llms.txt', link: '/agents' }],
-      },
-    ],
+    sidebar: sidebars,
     outline: { level: [2, 3] },
     search: { provider: 'local' },
     docFooter: { prev: 'Previous', next: 'Next' },

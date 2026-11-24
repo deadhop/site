@@ -6,6 +6,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { basePath, siteUrl } from './site-url.mjs';
+import { PAGES, PRODUCTS, htmlOf } from './docs-map.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -27,6 +28,15 @@ function walk(dir) {
 }
 
 /** URL path (under the base path) -> file in dist (same rules as the preview server). */
+function fileOf(urlPath) {
+  if (!urlPath.startsWith(BASE)) return null;
+  const p = join(dist, decodeURIComponent(urlPath.slice(BASE.length - 1)));
+  for (const c of [p, join(p, 'index.html'), `${p}.html`]) {
+    if (existsSync(c) && statSync(c).isFile()) return c;
+  }
+  return null;
+}
+
 function exists(urlPath) {
   if (!urlPath.startsWith(BASE)) return false;
   const p = join(dist, decodeURIComponent(urlPath.slice(BASE.length - 1)));
@@ -37,7 +47,10 @@ function exists(urlPath) {
 }
 
 const all = walk(dist);
-const pages = all.filter((f) => f.endsWith('.html') && !f.endsWith('404.html'));
+// Old tool-docs URLs are tiny redirect pages (scripts/build.mjs), checked on their own below.
+const isRedirect = (f) => /<meta http-equiv="refresh"/.test(readFileSync(f, 'utf8'));
+const redirects = all.filter((f) => f.endsWith('.html') && isRedirect(f));
+const pages = all.filter((f) => f.endsWith('.html') && !f.endsWith('404.html') && !redirects.includes(f));
 expect(pages.length >= 2, 'dist', 'expected the landing page and docs pages');
 
 for (const file of pages) {
@@ -84,6 +97,14 @@ for (const file of pages) {
     expect(exists(abs), where, `broken link ${ref}`);
   }
 
+  // Every #fragment names an id on its target page.
+  for (const [, ref, frag] of html.matchAll(/href="([^"#?]*)(?:\?[^"#]*)?#([^"]+)"/g)) {
+    if (/^(https?:|mailto:|\/\/)/.test(ref)) continue;
+    const target = ref === '' ? file : fileOf(new URL(ref, new URL(BASE + where.slice(1), 'http://x')).pathname);
+    const id = decodeURIComponent(frag);
+    expect(!!target && readFileSync(target, 'utf8').includes(`id="${id}"`), where, `broken anchor ${ref}#${frag}`);
+  }
+
   // Content is visible without JavaScript: nothing hidden in the markup itself.
   expect(!/<(main|section|article|h1|h2|p)[^>]*style="[^"]*(opacity:\s*0|visibility:\s*hidden)/.test(html), where, 'content hidden in markup');
 }
@@ -125,19 +146,75 @@ expect(existsSync(join(dist, 'llms-full.txt')) && statSync(join(dist, 'llms-full
 
 const sitemap = existsSync(join(dist, 'sitemap.xml')) ? readFileSync(join(dist, 'sitemap.xml'), 'utf8') : '';
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-// /relay/ and /lud16-lnaddr/ are published but not linked from the main site
-// yet: they are left out of the sitemap and llms.txt, and no main page links to them.
-const UNLINKED = ['relay', 'lud16-lnaddr'];
-const unlinked = (f) => UNLINKED.some((d) => relative(dist, f).startsWith(d));
-const listed = pages.filter((f) => !unlinked(f));
-expect(locs.length === listed.length, '/sitemap.xml', `lists ${locs.length} URLs for ${listed.length} pages`);
-for (const d of UNLINKED) {
-  expect(!sitemap.includes(`/${d}/`) && !llms.includes(`/${d}/`), '/sitemap.xml', `lists /${d}/, which is not linked yet`);
-  for (const f of listed) {
-    expect(!readFileSync(f, 'utf8').includes(`${BASE}${d}/`), '/' + relative(dist, f), `links to /${d}/, which is not linked yet`);
-  }
-  expect(exists(`${BASE}${d}/`) && exists(`${BASE}${d}/docs/`), `/${d}/`, `the /${d}/ page or its docs are missing`);
+expect(locs.length === pages.length, '/sitemap.xml', `lists ${locs.length} URLs for ${pages.length} pages`);
+
+// Redirects: each points at a page that exists, and is kept out of search.
+expect(redirects.length > 0, 'redirects', 'the old /relay/docs/ and /lud16-lnaddr/docs/ URLs should redirect');
+for (const f of redirects) {
+  const html = readFileSync(f, 'utf8');
+  const to = html.match(/url=([^"]+)"/)?.[1] ?? '';
+  expect(/name="robots" content="noindex"/.test(html), '/' + relative(dist, f), 'redirect without noindex');
+  expect(to.startsWith(SITE) && exists(new URL(to).pathname), '/' + relative(dist, f), `redirects to a missing page: ${to}`);
 }
+
+// The docs map and the docs agree: every page is in the map, every map entry has a page.
+const docsRoot = join(root, 'docs');
+const docFiles = walk(docsRoot)
+  .filter((f) => f.endsWith('.md') && !relative(docsRoot, f).startsWith('.vitepress') && !relative(docsRoot, f).startsWith('public'))
+  .map((f) => relative(docsRoot, f).replace(/\.md$/, ''));
+for (const f of docFiles) expect(PAGES.some((p) => p.path === f), `/docs/${f}.md`, 'not in scripts/docs-map.mjs');
+for (const p of PAGES) expect(docFiles.includes(p.path), `/docs/${p.path}.md`, 'in the docs map but missing');
+
+// The funnel. Every product page shows the product (a screenshot or real terminal
+// output) and links to its install page; every docs page says what kind it is and,
+// except the install page itself, where to go next.
+for (const prod of PRODUCTS) {
+  const file = join(dist, prod.page.replace(/^\//, ''), 'index.html');
+  const where = prod.page;
+  const html = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  const install = `${BASE}docs/${htmlOf(prod.install)}`;
+  expect(/<img [^>]*src="[^"]*\/shots\/[^"]+"/.test(html) || /class="shot t-termshot"/.test(html), where, 'no screenshot of the product');
+  expect(html.includes(`href="${install}"`) && exists(install), where, `no working link to its install page ${install}`);
+  expect(/<header[\s>]/.test(html) && /aria-label="Products"/.test(html), where, 'missing the shared header');
+}
+for (const p of PAGES) {
+  const file = join(dist, 'docs', htmlOf(p.path) || 'index.html');
+  const html = existsSync(file.endsWith('/') ? join(file, 'index.html') : file) ? readFileSync(file.endsWith('/') ? join(file, 'index.html') : file, 'utf8') : '';
+  const where = `/docs/${htmlOf(p.path)}`;
+  expect(/class="doc-kind"/.test(html), where, 'no kind badge');
+  const prod = PRODUCTS.find((x) => x.id === p.product);
+  if (p.path !== prod.install) {
+    const next = html.match(/<aside class="next-step"[\s\S]*?href="([^"]+)"/)?.[1];
+    expect(!!next && exists(next), where, `no working next step (${next})`);
+  }
+}
+
+// Every setting the docs name exists in the source.
+const repo = resolve(root, '..');
+const sources = ['server/src', 'server/crates', 'server/tests', 'wallet/src', 'relay/src', 'lnaddr/src', 'dashboard/deploy', 'scripts', 'relay/deploy']
+  .map((d) => join(repo, d))
+  .filter(existsSync)
+  .flatMap(walk)
+  .concat(['compose.yaml', 'justfile'].map((f) => join(repo, f)).filter(existsSync))
+  .filter((f) => /\.(rs|sh|ya?ml|ts|mjs|example)$|justfile$/.test(f));
+const known = new Set(sources.flatMap((f) => readFileSync(f, 'utf8').match(/\b(?:DEADHOP|LNADDR)_[A-Z0-9_]+/g) ?? []));
+// The relay reads DEADHOP_RELAY_ plus a name ("STORE_TTL_SECS"), and per network "{}_MAX_CONNECTIONS".
+for (const f of sources.filter((f) => f.includes(`${'/'}relay${'/'}src${'/'}`))) {
+  const text = readFileSync(f, 'utf8');
+  for (const [, n] of text.matchAll(/"([A-Z][A-Z0-9_]+)"/g)) known.add(`DEADHOP_RELAY_${n}`);
+  for (const [, n] of text.matchAll(/"\{\}_([A-Z0-9_]+)"/g)) for (const net of ['TOR', 'I2P', 'FIPS']) known.add(`DEADHOP_RELAY_${net}_${n}`);
+}
+// Names the docs ask the reader to define in their own code.
+known.add('DEADHOP_BACKEND_NSEC');
+if (known.size) {
+  for (const f of docFiles) {
+    const text = readFileSync(join(docsRoot, `${f}.md`), 'utf8');
+    for (const v of new Set(text.match(/\b(?:DEADHOP|LNADDR)_[A-Z0-9_]*[A-Z0-9]\b/g) ?? [])) {
+      expect(known.has(v) || [...known].some((k) => k.startsWith(v + '_')), `/docs/${f}.md`, `names ${v}, which the source does not define`);
+    }
+  }
+}
+
 for (const loc of locs) expect(loc.startsWith(SITE) && exists(new URL(loc).pathname), '/sitemap.xml', `unresolved ${loc}`);
 
 // Every Markdown twin starts with a single top-level heading.

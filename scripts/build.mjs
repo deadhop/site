@@ -2,10 +2,11 @@
 // one static folder, then add the files agents and crawlers look for:
 // a Markdown twin of every page, llms.txt, llms-full.txt, sitemap.xml and robots.txt.
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LOCAL_URL, basePath, siteUrl, sitePath } from './site-url.mjs';
+import { PAGES, PRODUCTS, htmlOf } from './docs-map.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -25,11 +26,8 @@ function run(cmd, args) {
 // Astro empties dist/, so it goes first; VitePress then writes dist/docs/.
 rmSync(dist, { recursive: true, force: true });
 run('npx', ['astro', 'build']);
+// Every product's docs, one VitePress root under /docs/.
 run('npx', ['vitepress', 'build', 'docs']);
-// deadhop relay's docs: their own VitePress root, under /relay/docs/.
-run('npx', ['vitepress', 'build', 'relay-docs']);
-// deadhop lnaddr's docs: their own VitePress root, under /lud16-lnaddr/docs/.
-run('npx', ['vitepress', 'build', 'lnaddr-docs']);
 
 // ---- Docs as Markdown ------------------------------------------------------
 
@@ -40,48 +38,45 @@ function parse(source) {
   if (m) {
     for (const line of m[1].split('\n')) {
       const i = line.indexOf(':');
-      if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+      if (i < 1) continue;
+      const v = line.slice(i + 1).trim();
+      // A quoted YAML scalar: 'it''s' -> it's, "x" -> x.
+      meta[line.slice(0, i).trim()] = /^'.*'$/.test(v) ? v.slice(1, -1).replace(/''/g, "'") : /^".*"$/.test(v) ? v.slice(1, -1) : v;
     }
   }
   return { meta, body: m ? source.slice(m[0].length) : source };
 }
 
-// Sidebar order, so llms.txt reads like the docs navigation.
-const ORDER = ['index', 'quickstart', 'how-it-works', 'configuration', 'deployment', 'api', 'integrate', 'integrate-react', 'integrate-solid', 'integrate-svelte5', 'integrate-svelte4', 'integrate-javascript', 'integrate-backend', 'security', 'testing', 'design', 'roadmap', 'agents'];
-const stems = readdirSync(docsSrc)
-  .filter((f) => f.endsWith('.md'))
-  .map((f) => f.replace(/\.md$/, ''))
-  .sort((a, b) => (ORDER.indexOf(a) + 1 || 99) - (ORDER.indexOf(b) + 1 || 99));
-
-const pages = stems.map((stem) => {
+// Every page of the docs map, in map order, so llms.txt reads like the sidebars.
+const pages = PAGES.map(({ path: stem, kind, product }) => {
   const { meta, body } = parse(readFileSync(join(docsSrc, `${stem}.md`), 'utf8'));
   // Put the description under the title, as llms.txt-style Markdown expects.
   const markdown = body.trimStart().replace(/^# (.+)\n/m, (h) => `${h}\n> ${meta.description}\n`).trimEnd() + '\n';
-  const html = stem === 'index' ? '/docs/' : `/docs/${stem}.html`;
+  const html = `/docs/${htmlOf(stem)}`;
+  mkdirSync(dirname(join(dist, 'docs', `${stem}.md`)), { recursive: true });
   writeFileSync(join(dist, 'docs', `${stem}.md`), markdown);
-  return { stem, title: meta.title, description: meta.description, html, md: `/docs/${stem}.md`, markdown };
+  return { stem, kind, product, title: meta.title, description: meta.description, html, md: `/docs/${stem}.md`, markdown };
 });
 
-// ---- relay docs as Markdown --------------------------------------------------
-// Twins only: /relay/ is not linked from the main site yet, so it stays out of
-// llms.txt and the sitemap below.
+// ---- Redirects from the tools' old docs URLs --------------------------------------
+// /relay/docs/ and /lud16-lnaddr/docs/ were the tools' own docs sites until they
+// joined /docs/. Their URLs are printed by binaries and READMEs, so each old page
+// sends the reader to its new place.
 
-const relaySrc = join(root, 'relay-docs');
-for (const f of readdirSync(relaySrc).filter((f) => f.endsWith('.md'))) {
-  const { meta, body } = parse(readFileSync(join(relaySrc, f), 'utf8'));
-  const markdown = body.trimStart().replace(/^# (.+)\n/m, (h) => `${h}\n> ${meta.description}\n`).trimEnd() + '\n';
-  writeFileSync(join(dist, 'relay', 'docs', f), markdown);
-}
-
-// ---- lnaddr docs as Markdown -------------------------------------------------
-// Twins only: /lud16-lnaddr/ is not linked from the main site yet, so it stays
-// out of llms.txt and the sitemap below.
-
-const lnaddrSrc = join(root, 'lnaddr-docs');
-for (const f of readdirSync(lnaddrSrc).filter((f) => f.endsWith('.md'))) {
-  const { meta, body } = parse(readFileSync(join(lnaddrSrc, f), 'utf8'));
-  const markdown = body.trimStart().replace(/^# (.+)\n/m, (h) => `${h}\n> ${meta.description}\n`).trimEnd() + '\n';
-  writeFileSync(join(dist, 'lud16-lnaddr', 'docs', f), markdown);
+const MOVED = { relay: 'relay', 'lud16-lnaddr': 'lnaddr' };
+let redirects = 0;
+for (const [old, dir] of Object.entries(MOVED)) {
+  for (const p of pages.filter((p) => p.stem.startsWith(`${dir}/`))) {
+    const leaf = p.stem.slice(dir.length + 1);
+    const from = join(dist, old, 'docs', leaf === 'index' ? 'index.html' : `${leaf}.html`);
+    const to = new URL(sitePath(p.html), SITE).href;
+    mkdirSync(dirname(from), { recursive: true });
+    writeFileSync(
+      from,
+      `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>Moved: ${p.title}</title><meta name="robots" content="noindex"><link rel="canonical" href="${to}"><meta http-equiv="refresh" content="0; url=${to}"></head><body><p>Moved to <a href="${to}">${to}</a>.</p></body></html>\n`,
+    );
+    redirects++;
+  }
 }
 
 // ---- llms.txt and llms-full.txt ------------------------------------------------
@@ -91,24 +86,29 @@ const landing = readFileSync(join(dist, 'index.md'), 'utf8');
 const abs = (p) => new URL(sitePath(p), SITE).href;
 const summary = landing.match(/^> (.+)$/m)?.[1] ?? '';
 
+const OPTIONAL = new Set(['testing', 'design', 'roadmap', 'agents', 'relay/testing', 'lnaddr/testing']);
+const line = (p) => `- [${p.title}](${abs(p.md)}): ${p.description}`;
 const llms = [
   '# deadhop',
   '',
-  `> ${summary} Self-hosted on-chain bitcoin invoicing over Nostr (ContextVM): no inbound ports, end-to-end encrypted requests, NIP-13 proof of work, a watch-only wallet and payment checks against your own Electrum server.`,
+  `> ${summary} Self-hosted on-chain bitcoin invoicing over Nostr (ContextVM): no inbound ports, end-to-end encrypted requests, NIP-13 proof of work, a watch-only wallet and payment checks against your own Electrum server. Also: a Lightning address for a node with no open port, a relay for one service, and a sweeping wallet.`,
   '',
-  'Every page below is Markdown. For the HTML version of a page, replace `.md` with `.html`.',
+  'Every page below is Markdown. For the HTML version of a page, replace `.md` with `.html`. Each docs page is a tutorial, a how-to guide, an explanation or a reference.',
   '',
   '## Overview',
   '',
-  `- [Landing page](${abs('/index.md')}): what deadhop does, its security benefits and limits`,
+  `- [Landing page](${abs('/index.md')}): what deadhop does, what you get, its security benefits and limits`,
+  ...PRODUCTS.filter((p) => p.id !== 'payments').map((p) => `- [${p.name}](${abs(`${p.page}index.md`)}): ${p.tagline}`),
   '',
-  '## Docs',
-  '',
-  ...pages.filter((p) => !['roadmap', 'agents', 'testing', 'design'].includes(p.stem)).map((p) => `- [${p.title}](${abs(p.md)}): ${p.description}`),
-  '',
+  ...PRODUCTS.flatMap((prod) => [
+    `## ${prod.id === 'payments' ? 'Docs' : `${prod.label} docs`}`,
+    '',
+    ...pages.filter((p) => p.product === prod.id && !OPTIONAL.has(p.stem)).map(line),
+    '',
+  ]),
   '## Optional',
   '',
-  ...pages.filter((p) => ['testing', 'design', 'roadmap', 'agents'].includes(p.stem)).map((p) => `- [${p.title}](${abs(p.md)}): ${p.description}`),
+  ...pages.filter((p) => OPTIONAL.has(p.stem)).map(line),
   `- [Everything in one file](${abs('/llms-full.txt')}): landing page and all docs pages`,
   '',
 ].join('\n');
@@ -122,7 +122,11 @@ writeFileSync(join(dist, 'llms-full.txt'), full);
 const vpSitemap = join(dist, 'docs', 'sitemap.xml');
 if (existsSync(vpSitemap)) rmSync(vpSitemap);
 const today = new Date().toISOString().slice(0, 10);
-const entries = [{ loc: abs('/'), priority: '1.0' }, ...pages.map((p) => ({ loc: abs(p.html), priority: p.stem === 'index' ? '0.9' : '0.7' }))];
+const entries = [
+  { loc: abs('/'), priority: '1.0' },
+  ...PRODUCTS.filter((p) => p.id !== 'payments').map((p) => ({ loc: abs(p.page), priority: '0.9' })),
+  ...pages.map((p) => ({ loc: abs(p.html), priority: p.stem === 'index' || p.stem === 'install' ? '0.9' : '0.7' })),
+];
 writeFileSync(
   join(dist, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries
@@ -168,4 +172,4 @@ writeFileSync(
 // Static hosts such as GitHub Pages serve /404.html for unknown paths.
 copyFileSync(join(dist, 'docs', '404.html'), join(dist, '404.html'));
 
-console.log(`built ${pages.length} docs pages + landing page into dist/ for ${PUBLIC_URL}`);
+console.log(`built ${pages.length} docs pages, ${PRODUCTS.length} product pages and ${redirects} redirects into dist/ for ${PUBLIC_URL}`);

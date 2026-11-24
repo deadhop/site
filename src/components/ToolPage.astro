@@ -1,0 +1,199 @@
+---
+// One page per tool. The route diagram is the tool's own, passed as the
+// "route" slot; everything else comes from its content file (src/tool.ts).
+import Base from '../layouts/Base.astro';
+import SiteNav from './SiteNav.astro';
+import Shot from './Shot.astro';
+import '../styles/tool.css';
+import { at } from '../paths';
+import { product, products } from '../products';
+import { docGroups, type Tool } from '../tool';
+
+interface Props {
+  tool: Tool;
+  jsonLd: unknown[];
+}
+const { tool: t, jsonLd } = Astro.props;
+const me = product(t.id);
+const others = products.filter((p) => p.id !== t.id);
+---
+
+<Base title={t.title} description={t.description} path={me.page} markdown={`${me.page}index.md`} jsonLd={jsonLd}>
+  <SiteNav current={t.id} />
+
+  <main id="content">
+    <section class="intro" aria-labelledby="t-title">
+      <div class="intro__copy">
+        <p class="stamp">{t.stamp}</p>
+        <h1 id="t-title" class="t-h1">{t.headline}</h1>
+        <p class="lede">{t.lede}</p>
+        <p class="actions">
+          <a class="button button--primary" href={me.install}>Install it</a>
+          <a class="button" href="#what">See what you get</a>
+        </p>
+        <p class="fine">Part of <a href={at('/')}>deadhop</a> · self-hosted · free · MIT</p>
+      </div>
+      {
+        t.hero ? (
+          <Shot class="intro__shot" eager {...t.hero} />
+        ) : t.term ? (
+          <figure class="shot t-termshot">
+            <div class="shot__frame">
+              <pre aria-label={t.term.title}><code>{t.term.lines.join('\n')}</code></pre>
+            </div>
+            <figcaption>{t.term.title}</figcaption>
+          </figure>
+        ) : null
+      }
+    </section>
+
+    {
+      t.facts && (
+        <section class="band t-band--tight" aria-label="Numbers">
+          <ul class="t-facts">
+            {t.facts.map((f) => (
+              <li>
+                <b>{f.value}</b>
+                <span>{f.label}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section id="what" class="band" aria-labelledby="what-title">
+      <p class="kicker">What you get</p>
+      <h2 id="what-title">What it looks like running</h2>
+      <p class="fine">Screenshots and output from test setups, not a live deployment.</p>
+      <div class:list={['t-gallery', `t-gallery--${t.gallery.length}`]}>
+        {t.gallery.map((s) => <Shot {...s} />)}
+      </div>
+    </section>
+
+    <section id="how" class="band" aria-labelledby="how-title">
+      <p class="kicker">How it works</p>
+      <h2 id="how-title">{t.flowTitle}</h2>
+      <div class="t-route">
+        <slot name="route" />
+        <ol class="t-steps">
+          {
+            t.flow.map((s) => (
+              <li>
+                <p class="kicker">{s.kicker}</p>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="why-title">
+      <h2 id="why-title">Why it is built this way</h2>
+      <ul class="grid">
+        {
+          t.points.map((p) => (
+            <li>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      {t.chips && <ul class="t-chips" aria-label={t.chips.label}>{t.chips.items.map((c) => <li>{c}</li>)}</ul>}
+    </section>
+
+    <section id="ways" class="band" aria-labelledby="ways-title">
+      <p class="kicker">Ways to run it</p>
+      <h2 id="ways-title">Pick the setup that fits</h2>
+      <ul class="paths">
+        {
+          t.ways.map((w) => (
+            <li>
+              <a href={w.href}>
+                <span class="paths__title">{w.title}</span>
+                <span class="paths__body">{w.body}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="install" class="band" aria-labelledby="install-title">
+      <div class="install">
+        <div>
+          <p class="kicker">Install</p>
+          <h2 id="install-title">{t.setupTitle}</h2>
+          <div class="t-term">
+            {
+              t.setup.map((s) => (
+                <div>
+                  <code>{s.cmd}</code>
+                  <span>{s.note}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div class="install__go">
+          <pre><code>git clone https://github.com/sandwichfarm/deadhop{'\n'}cd deadhop</code></pre>
+          <p class="actions">
+            <a class="button button--primary" href={me.install}>{me.installLabel}</a>
+            <a class="button" href={me.docs}>All the docs</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="docs-title">
+      <h2 id="docs-title">Documentation</h2>
+      <div class="t-docs">
+        {
+          docGroups(t.id).map((g) => (
+            <div>
+              <p class="cards__kind">{g.label}</p>
+              <p class="t-docs__blurb">{g.blurb}</p>
+              <ul>
+                {g.links.map((l) => (
+                  <li>
+                    <a href={l.href}>{l.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="more-title">
+      <h2 id="more-title">Also from deadhop</h2>
+      <ul class="tools">
+        {
+          others.map((o) => (
+            <li>
+              <a class="tools__card" href={o.href}>
+                <span class="tools__name">{o.id === 'payments' ? 'deadhop payments' : o.label}</span>
+                <span class="tools__body">{o.blurb}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>{me.name} 0.1.0 · MIT</p>
+    <nav aria-label="Footer">
+      <ul>
+        {products.map((p) => <li><a href={p.href}>{p.label}</a></li>)}
+        <li><a href={me.docs}>Documentation</a></li>
+        <li><a href={at(`${me.page}index.md`)}>This page as Markdown</a></li>
+      </ul>
+    </nav>
+  </footer>
+</Base>

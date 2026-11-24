@@ -1,0 +1,44 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { wallet } from '../../wallet/content';
+import { at } from '../../paths';
+
+const url = new URL(at('/wallet/'), Astro.site!).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'deadhop wallet',
+    url,
+    description: wallet.description,
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Linux',
+    softwareVersion: '0.1.0',
+    programmingLanguage: 'Rust',
+    featureList: wallet.points.map((p) => p.title),
+  },
+];
+---
+
+<ToolPage tool={wallet} jsonLd={jsonLd}>
+  <Fragment slot="route">
+    <svg viewBox="0 -6 1000 176" role="img" aria-label="payments into the generated wallet, kept offline; the sweeper checks and signs; the cold wallet receives">
+      <path class="hop" d="M92 66 C 170 10, 270 10, 338 60" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+      <text x="215" y="14" text-anchor="middle">payments · an address each</text>
+      <line class="wire" x1="402" y1="70" x2="598" y2="70" stroke-width="2" stroke-dasharray="2 6"></line>
+      <text x="500" y="58" text-anchor="middle">words · read-only</text>
+      <path class="hop" d="M662 66 C 740 10, 840 10, 908 60" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+      <text x="785" y="14" text-anchor="middle">send · PayJoin · CoinJoin</text>
+      <circle cx="70" cy="70" r="11" fill="currentColor"></circle>
+      <rect x="340" y="46" width="62" height="48" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
+      <rect x="600" y="46" width="62" height="48" rx="4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 5"></rect>
+      <path d="M908 52 H928 V58 a3 3 0 0 0 3 3 H939 a3 3 0 0 0 3 -3 V52 H962 V92 a4 4 0 0 1 -4 4 H912 a4 4 0 0 1 -4 -4 Z" fill="currentColor"></path>
+      <text class="name" x="70" y="132" text-anchor="middle">customers</text>
+      <text class="name" x="371" y="132" text-anchor="middle">wallet</text>
+      <text x="371" y="152" text-anchor="middle">no network</text>
+      <text class="name" x="631" y="132" text-anchor="middle">sweeper</text>
+      <text x="631" y="152" text-anchor="middle">checks, signs</text>
+      <text class="name" x="935" y="132" text-anchor="middle">cold wallet</text>
+    </svg>
+  </Fragment>
+</ToolPage>

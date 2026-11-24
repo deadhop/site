@@ -1,32 +1,47 @@
 ---
-title: Quick start
+title: Try it on regtest
 description: Run deadhop, its dashboard, bitcoind, Fulcrum and a private relay on a local regtest chain, then create and pay an invoice.
 ---
 
-# Quick start
+# Try it on regtest
 
-Run the whole system on a throwaway regtest chain, on loopback only.
+In this tutorial you run the whole system on a throwaway regtest chain, on loopback only, and pay an invoice. Nothing touches real bitcoin, and `just down` removes the test chain.
 
 ## Requirements
 
+A checkout of the repository (`git clone https://github.com/sandwichfarm/deadhop`), and:
+
 - Rust 1.88 or newer
 - Node 22 or newer
-- Docker
+- Docker with Compose v2
 - [`just`](https://github.com/casey/just)
 
 ## Start it
 
+Three terminals, in the repository's root:
+
 ```sh
+just install     # once: the JavaScript workspace (packages and dashboard)
 just up          # regtest bitcoind + Fulcrum + private relay, a funded "miner" and a "merchant" wallet
-just server      # builds and runs deadhop; writes dashboard/public/config.json
-just dashboard   # serves the dashboard at http://127.0.0.1:4173
 ```
 
-Run `npm install` in `dashboard/` once before `just dashboard`.
+```sh
+just server      # second terminal: builds and runs deadhop (stays in the foreground)
+```
+
+Wait until the second terminal logs `deadhop is serving`: only then has it written the dashboard's settings (`dashboard/public/config.json`: the service's key and the relay `ws://127.0.0.1:7777`).
+
+```sh
+just dashboard   # third terminal: serves the dashboard at http://127.0.0.1:4173
+```
+
+If you started it earlier and the page says `config.json` is missing, stop it and run it again.
+
+The first `just server` compiles the service in release mode, which takes a few minutes. After that, it starts in seconds.
 
 ## Pay an invoice
 
-1. Open http://127.0.0.1:4173 and choose **Continue as guest**.
+1. Open http://127.0.0.1:4173 and choose **Continue as guest**. Guests can create invoices here because the development stack turns public invoicing on; a real deployment has it off by default.
 2. Enter an amount and choose **Create invoice**. The page mines proof of work, then shows
    the QR code and address.
 3. Pay it from the regtest miner wallet. This also mines one block:
@@ -47,5 +62,10 @@ Run `npm install` in `dashboard/` once before `just dashboard`.
 just down        # removes the stack and its chain data
 ```
 
+Stop the other two terminals with Ctrl-C. `data/dev/` (the service's database and keys) and `dashboard/public/config.json` stay; they are gitignored.
+
+To build an app against this stack, see [Develop against a local service](./integrate.md#develop-against-a-local-service).
+
 The development stack uses unpinned images and no authentication. Never use it as a
-production deployment; see [Deployment](./deployment.md).
+production deployment. For real payments, follow [Your first real payment](./first-payment.md)
+or [Choose a setup](./install.md).

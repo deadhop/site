@@ -42,6 +42,17 @@ export const deadhop = createDeadhop({
 `createDeadhop` connects only when it is first used and keeps one connection, so create
 it once per page (or per process) and pass it to every component.
 
+### Develop against a local service
+
+[Try it on regtest](./quickstart.md) runs a service on your machine with test bitcoin.
+`just server` writes its values to `dashboard/public/config.json`: use its `serverPubkey`,
+and the relay `ws://127.0.0.1:7777`. That relay is plain `ws://` on loopback, so while
+you develop, your page's `connect-src` must allow `ws://127.0.0.1:7777` as well as your
+`wss:` relays. `just pay <address> <sats>` pays an invoice from the test wallet.
+
+A test invoice can be created from the browser (public invoicing is on in the dev stack)
+or by your backend with the operator key in `data/dev/operator.nsec`.
+
 ## Two ways to create invoices
 
 ### 1. The browser creates them (public invoicing)
@@ -201,7 +212,7 @@ npx jsr add @deadhop/client @deadhop/react     # JSR: the client, React and Soli
 deno add jsr:@deadhop/client
 ```
 
-`@deadhop/svelte` is only on npm: JSR can't host `.svelte` files. Every framework
+The packages are published on npm (and the client, React and Solid packages on JSR). `@deadhop/svelte` is only on npm: JSR can't host `.svelte` files. Every framework
 package re-exports `createDeadhop`, so the client needs no separate import.
 
 ## Checklist for agents and developers

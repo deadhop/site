@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-description: What deadhop does not do yet, including automatic PayJoin or CoinJoin sweeps above a balance threshold, TLS to Electrum, SPV verification and push notifications.
+description: What deadhop does not do yet, including driving the sweeper from the dashboard, PayJoin v2, CoinJoin interoperability, SPV verification and push notifications.
 ---
 
 # Roadmap

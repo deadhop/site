@@ -1,6 +1,6 @@
 ---
-import LnaddrBase from '../../layouts/LnaddrBase.astro';
-import { backends, docs, flow, lnaddr, points, setup } from '../../lnaddr/content';
+import ToolPage from '../../components/ToolPage.astro';
+import { lnaddr } from '../../lnaddr/content';
 import { at } from '../../paths';
 
 const url = new URL(at('/lud16-lnaddr/'), Astro.site!).href;
@@ -8,60 +8,21 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: lnaddr.name,
+    name: 'deadhop lnaddr',
     url,
     description: lnaddr.description,
     applicationCategory: 'FinanceApplication',
-    applicationSubCategory: 'Lightning address (LUD-16) server',
     operatingSystem: 'Linux',
     softwareVersion: '0.1.0',
     programmingLanguage: 'Rust',
-    featureList: points.map((p) => p.title),
+    featureList: lnaddr.points.map((p) => p.title),
   },
 ];
 ---
 
-<LnaddrBase title={lnaddr.title} description={lnaddr.description} path="/lud16-lnaddr/" markdown="/lud16-lnaddr/index.md" jsonLd={jsonLd}>
-  <header class="ln-bar">
-    <a class="ln-brand" href={at('/lud16-lnaddr/')} aria-label="deadhop lnaddr">
-      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"
-        ><circle cx="4.6" cy="20" r="3.1" fill="currentColor"></circle><path
-          d="M7.4 16.2C10.5 5 20 2.6 24.5 14.8"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.8"
-          stroke-linecap="round"
-          stroke-dasharray="4.2 3.6"></path><path
-          d="M18 18.5H22.3V20.2a1 1 0 0 0 1 1H25.7a1 1 0 0 0 1-1V18.5H31V28.5a1.5 1.5 0 0 1-1.5 1.5H19.5A1.5 1.5 0 0 1 18 28.5Z"
-          fill="currentColor"></path></svg
-      >
-      <span>deadhop</span>
-    </a>
-    <span class="ln-tag">lnaddr</span>
-    <nav aria-label="lnaddr">
-      <ul>
-        <li><a href="#how">How it works</a></li>
-        <li><a href={at('/lud16-lnaddr/docs/')}>Docs</a></li>
-        <li><a href={at('/lud16-lnaddr/docs/quickstart.html')}>Quick start</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main id="content">
-    <section class="ln-hero" aria-labelledby="ln-title">
-      <p class="ln-stamp">LUD-16 · home node · ports open: <b>0</b></p>
-      <h1 id="ln-title">{lnaddr.headline}</h1>
-      <p class="ln-lede">{lnaddr.lede}</p>
-      <p class="ln-actions">
-        <a class="ln-button ln-button--primary" href={at('/lud16-lnaddr/docs/quickstart.html')}>Set it up</a>
-        <a class="ln-button" href={at('/lud16-lnaddr/docs/architecture.html')}>How it is built</a>
-      </p>
-    </section>
-
-    <section id="how" aria-labelledby="how-title">
-      <h2 id="how-title" class="ln-kicker">How a payment travels</h2>
-      <div class="ln-route">
-        <svg viewBox="0 0 1000 170" role="img" aria-label="wallet to gateway over https, gateway to node over Nostr relays, node to Lightning backend">
+<ToolPage tool={lnaddr} jsonLd={jsonLd}>
+  <Fragment slot="route">
+    <svg viewBox="0 0 1000 170" role="img" aria-label="wallet to gateway over https, gateway to node over Nostr relays, node to Lightning backend">
           <line class="wire" x1="70" y1="70" x2="330" y2="70" stroke-width="2"></line>
           <text x="200" y="56" text-anchor="middle">https</text>
           <path class="hop" d="M392 66 C 470 -6, 560 -6, 630 60" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
@@ -76,54 +37,5 @@ const jsonLd = [
           <text class="name" x="895" y="132" text-anchor="middle">your node</text>
           <text x="895" y="152" text-anchor="middle">no open port</text>
         </svg>
-        <ol class="ln-steps">
-          {
-            flow.map((s) => (
-              <li>
-                <p class="ln-kicker">{s.kicker}</p>
-                <h3>{s.title}</h3>
-                <p>{s.body}</p>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
-    </section>
-
-    <section class="ln-band" aria-labelledby="why-title">
-      <h2 id="why-title">Why it is built this way</h2>
-      <ul class="ln-grid">
-        {
-          points.map((p) => (
-            <li>
-              <h3>{p.title}</h3>
-              <p>{p.body}</p>
-            </li>
-          ))
-        }
-      </ul>
-      <ul class="ln-backends" aria-label="Lightning backends">{backends.map((b) => <li>{b}</li>)}</ul>
-    </section>
-
-    <section class="ln-band" aria-labelledby="setup-title">
-      <h2 id="setup-title">Three commands to a working address</h2>
-      <div class="ln-term">
-        {
-          setup.map((s) => (
-            <div>
-              <code>{s.cmd}</code>
-              <span>{s.note}</span>
-            </div>
-          ))
-        }
-      </div>
-    </section>
-
-    <section class="ln-band" aria-labelledby="docs-title">
-      <h2 id="docs-title">Read more</h2>
-      <ul class="ln-docs">{docs.map((d) => <li><a href={d.href}>{d.title}</a></li>)}</ul>
-    </section>
-  </main>
-
-  <footer class="ln-foot">deadhop lnaddr 0.1.0 · MIT · This page is also available as <a href={at('/lud16-lnaddr/index.md')}>Markdown</a>.</footer>
-</LnaddrBase>
+  </Fragment>
+</ToolPage>

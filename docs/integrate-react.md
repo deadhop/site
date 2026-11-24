@@ -64,7 +64,7 @@ import { InvoiceForm } from '@deadhop/react';
 import { Invoice } from '@deadhop/react';
 
 export function Checkout({ invoiceId }: { invoiceId: string }) {
-  return <Invoice client={deadhop} id={invoiceId} onPaid={() => router.refresh()} />;
+  return <Invoice client={deadhop} id={invoiceId} onPaid={() => router.refresh()} />; // router: your framework's, e.g. Next.js useRouter()
 }
 ```
 

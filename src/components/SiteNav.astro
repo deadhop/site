@@ -1,0 +1,51 @@
+---
+// The header on every page: the brand, the four products, the docs, and
+// the way to install whatever page you are on.
+import '../styles/nav.css';
+import { at } from '../paths';
+import { product, products, type ProductId } from '../products';
+
+interface Props {
+  current: ProductId;
+}
+const { current } = Astro.props;
+const here = product(current);
+---
+
+<header class="nav">
+  <div class="nav__in">
+    <a class="nav__brand" href={at('/')} aria-label="deadhop home">
+      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"
+        ><circle cx="4.6" cy="20" r="3.1" fill="currentColor"></circle><path
+          d="M7.4 16.2C10.5 5 20 2.6 24.5 14.8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.8"
+          stroke-linecap="round"
+          stroke-dasharray="4.2 3.6"></path><path
+          d="M18 18.5H22.3V20.2a1 1 0 0 0 1 1H25.7a1 1 0 0 0 1-1V18.5H31V28.5a1.5 1.5 0 0 1-1.5 1.5H19.5A1.5 1.5 0 0 1 18 28.5Z"
+          fill="currentColor"></path></svg
+      >
+      <span>deadhop</span>
+    </a>
+    <nav class="nav__products" aria-label="Products">
+      <ul>
+        {
+          products.map((p) => (
+            <li>
+              <a href={p.href} aria-current={p.id === current ? 'page' : undefined}>
+                {p.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <nav class="nav__end" aria-label="Documentation">
+      <ul>
+        <li><a href={here.docs}>Docs</a></li>
+        <li><a class="nav__install" href={here.install}>Install</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>

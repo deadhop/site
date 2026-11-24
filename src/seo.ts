@@ -20,6 +20,14 @@ export const faq: { q: string; a: string }[] = [
     q: 'What do I need to run it?',
     a: 'The deadhop binary, a few Nostr relays, and an Electrum server (Fulcrum or electrs) on your own Bitcoin node. The dashboard is a static page you can host anywhere.',
   },
+  {
+    q: 'Which wallets work with it?',
+    a: 'Any wallet that shows the account public key of a single-signature Native SegWit account and lets you raise its gap limit. The docs have guides for Sparrow, Electrum, the Blockstream app, COLDCARD, Trezor and Ledger. Or let it generate a wallet and write down the 24 words.',
+  },
+  {
+    q: 'Is there a hosted version?',
+    a: 'No. You run it next to your own node. There is no company in the middle, no fee and no account.',
+  },
 ];
 
 export function landingJsonLd(site: URL) {

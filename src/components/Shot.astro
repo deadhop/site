@@ -1,0 +1,26 @@
+---
+// A screenshot in a window frame, with an optional light-scheme version and a caption.
+import { at } from '../paths';
+
+interface Props {
+  src: string;
+  light?: string;
+  alt: string;
+  width: number;
+  height: number;
+  caption?: string;
+  class?: string;
+  eager?: boolean;
+}
+const { src, light, alt, width, height, caption, class: extra, eager } = Astro.props;
+---
+
+<figure class:list={['shot', extra]}>
+  <div class="shot__frame">
+    <picture>
+      {light && <source srcset={at(light)} media="(prefers-color-scheme: light)" />}
+      <img src={at(src)} alt={alt} width={width} height={height} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+    </picture>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
