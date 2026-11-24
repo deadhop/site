@@ -30,7 +30,7 @@ Using an invoice-only credential matters most. See [Lightning backends](./backen
 ## The gateway
 
 - **Only LNURL paths in public.** The public listener serves `/.well-known/lnurlp/…` and `/healthz`, nothing else. The admin interface has its own listener (loopback by default); a test checks that every admin path is `404` in public.
-- **Domains from configuration.** Callback URLs are built from configured domains, never from the request's `Host`. With several domains, the request's host picks one from the list; `X-Forwarded-Host` and `X-Forwarded-For` count only from configured `trusted_proxies` (or a Unix socket).
+- **Domains from configuration.** Callback URLs are built from configured domains, never from the request's `Host`. With several domains, the request's host picks one from the list; `X-Forwarded-Host` counts only from configured `trusted_proxies` or a Unix socket, and `X-Forwarded-For` only from configured `trusted_proxies`. On a Unix socket without them, all clients share one rate-limit budget.
 - **Every invoice checked** before a wallet sees it: amount, description hash, network, expiry and the optional pinned payee.
 - **Rate limits and connection limits** (see [hardening](./hardening.md)).
 
