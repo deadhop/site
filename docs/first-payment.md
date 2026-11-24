@@ -13,6 +13,10 @@ We make the choices for you: Docker Compose, a generated wallet, the dashboard o
 Follow the same steps with your wallet's key: in step 3 add `DEADHOP_XPUB` from [your wallet's guide](./xpub/index.md), skip step 5, and in step 6 use your wallet as its guide says (or watch that key in Sparrow).
 :::
 
+::: warning Must nobody learn where it runs?
+Set up [Hide the service](./hide.md) before step 4: relays see the address from the first connection.
+:::
+
 ## What you need
 
 - A bitcoin node with **Fulcrum or electrs**, on this machine or your local network.
@@ -53,7 +57,7 @@ DEADHOP_ADMINS=npub1…your key…
 DEADHOP_NAME=My first deadhop
 ```
 
-No `DEADHOP_XPUB`: deadhop will generate a wallet for you.
+No `DEADHOP_XPUB`: deadhop will generate a wallet for you (unless you follow the hardware-wallet tip above).
 
 ## 4. Start it
 
@@ -123,7 +127,7 @@ Pay the exact amount from your other wallet. Within a few seconds the drop says 
 
 ## 10. See it arrive
 
-In Sparrow, the payment appears on the **Transactions** tab, to an address deadhop made from your wallet's key. deadhop never had a key that could spend it, and still does not. To spend it later, restore the 24 words in a wallet: see [Spending what the service generated](./xpub/sparrow.md#spending-what-the-service-generated), or move it out automatically with the [sweeper](./wallet/sweep.md).
+In Sparrow, the payment appears on the **Transactions** tab, to an address deadhop made from your wallet's key. The payment service never had a key that could spend it. The words that can are on your paper, and in the `wallet` container, which has no network. To spend it later, restore the 24 words in a wallet: see [Spending what the service generated](./xpub/sparrow.md#spending-what-the-service-generated), or move it out automatically with the [sweeper](./wallet/sweep.md).
 
 ## What you have
 

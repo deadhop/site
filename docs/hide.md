@@ -59,7 +59,7 @@ volumes:
   tor-data:
 ```
 
-Its port is not published to the host. Then in `.env`:
+Its port is not published to the host. If you already have a `compose.override.yaml` (for the dashboard's port, say), put both under the same `services:`. Then in `.env`:
 
 ```sh
 DEADHOP_PROXY=socks5://tor:9050
@@ -115,7 +115,11 @@ The dashboard is a static page and the only public part. Host it away from the s
 
 If you run the [sweeper](./wallet/index.md), give it a proxy of its own: `DEADHOP_WALLET_PROXY=socks5://tor:9050`. It is used for PayJoin requests and the CoinJoin relay. The sweeper reaches the Electrum server directly, like the service.
 
-## 8. Drop inbound traffic
+## 8. Your own browser
+
+The service's address is hidden; yours is not. The dashboard connects to the relays from the browser you open it in, so relays see that browser's address. If that matters, open the dashboard in Tor Browser.
+
+## 9. Drop inbound traffic
 
 The service needs no inbound connection at all. Allow outbound connections to the relays (or the proxy) and to the Electrum server, and drop the rest.
 

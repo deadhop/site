@@ -60,7 +60,7 @@ export const benefits: { title: string; body: string }[] = [
   { title: 'Strictly typed interface', body: 'Every tool has published JSON schemas. Unknown fields are rejected; the dashboard validates every response with strict schemas.' },
   { title: 'Proof of work and rate limits', body: 'NIP-13 work for public invoice creation, per-key and global budgets, open-invoice and daily caps.' },
   { title: 'Replay protection', body: 'Every invoice request must be fresh, addressed to this service and never seen before, operators included.' },
-  { title: 'Cannot spend', body: 'Watch-only BIP-84 wallet. A compromised host cannot move funds already received.' },
+  { title: 'Cannot spend', body: 'The payment service holds a watch-only BIP-84 key: taking it over cannot move funds received. With your own wallet’s key, nothing on the host can.' },
   { title: 'Verified payment data', body: 'Transactions are re-hashed against their ids, sums are capped, and one bad invoice cannot stall the others.' },
   { title: 'Small, tested code', body: 'One Rust binary, no HTTP stack, SQLite. 100% line and function coverage, plus end-to-end tests on regtest.' },
   { title: 'Remote control without remote risk', body: 'Operators manage relays, proxy, limits and keys from the dashboard. Every change is one-time, audited, and can never touch the wallet or the Electrum server.' },

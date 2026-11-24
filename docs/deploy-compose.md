@@ -59,7 +59,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-The first build takes several minutes. Then all three containers report `healthy`. The service is healthy once it has connected to its relays:
+The first build takes several minutes. Then the three that start by default (`wallet`, `deadhop`, `dashboard`) report `healthy`. The service is healthy once it has connected to its relays:
 
 ```sh
 docker compose logs deadhop | grep -E "serving|first receive address"
@@ -71,6 +71,8 @@ INFO deadhop::app: first receive address (index 0): check that your wallet lists
 ```
 
 If a required setting is missing, the service logs which one and restarts until it is set.
+
+If nobody must learn where the service runs, set up [Hide the service](./hide.md) before this step.
 
 ## 4. Write down the recovery phrase
 
@@ -96,7 +98,7 @@ To spend, restore the words in any bitcoin wallet (for example Sparrow, BlueWall
 
 The wallets the export names are examples. To watch the payments over time, use one whose gap limit you can raise, such as [Sparrow](./xpub/sparrow.md); see [Wallets that do not fit well](./xpub/index.md#wallets-that-do-not-fit-well).
 
-Write the words on paper. The dashboard warns until they have been exported. The `wallet` container has no network, so the words never leave it except through this command.
+Write the words on paper. The dashboard warns until they have been exported. The `wallet` container has no network, so the words leave it only through this command, and, read-only, to the [sweeper](./wallet/index.md) if you turn it on.
 
 The generated wallet is meant for small balances. Sweep it to a wallet you keep offline, by hand or with the [sweeper](./wallet/sweep.md).
 

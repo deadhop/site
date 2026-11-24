@@ -5,6 +5,8 @@ description: Every deadhop environment variable, its default and what it control
 
 # Configuration
 
+The payment service's settings. The tools have their own: the [sweeping wallet](./wallet/configuration.md), the [relay](./relay/configuration.md), and lnaddr's [node](./lnaddr/node.md) and [gateway](./lnaddr/gateway.md).
+
 All configuration is environment variables. Nothing has a network-reaching default.
 
 | Variable | Default | Meaning |

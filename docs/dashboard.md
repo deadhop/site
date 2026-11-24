@@ -40,7 +40,7 @@ pay.example.com {
    }
    ```
 
-   `deadhop pubkey` and `deadhop pubkey admin` print the two keys on the service's host. `relays` are the relays the service listens on.
+   `deadhop pubkey` and `deadhop pubkey admin` print the two keys on the service's host; with Compose, `docker compose run --rm --no-deps deadhop pubkey` and `… pubkey admin` ([Commands](./cli.md)). `relays` are the relays the service listens on.
 
 3. Serve `dist/` over HTTPS with these headers. A `<meta>` policy cannot express the first:
 
@@ -73,6 +73,6 @@ Use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser
 
 Pasting a secret key also works; the page keeps it in memory only.
 
-## Not run yet
+## Tested
 
-The Caddy example has not been run. The Compose dashboard behind a loopback port was tested on regtest.
+The Caddy example was run with Caddy 2, with the site address changed to `localhost`: it served the dashboard over HTTPS with the three headers above. The Compose dashboard behind a loopback port was tested on regtest.

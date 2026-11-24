@@ -16,7 +16,7 @@ LNADDR_NODE_BACKEND_SECRET_FILE=/lnd/data/chain/bitcoin/mainnet/invoice.macaroon
 LNADDR_NODE_BACKEND_TLS_CERT_FILE=/lnd/tls.cert
 ```
 
-`invoice.macaroon` only allows invoice methods. It is binary; the node reads it as hex for the `Grpc-Metadata-macaroon` header. The node calls `POST /v1/invoices` with `value_msat`, `description_hash`, `expiry` and `private: true`, so invoices carry route hints for private channels: a home node often has no public channel, and without hints nobody could route to it.
+`invoice.macaroon` allows creating and reading invoices (and new on-chain addresses), and cannot spend. It is binary; the node reads it as hex for the `Grpc-Metadata-macaroon` header. The node calls `POST /v1/invoices` with `value_msat`, `description_hash`, `expiry` and `private: true`, so invoices carry route hints for private channels: a home node often has no public channel, and without hints nobody could route to it.
 
 ## Core Lightning (clnrest)
 

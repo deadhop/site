@@ -66,7 +66,9 @@ docker run -d --name lnaddr-gateway --restart unless-stopped \
   deadhop-lnaddr-gateway
 ```
 
-`LNADDR_GATEWAY_TRUSTED_PROXIES` names your reverse proxy, so per-client rate limits see the real client address ([why](./reverse-proxies.md)). `172.16.0.0/12` covers Docker's default networks; use your proxy's address.
+`LNADDR_GATEWAY_TRUSTED_PROXIES` names your reverse proxy, so per-client rate limits see the real client address ([why](./reverse-proxies.md)). `172.16.0.0/12` covers Docker's default networks, which is where a reverse proxy on the host appears from inside the container; use your proxy's address if it differs.
+
+The public host needs your domain's DNS pointing at it and ports 80 and 443 open for the reverse proxy. Your node needs inbound liquidity to receive.
 
 Point your reverse proxy's `/.well-known/lnurlp/` at `127.0.0.1:8080` ([examples](./reverse-proxies.md)).
 
