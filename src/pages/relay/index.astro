@@ -1,0 +1,138 @@
+---
+import RelayBase from '../../layouts/RelayBase.astro';
+import { docs, facts, flow, points, relay, setup } from '../../relay/content';
+import { at } from '../../paths';
+
+const url = new URL(at('/relay/'), Astro.site!).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: relay.name,
+    url,
+    description: relay.description,
+    applicationCategory: 'DeveloperApplication',
+    applicationSubCategory: 'Nostr relay',
+    operatingSystem: 'Linux',
+    softwareVersion: '0.1.0',
+    programmingLanguage: 'Rust',
+    featureList: points.map((p) => p.title),
+  },
+];
+---
+
+<RelayBase title={relay.title} description={relay.description} path="/relay/" markdown="/relay/index.md" jsonLd={jsonLd}>
+  <header class="rl-bar">
+    <a class="rl-brand" href={at('/relay/')} aria-label="deadhop relay">
+      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"
+        ><circle cx="4.6" cy="20" r="3.1" fill="currentColor"></circle><path
+          d="M7.4 16.2C10.5 5 20 2.6 24.5 14.8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.8"
+          stroke-linecap="round"
+          stroke-dasharray="4.2 3.6"></path><path
+          d="M18 18.5H22.3V20.2a1 1 0 0 0 1 1H25.7a1 1 0 0 0 1-1V18.5H31V28.5a1.5 1.5 0 0 1-1.5 1.5H19.5A1.5 1.5 0 0 1 18 28.5Z"
+          fill="currentColor"></path></svg
+      >
+      <span>deadhop</span>
+    </a>
+    <span class="rl-tag">relay</span>
+    <nav aria-label="relay">
+      <ul>
+        <li><a href="#how">How it works</a></li>
+        <li><a href={at('/relay/docs/')}>Docs</a></li>
+        <li><a href={at('/relay/docs/quickstart.html')}>Quick start</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="content">
+    <section class="rl-hero" aria-labelledby="rl-title">
+      <p class="rl-stamp">Nostr relay · ContextVM only · whitelist or public · dropped: <b>0</b></p>
+      <h1 id="rl-title">{relay.headline}</h1>
+      <p class="rl-lede">{relay.lede}</p>
+      <p class="rl-actions">
+        <a class="rl-button rl-button--primary" href={at('/relay/docs/quickstart.html')}>Run it</a>
+        <a class="rl-button" href={at('/relay/docs/architecture.html')}>How it is built</a>
+      </p>
+      <ul class="rl-facts" aria-label="Benchmark numbers">
+        {
+          facts.map((f) => (
+            <li>
+              <b>{f.value}</b>
+              <span>{f.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="how" aria-labelledby="how-title">
+      <h2 id="how-title" class="rl-kicker">How a request travels</h2>
+      <div class="rl-route">
+        <svg viewBox="0 0 1000 190" role="img" aria-label="customer to relay, relay to the authenticated service, and back; strangers are refused">
+          <path class="hop" d="M78 70 C 190 34, 330 34, 432 66" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+          <text x="255" y="22" text-anchor="middle">request · to a whitelisted key</text>
+          <path class="hop" d="M568 66 C 670 34, 810 34, 918 70" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+          <text x="745" y="22" text-anchor="middle">only to its AUTH'd key</text>
+          <path class="hop" d="M918 92 C 810 132, 670 132, 568 98" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+          <path class="hop" d="M432 98 C 330 132, 190 132, 78 92" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 9"></path>
+          <text x="500" y="170" text-anchor="middle">answer · only from the whitelisted key</text>
+          <circle cx="62" cy="80" r="11" fill="currentColor"></circle>
+          <rect x="432" y="52" width="136" height="58" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
+          <text class="name" x="500" y="87" text-anchor="middle">deadhop relay</text>
+          <path d="M918 64 H938 V70 a3 3 0 0 0 3 3 H949 a3 3 0 0 0 3 -3 V64 H972 V104 a4 4 0 0 1 -4 4 H922 a4 4 0 0 1 -4 -4 Z" fill="currentColor"></path>
+          <text class="name" x="62" y="124" text-anchor="middle">customer</text>
+          <text class="name" x="945" y="132" text-anchor="middle">your service</text>
+        </svg>
+        <ol class="rl-steps">
+          {
+            flow.map((s) => (
+              <li>
+                <p class="rl-kicker">{s.kicker}</p>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="rl-band" aria-labelledby="why-title">
+      <h2 id="why-title">Why it is built this way</h2>
+      <ul class="rl-grid">
+        {
+          points.map((p) => (
+            <li>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="rl-band" aria-labelledby="setup-title">
+      <h2 id="setup-title">Three commands to a running relay</h2>
+      <div class="rl-term">
+        {
+          setup.map((s) => (
+            <div>
+              <code>{s.cmd}</code>
+              <span>{s.note}</span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="rl-band" aria-labelledby="docs-title">
+      <h2 id="docs-title">Read more</h2>
+      <ul class="rl-docs">{docs.map((d) => <li><a href={d.href}>{d.title}</a></li>)}</ul>
+    </section>
+  </main>
+
+  <footer class="rl-foot">deadhop relay 0.1.0 · MIT · This page is also available as <a href={at('/relay/index.md')}>Markdown</a>.</footer>
+</RelayBase>

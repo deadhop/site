@@ -125,16 +125,19 @@ expect(existsSync(join(dist, 'llms-full.txt')) && statSync(join(dist, 'llms-full
 
 const sitemap = existsSync(join(dist, 'sitemap.xml')) ? readFileSync(join(dist, 'sitemap.xml'), 'utf8') : '';
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-// /lud16-lnaddr/ is published but not linked from the main site yet: it is
-// left out of the sitemap and llms.txt, and no main page links to it.
-const unlinked = (f) => relative(dist, f).startsWith('lud16-lnaddr');
+// /relay/ and /lud16-lnaddr/ are published but not linked from the main site
+// yet: they are left out of the sitemap and llms.txt, and no main page links to them.
+const UNLINKED = ['relay', 'lud16-lnaddr'];
+const unlinked = (f) => UNLINKED.some((d) => relative(dist, f).startsWith(d));
 const listed = pages.filter((f) => !unlinked(f));
 expect(locs.length === listed.length, '/sitemap.xml', `lists ${locs.length} URLs for ${listed.length} pages`);
-expect(!sitemap.includes('lud16-lnaddr') && !llms.includes('lud16-lnaddr'), '/sitemap.xml', 'lists /lud16-lnaddr/, which is not linked yet');
-for (const f of listed) {
-  expect(!readFileSync(f, 'utf8').includes('lud16-lnaddr'), '/' + relative(dist, f), 'links to /lud16-lnaddr/, which is not linked yet');
+for (const d of UNLINKED) {
+  expect(!sitemap.includes(`/${d}/`) && !llms.includes(`/${d}/`), '/sitemap.xml', `lists /${d}/, which is not linked yet`);
+  for (const f of listed) {
+    expect(!readFileSync(f, 'utf8').includes(`${BASE}${d}/`), '/' + relative(dist, f), `links to /${d}/, which is not linked yet`);
+  }
+  expect(exists(`${BASE}${d}/`) && exists(`${BASE}${d}/docs/`), `/${d}/`, `the /${d}/ page or its docs are missing`);
 }
-expect(exists(`${BASE}lud16-lnaddr/`) && exists(`${BASE}lud16-lnaddr/docs/`), '/lud16-lnaddr/', 'the lnaddr page or its docs are missing');
 for (const loc of locs) expect(loc.startsWith(SITE) && exists(new URL(loc).pathname), '/sitemap.xml', `unresolved ${loc}`);
 
 // Every Markdown twin starts with a single top-level heading.
