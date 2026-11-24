@@ -14,6 +14,7 @@ All configuration is environment variables. Nothing has a network-reaching defau
 | `DEADHOP_ELECTRUM_CERT_SHA256` | none | Pin the server's TLS certificate: SHA-256 fingerprint(s), comma-separated |
 | `DEADHOP_XPUB` | see below | Your wallet's BIP-84 **account** key (`xpub`/`zpub`, or `tpub`/`vpub` on test networks). Unset: one is generated (Compose) |
 | `DEADHOP_XPUB_FILE` | none | Read the account key from this file when `DEADHOP_XPUB` is unset (the wallet service writes it) |
+| `DEADHOP_INDEX_FILE` | none | Write the next unused address index here after every poll, for the sweeping wallet's scan (Compose sets it) |
 | `DEADHOP_NETWORK` | `bitcoin` | `bitcoin`, `testnet`, `signet` or `regtest` |
 | `DEADHOP_ADMINS` | none | Comma-separated operator public keys (hex or `npub`) |
 | `DEADHOP_PUBLIC_INVOICING` | `false` | Let non-operators create invoices (with proof of work) |
@@ -33,11 +34,12 @@ All configuration is environment variables. Nothing has a network-reaching defau
 | `DEADHOP_POLL_SECS` | `10` | Chain polling interval |
 | `DEADHOP_LATE_GRACE_SECS` | `86400` | How long expired invoices are still watched |
 | `DEADHOP_DATA_DIR` | `data` | Database and the service's Nostr key (created `0700`) |
+| `DEADHOP_PUBLIC_DIR` | none | A directory shared with the dashboard (`/public` in `compose.yaml`). The service writes `relays.json` there: the `wss://` relays each key listens on now, without `.onion`, `.i2p` or `.fips` addresses. The dashboard adds them to its own list |
 | `DEADHOP_ANNOUNCE` | `false` | Publish public ContextVM discovery announcements |
 | `DEADHOP_NAME` | `deadhop` | Name shown in the dashboard |
 | `DEADHOP_PROXY` | none | A proxy for relay connections only: `socks5://`, `https://` or `http://`, optionally `user:pass@`. The first entry of the proxy list |
 | `DEADHOP_PROXIES` | none | More proxies, comma-separated, after `DEADHOP_PROXY` (at most 8 in all) |
-| `DEADHOP_PROXY_MODE` | `failover` | How the list is used: `failover`, `round_robin` or `chaos` |
+| `DEADHOP_PROXY_MODE` | `off` | How the list is used: `off` (the first proxy only), `failover`, `round_robin` or `chaos` |
 | `DEADHOP_PROXY_ROTATE_SECS` | `3600` | Round robin: seconds between changes (60 to 604800) |
 | `DEADHOP_PROXY_CHAOS_MIN_SECS` / `DEADHOP_PROXY_CHAOS_MAX_SECS` | `300` / `900` | Chaos: shortest and longest time before the next change |
 | `DEADHOP_PROXY_OFFLINE` | `kill_switch` | When no proxy is reachable: `kill_switch` (disconnect from every relay), `admin_only` (connect straight, serve operators only), `invoicing_only` (connect straight, serve the public only) or `open` (connect straight, carry on) |
@@ -152,6 +154,7 @@ relay. Every proxy is probed once a minute, and the result is on the Overview an
 
 | Mode | Use |
 | --- | --- |
+| Off (the default) | The first proxy in the list, and never another. While it is down, the offline policy below applies, so the address relays see never changes. |
 | Failover | The first reachable proxy in list order. When a proxy earlier in the list comes back, the service goes back to it only after it has stayed up for 2 minutes. |
 | Round robin | The reachable proxies in turn, one change every `DEADHOP_PROXY_ROTATE_SECS`, never per connection. |
 | Chaos | A random other reachable proxy after a random time between `DEADHOP_PROXY_CHAOS_MIN_SECS` and `DEADHOP_PROXY_CHAOS_MAX_SECS` (for example 5 to 15 minutes). |

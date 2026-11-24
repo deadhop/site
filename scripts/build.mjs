@@ -28,6 +28,8 @@ run('npx', ['astro', 'build']);
 run('npx', ['vitepress', 'build', 'docs']);
 // deadhop relay's docs: their own VitePress root, under /relay/docs/.
 run('npx', ['vitepress', 'build', 'relay-docs']);
+// deadhop lnaddr's docs: their own VitePress root, under /lud16-lnaddr/docs/.
+run('npx', ['vitepress', 'build', 'lnaddr-docs']);
 
 // ---- Docs as Markdown ------------------------------------------------------
 
@@ -69,6 +71,17 @@ for (const f of readdirSync(relaySrc).filter((f) => f.endsWith('.md'))) {
   const { meta, body } = parse(readFileSync(join(relaySrc, f), 'utf8'));
   const markdown = body.trimStart().replace(/^# (.+)\n/m, (h) => `${h}\n> ${meta.description}\n`).trimEnd() + '\n';
   writeFileSync(join(dist, 'relay', 'docs', f), markdown);
+}
+
+// ---- lnaddr docs as Markdown -------------------------------------------------
+// Twins only: /lud16-lnaddr/ is not linked from the main site yet, so it stays
+// out of llms.txt and the sitemap below.
+
+const lnaddrSrc = join(root, 'lnaddr-docs');
+for (const f of readdirSync(lnaddrSrc).filter((f) => f.endsWith('.md'))) {
+  const { meta, body } = parse(readFileSync(join(lnaddrSrc, f), 'utf8'));
+  const markdown = body.trimStart().replace(/^# (.+)\n/m, (h) => `${h}\n> ${meta.description}\n`).trimEnd() + '\n';
+  writeFileSync(join(dist, 'lud16-lnaddr', 'docs', f), markdown);
 }
 
 // ---- llms.txt and llms-full.txt ------------------------------------------------
