@@ -36,7 +36,7 @@ Check the configuration without starting:
 DEADHOP_RELAY_WHITELIST="admin=npub1…" deadhop-relay check
 ```
 
-Without a whitelist, the relay exits with an error that says what to set.
+Without a whitelist, the relay exits with an error that says what to set. To run a public ContextVM relay instead, for any key, set `DEADHOP_RELAY_PUBLIC=on` (see [Public mode](./security.md#public-mode)).
 
 ## 3. Put TLS in front of it
 

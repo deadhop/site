@@ -10,12 +10,13 @@ description: The write and read rules of deadhop relay, how events fan out to su
 Every `EVENT` is judged in order of cost. The cheap checks come first, so junk is refused before it costs a Schnorr signature check.
 
 1. **Time.** More than 15 minutes in the future is refused.
-2. **Announcements** (kinds 0, 10002, 11316–11320): only from a whitelisted key.
+2. **Announcements** (kinds 0, 10002, 11316–11320): only from a whitelisted key, or, in public mode, from any key at public limits (step 7).
 3. **Other kinds:** only ContextVM messages (25910) and gift wraps (1059, 21059). Anything else is `blocked:`.
 4. **From a whitelisted key**, or on a connection that authenticated as one (NIP-42): accepted. This is how replies get through: a gift-wrapped reply is signed by a random key, so the relay can only know it comes from the service by the connection it arrives on.
 5. **To a whitelisted key** (a `p` tag): a request. It must be at most 32 KiB and at most 10 minutes old, fit within the sender's address budget, and carry proof of work if you require it (NIP-13). If the service's connection is backed up (its queue more than half full), the request is refused with `rate-limited:`; it is not accepted and then lost. `@deadhop/client` reports such a refusal as the service not being reachable, and the customer or dashboard can try again.
 6. **deadhop's relay health check** (a fixed text to one random key): accepted within its own small budget, so the dashboard's relay check works. It is never stored.
-7. **Anything else** is refused: `auth-required:` without AUTH, `restricted:` with AUTH as a key that is not whitelisted.
+7. **Public mode** (`DEADHOP_RELAY_PUBLIC=on`): anything else is accepted if it is at most `OPEN_MAX_EVENT_BYTES` (128 KiB) and 10 minutes old, fits within the sender's address budget, and carries any proof of work you require. Anyone may read it.
+8. **Otherwise** it is refused: `auth-required:` without AUTH, `restricted:` with AUTH as a key that is not whitelisted.
 
 Then duplicates are answered `duplicate:` (and not sent again), and the id and signature are checked.
 
@@ -46,7 +47,7 @@ Everything lives in memory. Nothing is written to disk.
 | Announcements | the latest per key and kind, until replaced |
 | Event ids | the last 200,000, to answer duplicates |
 
-Writes from anyone and writes from whitelisted keys have separate budgets (`PUBLIC_STORE_MAX_EVENTS`, 1,000; `STORE_MAX_EVENTS`, 20,000), so a flood of requests can never push out a reply. The first is also the bound on what can be held for an absent service: if more than 1,000 requests arrive while it is away, the oldest are gone when it returns.
+Writes from anyone and writes from whitelisted keys have separate budgets (`PUBLIC_STORE_MAX_EVENTS`, 1,000; `STORE_MAX_EVENTS`, 20,000), so a flood of requests can never push out a reply. In public mode, traffic between keys that are not whitelisted has a third budget (`OPEN_STORE_MAX_EVENTS`, 5,000), announcements included, so it can push out neither. The first is also the bound on what can be held for an absent service: if more than 1,000 requests arrive while it is away, the oldest are gone when it returns.
 
 ## Why nothing accepted is dropped
 

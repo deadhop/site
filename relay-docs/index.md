@@ -13,7 +13,7 @@ deadhop relay is a relay that carries **one service's traffic and nothing else**
 - **replies** from those keys, and only from them: by their signature, or from a connection that proved the key with NIP-42 AUTH;
 - those keys' **announcements** (profile, relay list, ContextVM server and tool announcements).
 
-Everything else is refused before it costs a signature check. The relay will not start without a whitelist.
+Everything else is refused before it costs a signature check. The relay will not start without a whitelist, unless you open it to every key with `DEADHOP_RELAY_PUBLIC=on`: it then carries ContextVM traffic for anyone, under public limits (see [Public mode](./security.md#public-mode)).
 
 ```text
 customer / dashboard ──wss──▶ deadhop relay ◀──wss── deadhop service (AUTH as a whitelisted key)
