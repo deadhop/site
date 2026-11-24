@@ -32,7 +32,7 @@ Each adapter is turned on by its `_LISTEN` variable, and needs the address clien
 | `DEADHOP_RELAY_I2P_URLS` | required with `_LISTEN` | The tunnel's address, e.g. `ws://….b32.i2p` |
 | `DEADHOP_RELAY_I2P_DAEMONS` | `127.0.0.1,::1` | The router's addresses; only they may connect |
 | `DEADHOP_RELAY_I2P_MAX_CONNECTIONS` | 128 | Open connections over I2P, at most |
-| `DEADHOP_RELAY_FIPS_LISTEN` | off | This node's FIPS address and a port, e.g. `[fd12:…]:7447`, or `[::]:7447` |
+| `DEADHOP_RELAY_FIPS_LISTEN` | off | This node's FIPS address and a port, e.g. `[fd12:…]:7447` |
 | `DEADHOP_RELAY_FIPS_URLS` | required with `_LISTEN` | `ws://npub1….fips:7447` |
 | `DEADHOP_RELAY_FIPS_MAX_CONNECTIONS` | 128 | Open connections over FIPS, at most |
 
@@ -40,7 +40,9 @@ Addresses must end in `.onion`, `.i2p` or `.fips` respectively. `ws://` is right
 
 **Clearnet off.** With at least one adapter, `DEADHOP_RELAY_LISTEN=off` serves the relay only on the overlays. Without that, clearnet stays on at its default `0.0.0.0:7447`, so an onion-only operator must turn it off.
 
-**Each overlay has its own cap.** New circuits and destinations cost nothing, so per-client limits alone cannot stop a flood over Tor or I2P. Past its `_MAX_CONNECTIONS`, a network's new connections go on probation, as they do past the relay's own limit: they stay only if they authenticate as a whitelisted key. A flood over one network leaves the others, and clearnet, open. Keep the caps together below `DEADHOP_RELAY_MAX_CONNECTIONS` (512) to keep room on clearnet.
+**Each overlay has its own cap.** New circuits and destinations cost nothing, so per-client limits alone cannot stop a flood over Tor or I2P. Past its `_MAX_CONNECTIONS`, a network's new connections go on probation, as they do past the relay's own limit: they stay only if they authenticate as a whitelisted key. An overlay may hold at most a quarter of the reserved slots (`RESERVED_CONNECTIONS`, 32, so 8 each). A flood over one network then leaves the others, clearnet included, room to connect and to authenticate. Keep the caps together below `DEADHOP_RELAY_MAX_CONNECTIONS` (512) to keep room on clearnet.
+
+**What a cap cannot do.** Each new circuit or destination also gets a fresh per-client event budget (`PUBLIC_EVENTS_PER_MIN`). Up to the cap, an attacker on Tor or I2P can therefore write at the cap times that rate, more than one clearnet address can. A whitelisted service that connects while its network is flooded competes for that network's probation share. If that matters, require proof of work (`MIN_POW`), lower the overlay's cap, or let the service connect over another network.
 
 **AUTH names the network's own address.** A service that authenticates (NIP-42) over Tor names the onion address, over I2P the `.i2p` address, and so on. Clearnet keeps its rule (`DEADHOP_RELAY_PUBLIC_URLS`, or the host dialled).
 
@@ -61,7 +63,7 @@ DEADHOP_RELAY_TOR_LISTEN=127.0.0.1:7451
 DEADHOP_RELAY_TOR_URLS=ws://<that address>.onion
 ```
 
-`HiddenServiceExportCircuitID haproxy` is required. With it, Tor starts each connection with a PROXY protocol line that names the circuit. Without it, the relay refuses the connection, since every client would look the same. It is an option of the C Tor daemon, for v3 onion services.
+`HiddenServiceExportCircuitID haproxy` is required. With it, Tor starts each connection with a PROXY protocol line that names the circuit, such as `PROXY TCP6 fc00:dead:beef:4dad::0:29a ::1 666 80`. The circuit is the low 32 bits of that address. Without the line, the relay refuses the connection, since every client would look the same. It is an option of the C Tor daemon, for v3 onion services.
 
 If Tor runs in another container, list its address in `DEADHOP_RELAY_TOR_DAEMONS` and keep the adapter's port off the host's public interfaces.
 
@@ -90,14 +92,16 @@ This was checked against i2pd's source. The Java I2P router's HTTP server tunnel
 
 ## FIPS
 
-[FIPS](https://github.com/jmcorgan/fips) gives each node an address in fd00::/8, derived from its Nostr key, and a name `<npub>.fips`. Bind the adapter to your node's FIPS address, or to `[::]`:
+[FIPS](https://github.com/jmcorgan/fips) gives each node an address in fd00::/8, derived from its Nostr key, and a name `<npub>.fips`. Bind the adapter to your node's own FIPS address:
 
 ```sh
-DEADHOP_RELAY_FIPS_LISTEN=[::]:7447
+DEADHOP_RELAY_FIPS_LISTEN=[fd12:3456:…]:7447
 DEADHOP_RELAY_FIPS_URLS=ws://npub1….fips:7447
 ```
 
-Peers arrive from their own FIPS address, so each node is one client. Connections from outside fd00::/8 are turned away on this listener, so `[::]` cannot be used to reach the relay around its clearnet limits. If clearnet also listens on `[::]`, give the two different ports.
+Peers arrive from their own FIPS address, so each node is one client. Connections from outside fd00::/8 are turned away on this listener.
+
+Bind to the node's address, not to `[::]`. fd00::/8 is all of private (ULA) IPv6, not only FIPS: on `[::]`, peers on a LAN, a Docker network or a VPN that use such addresses would also arrive as FIPS clients, each address its own client.
 
 ## Watching each network
 
