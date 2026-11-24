@@ -25,13 +25,17 @@ A public relay may still have a whitelist. Whitelisted keys then keep everything
 
 | Variable | Default | What |
 | --- | --- | --- |
-| `DEADHOP_RELAY_LISTEN` | `0.0.0.0:7447` | WebSocket and public pages |
+| `DEADHOP_RELAY_LISTEN` | `0.0.0.0:7447` | WebSocket and public pages, on clearnet. `off` only when the relay is served on Tor, I2P or FIPS instead ([Tor, I2P and FIPS](./networks.md)) |
 | `DEADHOP_RELAY_STATS_LISTEN` | `127.0.0.1:7448` | The operator page (no sign-in). `off` turns it off. |
 | `DEADHOP_RELAY_PUBLIC_URLS` | none | The `ws://` or `wss://` addresses clients use, shown on the status page. When set, AUTH must name one of them; when unset, the host the client dialled. Set it on any relay reachable from the internet. |
 | `DEADHOP_RELAY_TRUSTED_PROXIES` | none | IP addresses of reverse proxies whose `X-Forwarded-For` (its last entry) is believed |
 | `DEADHOP_RELAY_NAME` | `deadhop relay` | Shown on the pages and in NIP-11, at most 64 characters |
 | `DEADHOP_RELAY_DESCRIPTION` | one sentence | NIP-11 description and status page lead |
 | `DEADHOP_RELAY_ALLOW_PROBE` | `true` | Accept deadhop's relay health check (see [Security](./security.md)) |
+
+## Tor, I2P and FIPS
+
+`DEADHOP_RELAY_TOR_*`, `DEADHOP_RELAY_I2P_*` and `DEADHOP_RELAY_FIPS_*` serve the relay on those networks too, each on a listener of its own. They are all off by default. See [Tor, I2P and FIPS](./networks.md) for every variable and how to set up each daemon.
 
 ## Limits
 

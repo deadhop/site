@@ -89,6 +89,7 @@ export default defineConfig({
         items: [
           { text: 'Configuration', link: '/configuration' },
           { text: 'Deployment', link: '/deployment' },
+          { text: 'Tor, I2P and FIPS', link: '/networks' },
           { text: 'Status pages', link: '/status-pages' },
         ],
       },
