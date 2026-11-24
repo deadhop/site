@@ -8,7 +8,7 @@ export const lnaddr: Tool = {
   description:
     'A Lightning address (LUD-16) for a node with no public address: a gateway asks your node for each invoice over Nostr. No VPN, no tunnel, no forwarded port.',
   stamp: 'LUD-16 · home node · ports open: 0',
-  headline: 'A Lightning address for a node nobody can reach.',
+  headline: 'A Lightning address for a node with no open port.',
   lede: 'Your node stays home, behind NAT, with no port open. A small gateway on any public host serves you@yourdomain and asks your node for each invoice over encrypted Nostr messages.',
   hero: {
     src: '/shots/lnaddr-overview.webp',
