@@ -1,13 +1,15 @@
 ---
-title: Quick start
+title: Try it on regtest
 description: Run deadhop, its dashboard, bitcoind, Fulcrum and a private relay on a local regtest chain, then create and pay an invoice.
 ---
 
-# Quick start
+# Try it on regtest
 
-Run the whole system on a throwaway regtest chain, on loopback only.
+In this tutorial you run the whole system on a throwaway regtest chain, on loopback only, and pay an invoice. Nothing touches real bitcoin, and `just down` removes it all.
 
 ## Requirements
+
+A checkout of the repository (`git clone https://github.com/sandwichfarm/deadhop`), and:
 
 - Rust 1.88 or newer
 - Node 22 or newer
@@ -48,4 +50,5 @@ just down        # removes the stack and its chain data
 ```
 
 The development stack uses unpinned images and no authentication. Never use it as a
-production deployment; see [Deployment](./deployment.md).
+production deployment. For real payments, follow [Your first real payment](./first-payment.md)
+or [Choose a setup](./install.md).

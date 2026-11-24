@@ -1,0 +1,220 @@
+/* Tool pages (components/ToolPage.astro), on top of site.css. */
+.t-h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3.5rem);
+}
+
+.t-band--tight {
+  padding-top: 0.5rem;
+}
+
+.t-facts {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+}
+
+.t-facts li {
+  border: 1.5px dashed var(--line);
+  border-radius: 4px;
+  padding: 1rem 1.1rem;
+}
+
+.t-facts b {
+  display: block;
+  font: 800 1.8rem/1.1 var(--display);
+  letter-spacing: -0.03em;
+}
+
+.t-facts span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.t-gallery {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.t-gallery--2 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.t-gallery--1 {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 52rem;
+}
+
+.t-termshot pre,
+.t-gallery pre {
+  margin: 0;
+  padding: 1.1rem 1.2rem;
+  font: 400 0.74rem/1.75 var(--mono);
+  color: var(--fg);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.t-route {
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 1.6rem 1.5rem 0.5rem;
+}
+
+.t-route svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  color: var(--fg);
+}
+
+.t-route .hop {
+  stroke: var(--accent);
+}
+
+.t-route .wire {
+  stroke: var(--muted);
+}
+
+.t-route text {
+  font-family: var(--mono);
+  font-size: 13px;
+  fill: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.t-route text.name {
+  fill: var(--fg);
+  font-size: 15px;
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.t-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.t-steps li {
+  padding: 0.9rem 0.25rem 1.1rem;
+}
+
+.t-steps .kicker {
+  margin-bottom: 0.4rem;
+}
+
+.t-steps h3 {
+  margin-bottom: 0.35rem;
+}
+
+.t-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.t-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.1rem 0 0;
+}
+
+.t-chips li {
+  font: 500 0.8rem/1 var(--mono);
+  border: 1.5px dashed var(--line);
+  border-radius: 4px;
+  padding: 0.6rem 0.75rem;
+}
+
+.t-term {
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  font: 0.8rem/1.5 var(--mono);
+}
+
+.t-term div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.2rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+.t-term div:last-child {
+  border-bottom: 0;
+}
+
+.t-term code {
+  overflow-wrap: anywhere;
+}
+
+.t-term code::before {
+  content: '$ ';
+  color: var(--muted);
+}
+
+.t-term span {
+  color: var(--muted);
+  font: 0.88rem/1.4 var(--body);
+}
+
+.t-docs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem;
+}
+
+.t-docs > div {
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  padding: 1.1rem 1.2rem;
+}
+
+.t-docs__blurb {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.6rem;
+}
+
+.t-docs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.t-docs li {
+  padding: 0.28rem 0;
+  border-top: 1px dashed var(--line);
+}
+
+.t-docs a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.t-docs a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 52rem) {
+  .t-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .t-gallery--2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

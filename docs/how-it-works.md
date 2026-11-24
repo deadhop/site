@@ -23,7 +23,7 @@ Plaintext requests are refused. The service never accepts an inbound connection.
 | Reachability | Only outbound websocket connections to relays |
 | Confidentiality | NIP-44 encryption with NIP-59 gift wrap on every message |
 | Identity | The Nostr key that signed the request; operators are a configured list of keys |
-| Typed interface | MCP tools with published JSON schemas (five for invoicing, twelve for operators); unknown fields are rejected |
+| Typed interface | MCP tools with published JSON schemas, a few for invoicing and the rest for operators; unknown fields are rejected |
 | Abuse resistance | NIP-13 proof of work for public invoice creation, then rate limits and caps |
 | Funds | Watch-only account public key; one fresh native segwit address per invoice |
 | Payment detection | Polls an Electrum server per open invoice, re-hashes every transaction, counts confirmations |

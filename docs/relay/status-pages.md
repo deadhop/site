@@ -18,7 +18,7 @@ On the relay's main address, for a browser (`GET /`):
 
 It names no keys. Anyone can see how busy the relay is, but not whose traffic it carries.
 
-![The public status page](/status.png)
+![The public status page](/relay/status.png)
 
 ## The operator page
 
@@ -30,7 +30,7 @@ On `DEADHOP_RELAY_STATS_LISTEN` (`127.0.0.1:7448` by default), with no sign-in, 
 - **refusals** by reason (`invalid`, `restricted`, `auth-required`, `rate-limited`, `pow`, `duplicate`, `blocked`);
 - **limits**: every limit in effect.
 
-![The operator page during a flood](/operator.png)
+![The operator page during a flood](/relay/operator.png)
 
 When the relay is also served on Tor, I2P or FIPS, the operator page adds links between networks in its header, and a **Networks** row of cards. Each card shows open connections against the network's cap, the last hour as bars, and that hour's events and refusals. Each card opens the network's own page (`/networks/tor`, and so on) with only what arrived over it. The public page then lists every network's address, and no per-network numbers. See [Tor, I2P and FIPS](./networks.md#watching-each-network). With clearnet alone, neither page changes.
 

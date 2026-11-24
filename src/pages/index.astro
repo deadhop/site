@@ -1,8 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
-import { benefits, components, docLinks, limits, pricing, product, steps } from '../content';
+import SiteNav from '../components/SiteNav.astro';
+import Shot from '../components/Shot.astro';
+import { benefits, components, docLinks, limits, needs, paths, pricing, product, shots, steps } from '../content';
+import { products } from '../products';
 import { faq, landingJsonLd } from '../seo';
 import { at } from '../paths';
+
+const tools = products.filter((p) => p.id !== 'payments');
+const toolShots: Record<string, { src: string; width: number; height: number; alt: string } | null> = {
+  lnaddr: { src: '/shots/lnaddr-overview.webp', width: 1600, height: 938, alt: 'The lnaddr gateway admin: nodes, latency and the Lightning addresses it serves.' },
+  relay: { src: '/shots/relay-operator.webp', width: 1600, height: 938, alt: 'The relay operator page: connections, events and a card per network (clearnet, Tor, I2P, FIPS).' },
+  wallet: null,
+};
 ---
 
 <Base
@@ -12,50 +22,65 @@ import { at } from '../paths';
   markdown="/index.md"
   jsonLd={landingJsonLd(Astro.site!)}
 >
-  <header class="bar">
-    <a class="brand" href={at('/')} aria-label="deadhop home">
-      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"
-        ><circle cx="4.6" cy="20" r="3.1" fill="currentColor"></circle><path
-          d="M7.4 16.2C10.5 5 20 2.6 24.5 14.8"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.8"
-          stroke-linecap="round"
-          stroke-dasharray="4.2 3.6"></path><path
-          d="M18 18.5H22.3V20.2a1 1 0 0 0 1 1H25.7a1 1 0 0 0 1-1V18.5H31V28.5a1.5 1.5 0 0 1-1.5 1.5H19.5A1.5 1.5 0 0 1 18 28.5Z"
-          fill="currentColor"></path></svg
-      >
-      <span>deadhop</span>
-    </a>
-    <nav aria-label="Primary">
-      <ul>
-        <li><a href="#security">Security</a></li>
-        <li><a href={at('/docs/')}>Docs</a></li>
-        <li><a href={at('/docs/quickstart.html')}>Quick start</a></li>
-      </ul>
-    </nav>
-  </header>
+  <SiteNav current="payments" />
 
   <main id="content">
+    <section class="intro" aria-labelledby="hero-title">
+      <div class="intro__copy">
+        <p class="stamp">ports open: 0</p>
+        <h1 id="hero-title">{product.motto.split(/(?<=\.)\s+/).map((line) => <span class="line">{line}</span>)}</h1>
+        <p class="motto-sub">{product.tagline}</p>
+        <p class="lede">{product.summary}</p>
+        <p class="actions">
+          <a class="button button--primary" href={at('/docs/install.html')}>Install it</a>
+          <a class="button" href="#product">See what you get</a>
+        </p>
+        <p class="fine">Self-hosted · free · MIT · runs next to your own bitcoin node</p>
+      </div>
+      <Shot class="intro__shot" eager {...shots.hero} />
+    </section>
+
+    <section id="start" class="band" aria-labelledby="start-title">
+      <p class="kicker">Where do you start?</p>
+      <h2 id="start-title">Pick what you came for</h2>
+      <ul class="paths">
+        {
+          paths.map((p) => (
+            <li>
+              <a href={at(p.href)}>
+                <span class="paths__kind">{p.kind}</span>
+                <span class="paths__title">{p.title}</span>
+                <span class="paths__body">{p.body}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="product" class="band" aria-labelledby="product-title">
+      <p class="kicker">What you get</p>
+      <h2 id="product-title">A checkout for your customers, a dashboard for you</h2>
+      <p class="band__lede">
+        The dashboard is a static page. It reaches the service through Nostr relays like any customer does, so it can be hosted anywhere and the service still opens no port. Sign in with your Nostr key; there are no accounts.
+      </p>
+      <div class="gallery">
+        {shots.gallery.map((s) => <Shot {...s} />)}
+      </div>
+    </section>
+
     <div class="stage">
       <div class="stage__copy">
-        <section class="hero" aria-labelledby="hero-title">
-          <p class="stamp">ports open: 0</p>
-          <h1 id="hero-title">{product.motto.split(/(?<=\.)\s+/).map((line) => <span class="line">{line}</span>)}</h1>
-          <p class="motto-sub">{product.tagline}</p>
-          <p class="lede">{product.summary}</p>
-          <p class="actions">
-            <a class="button button--primary" href={at('/docs/quickstart.html')}>Run it locally</a>
-            <a class="button" href={at('/docs/')}>Read the docs</a>
-          </p>
-        </section>
-
-        <section id="story" aria-label="How a payment flows">
+        <section id="story" aria-labelledby="story-title">
+          <header class="story__head">
+            <p class="kicker">How a payment travels</p>
+            <h2 id="story-title">Nothing to reach, at any step</h2>
+          </header>
           {
             steps.map((s) => (
               <article class="step" id={s.id} aria-labelledby={`${s.id}-title`}>
                 <p class="kicker">{s.kicker}</p>
-                <h2 id={`${s.id}-title`}>{s.title}</h2>
+                <h3 id={`${s.id}-title`}>{s.title}</h3>
                 <p>{s.body}</p>
               </article>
             ))
@@ -66,6 +91,30 @@ import { at } from '../paths';
         <canvas id="scene"></canvas>
       </div>
     </div>
+
+    <section id="tools" class="band" aria-labelledby="tools-title">
+      <p class="kicker">Tools built the same way</p>
+      <h2 id="tools-title">Each does one job, with nothing to reach</h2>
+      <ul class="tools">
+        {
+          tools.map((t) => (
+            <li>
+              <a class="tools__card" href={t.href}>
+                {toolShots[t.id] ? (
+                  <img src={at(toolShots[t.id]!.src)} alt={toolShots[t.id]!.alt} width={toolShots[t.id]!.width} height={toolShots[t.id]!.height} loading="lazy" decoding="async" />
+                ) : (
+                  <pre class="tools__term" aria-label="The sweeper's log after a sweep">
+                    <code>sweeping by send once 60000 sat are confirmed{'\n'}send: moved 96409 sat of 100000 to bcrt1qkh5n…5ah2 in 7205…fd9b</code>
+                  </pre>
+                )}
+                <span class="tools__name">{t.label}</span>
+                <span class="tools__body">{t.blurb}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
 
     <section id="security" class="band" aria-labelledby="security-title">
       <h2 id="security-title" data-reveal>Security benefits</h2>
@@ -116,6 +165,23 @@ import { at } from '../paths';
       </dl>
     </section>
 
+    <section id="install" class="band" aria-labelledby="install-title">
+      <div class="install">
+        <div>
+          <p class="kicker">Install</p>
+          <h2 id="install-title">Run it next to your node</h2>
+          <ul class="install__needs">{needs.map((n) => <li>{n}</li>)}</ul>
+        </div>
+        <div class="install__go">
+          <pre><code>git clone https://github.com/sandwichfarm/deadhop{'\n'}cd deadhop</code></pre>
+          <p class="actions">
+            <a class="button button--primary" href={at('/docs/install.html')}>Choose a setup</a>
+            <a class="button" href={at('/docs/quickstart.html')}>Try it on regtest</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section class="band" aria-labelledby="docs-title">
       <h2 id="docs-title" data-reveal>Documentation</h2>
       <ul class="cards" data-stagger>
@@ -123,6 +189,7 @@ import { at } from '../paths';
           docLinks.map((d) => (
             <li>
               <a href={at(d.href)}>
+                <span class="cards__kind">{d.kind}</span>
                 <span class="cards__title">{d.title}</span>
                 <span class="cards__body">{d.body}</span>
               </a>
@@ -137,8 +204,8 @@ import { at } from '../paths';
     <p>deadhop 0.1.0</p>
     <nav aria-label="Footer">
       <ul>
+        {products.map((p) => <li><a href={p.href}>{p.label}</a></li>)}
         <li><a href={at('/docs/')}>Documentation</a></li>
-        <li><a href={at('/docs/security.html')}>Security</a></li>
         <li><a href={at('/index.md')}>This page as Markdown</a></li>
         <li><a href={at('/llms.txt')}>llms.txt</a></li>
       </ul>
