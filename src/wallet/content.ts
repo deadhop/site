@@ -10,18 +10,12 @@ export const wallet: Tool = {
   stamp: 'sweeper · send · PayJoin · CoinJoin',
   headline: 'What you received, moved to cold storage on its own.',
   lede: 'deadhop can generate its own wallet so you can start today. The sweeper keeps that wallet small: past a threshold you set, it sends everything to a fresh address of your cold wallet.',
-  term: {
-    title: 'The sweeper on a test chain: two paid invoices, swept in one transaction',
-    lines: [
-      '$ docker compose --profile sweep logs sweeper',
-      'INFO deadhop_wallet::run: sweeping by send once 60000 sat are confirmed',
-      'INFO deadhop_wallet::run: send: moved 96409 sat of 100000 to',
-      '     bcrt1qkh5nhkj8an3c7vw8dlzyq4vzk07g90xjte5ah2 in 7205568a…51c3fd9b',
-      '',
-      '$ docker compose --profile sweep exec sweeper deadhop-wallet status',
-      '1795518681 send moved 96409 of 100000 sat to',
-      '     bcrt1qkh5nhkj8an3c7vw8dlzyq4vzk07g90xjte5ah2 in 7205568a…51c3fd9b',
-    ],
+  hero: {
+    src: '/shots/wallet-warning.webp',
+    light: '/shots/wallet-warning-light.webp',
+    width: 1600,
+    height: 622,
+    alt: 'The dashboard Overview with the warning: the wallet was generated on this host and its recovery phrase has not been backed up.',
   },
   flowTitle: 'How a sweep travels',
   flow: [
@@ -32,12 +26,12 @@ export const wallet: Tool = {
   ],
   gallery: [
     {
-      src: '/shots/payments-overview.webp',
-      light: '/shots/payments-overview-light.webp',
-      width: 1600,
-      height: 1121,
-      alt: 'The deadhop dashboard Overview, with the totals received.',
-      caption: 'The payment service fills the wallet; the dashboard shows what came in. The sweeper itself has no screen, only its log and status.',
+      src: '/shots/wallet-sweep.webp',
+      light: '/shots/wallet-sweep-light.webp',
+      width: 1400,
+      height: 290,
+      alt: 'A terminal: the sweeper holding below its threshold, then moving 195,273 of 203,000 sats to the cold wallet in one transaction, and the same sweep in its status.',
+      caption: 'The sweeper on a test chain: it holds until the confirmed balance passes the threshold, then moves everything to your cold wallet in one transaction. Until you write the generated wallet’s words down, the dashboard warns on every visit (above).',
     },
   ],
   points: [

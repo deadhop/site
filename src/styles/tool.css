@@ -45,7 +45,6 @@
 
 .t-gallery--1 {
   grid-template-columns: minmax(0, 1fr);
-  max-width: 52rem;
 }
 
 .t-termshot pre,

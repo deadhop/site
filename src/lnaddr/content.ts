@@ -14,8 +14,8 @@ export const lnaddr: Tool = {
     src: '/shots/lnaddr-overview.webp',
     light: '/shots/lnaddr-overview-light.webp',
     width: 1600,
-    height: 938,
-    alt: 'The gateway’s admin page: invoices, lookups, the node with its latency, and the addresses it serves.',
+    height: 939,
+    alt: 'The gateway’s admin page: invoices, lookups, failures, latency, the node, and the addresses it serves.',
   },
   flowTitle: 'How a payment travels',
   flow: [
@@ -27,16 +27,17 @@ export const lnaddr: Tool = {
   gallery: [
     {
       src: '/shots/lnaddr-wallet-view.webp',
+      light: '/shots/lnaddr-wallet-view-light.webp',
       width: 1400,
-      height: 763,
+      height: 701,
       alt: 'A terminal: the LNURL pay request for alice, an invoice from the callback, a refused amount, and the health check.',
-      caption: 'What a wallet sees: the pay request, an invoice made by the node at home, and an amount out of range refused.',
+      caption: 'What a wallet sees: the pay request, an invoice made by the node (here a test backend), and an amount out of range refused.',
     },
     {
       src: '/shots/lnaddr-overview.webp',
       light: '/shots/lnaddr-overview-light.webp',
       width: 1600,
-      height: 938,
+      height: 939,
       alt: 'The gateway’s admin page.',
       caption: 'The optional admin page: each node’s latency, the addresses it serves, recent failures.',
     },

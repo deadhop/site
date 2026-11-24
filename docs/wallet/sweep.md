@@ -66,7 +66,7 @@ The sweeper never forces a transaction. It logs why it is waiting and tries agai
 | Log | Why | What to do |
 | --- | --- | --- |
 | `due with … confirmed, but waiting: fees are above the cap of 20 sat/vB` | The fee estimate is above `DEADHOP_WALLET_MAX_FEE_RATE` | Wait, or raise the cap |
-| Nothing after `sweeping by send once …` | The confirmed balance is below the threshold | Wait |
+| `holding 0 BTC confirmed and 0.00168000 BTC unconfirmed, below the threshold` | The confirmed balance is below the threshold (here, payments still waiting for a block) | Wait |
 | `holding: no destination is set, so nothing is swept, no key is read and no connection is made` | `DEADHOP_WALLET_DESTINATION` is empty | Set it |
 | `DEADHOP_XPUB is set: that wallet's keys are not on this host, …` | deadhop receives to your own wallet; there is nothing here to sweep | Nothing: your wallet already holds the funds |
 
