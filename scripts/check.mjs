@@ -28,6 +28,15 @@ function walk(dir) {
 }
 
 /** URL path (under the base path) -> file in dist (same rules as the preview server). */
+function fileOf(urlPath) {
+  if (!urlPath.startsWith(BASE)) return null;
+  const p = join(dist, decodeURIComponent(urlPath.slice(BASE.length - 1)));
+  for (const c of [p, join(p, 'index.html'), `${p}.html`]) {
+    if (existsSync(c) && statSync(c).isFile()) return c;
+  }
+  return null;
+}
+
 function exists(urlPath) {
   if (!urlPath.startsWith(BASE)) return false;
   const p = join(dist, decodeURIComponent(urlPath.slice(BASE.length - 1)));
@@ -86,6 +95,14 @@ for (const file of pages) {
     if (/^(https?:|mailto:|data:|\/\/)/.test(ref)) continue;
     const abs = new URL(ref, new URL(BASE + where.slice(1), 'http://x')).pathname;
     expect(exists(abs), where, `broken link ${ref}`);
+  }
+
+  // Every #fragment names an id on its target page.
+  for (const [, ref, frag] of html.matchAll(/href="([^"#?]*)(?:\?[^"#]*)?#([^"]+)"/g)) {
+    if (/^(https?:|mailto:|\/\/)/.test(ref)) continue;
+    const target = ref === '' ? file : fileOf(new URL(ref, new URL(BASE + where.slice(1), 'http://x')).pathname);
+    const id = decodeURIComponent(frag);
+    expect(!!target && readFileSync(target, 'utf8').includes(`id="${id}"`), where, `broken anchor ${ref}#${frag}`);
   }
 
   // Content is visible without JavaScript: nothing hidden in the markup itself.

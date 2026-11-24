@@ -30,7 +30,11 @@ The data directory holds the SQLite database, backups and the service's Nostr ke
 
 ## 3. The environment file
 
-`/etc/deadhop/env`, readable by root and the service only:
+```sh
+sudo install -d -m 0750 -g deadhop /etc/deadhop
+```
+
+Then `/etc/deadhop/env`, readable by root and the service only:
 
 ```sh
 DEADHOP_RELAYS=wss://relay.contextvm.org,wss://nos.lol,wss://relay.damus.io
@@ -43,7 +47,6 @@ DEADHOP_DATA_DIR=/var/lib/deadhop
 See [Connect your Electrum server](./electrum.md), [Receive to your own wallet](./xpub/index.md) and every other setting in [Configuration](./configuration.md).
 
 ```sh
-sudo install -d -m 0750 -g deadhop /etc/deadhop
 sudo chmod 0640 /etc/deadhop/env && sudo chgrp deadhop /etc/deadhop/env
 ```
 
@@ -91,3 +94,7 @@ Build it and serve it from any web server: [Host the dashboard](./dashboard.md).
 ## 6. Back up
 
 Copy `/var/lib/deadhop` with its permissions intact, and the backups the dashboard writes to `/var/lib/deadhop/backups` (the newest 10 are kept). The data directory holds the service's key: a new one means a new address for customers to reach.
+
+## Not run yet
+
+These steps have not been run end to end on a systemd host. The unit is the one the repository has documented since the first release; the commands are standard.

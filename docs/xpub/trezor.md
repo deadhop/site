@@ -27,4 +27,4 @@ DEADHOP_XPUB=xpub6…        # or the zpub, whichever Suite shows
 
 ## 5. The gap limit: use Sparrow
 
-Trezor Suite finds up to 20 unused addresses in a row and has no setting to change that ([addresses](https://trezor.io/guides/trezor-suite/addresses-transaction-history)). Payments past that gap stay safe on your Trezor but Suite will not show them. Connect the Trezor to [Sparrow](./sparrow.md) and raise the gap limit there; Sparrow then shows and spends them with the Trezor signing.
+Trezor's guide says Suite can generate 20 new unused addresses, and describes no setting to change that ([addresses](https://trezor.io/guides/trezor-suite/addresses-transaction-history)). Payments past that gap stay safe on your Trezor, but Suite may not show them. Connect the Trezor to [Sparrow](./sparrow.md) and raise the gap limit there; Sparrow then shows and spends them with the Trezor signing.

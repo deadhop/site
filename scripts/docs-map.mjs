@@ -33,6 +33,7 @@ export const PRODUCTS = [
       ['quickstart', 'tutorial', 'Try it on regtest'],
       ['first-payment', 'tutorial', 'Your first real payment'],
       ['install', 'howto', 'Choose a setup'],
+      ['setups', 'howto', 'Deployment setups'],
       ['deploy-compose', 'howto', 'Run it with Docker Compose'],
       ['deploy-systemd', 'howto', 'Run it under systemd'],
       ['electrum', 'howto', 'Connect your Electrum server'],

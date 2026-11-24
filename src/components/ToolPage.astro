@@ -65,6 +65,7 @@ const others = products.filter((p) => p.id !== t.id);
     <section id="what" class="band" aria-labelledby="what-title">
       <p class="kicker">What you get</p>
       <h2 id="what-title">What it looks like running</h2>
+      <p class="fine">Screenshots and output from test setups, not a live deployment.</p>
       <div class:list={['t-gallery', `t-gallery--${t.gallery.length}`]}>
         {t.gallery.map((s) => <Shot {...s} />)}
       </div>

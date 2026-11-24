@@ -93,6 +93,8 @@ To spend, restore the words in any bitcoin wallet (for example Sparrow, BlueWall
   addresses the dashboard shows as created, plus 20
 ```
 
+The wallets the export names are examples. To watch the payments over time, use one whose gap limit you can raise, such as [Sparrow](./xpub/sparrow.md); see [Wallets that do not fit well](./xpub/index.md#wallets-that-do-not-fit-well).
+
 Write the words on paper. The dashboard warns until they have been exported. The `wallet` container has no network, so the words never leave it except through this command.
 
 The generated wallet is meant for small balances. Sweep it to a wallet you keep offline, by hand or with the [sweeper](./wallet/sweep.md).

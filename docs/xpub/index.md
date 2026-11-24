@@ -42,17 +42,17 @@ An `xpub` carries no address type. A key from a Nested SegWit or Taproot account
   <a href="./electrum.html"><strong>Electrum</strong><span>Desktop. Shows a <code>zpub</code> for Native SegWit. The gap limit is raised from its console.</span><em>Good fit</em></a>
   <a href="./blockstream.html"><strong>Blockstream app</strong><span>Mobile and desktop. Singlesig Bitcoin accounts; a custom gap limit on Android.</span><em>Good fit</em></a>
   <a href="./coldcard.html"><strong>COLDCARD</strong><span>Exports the BIP-84 account key from the device, by QR, NFC or file. Pair it with Sparrow for the gap limit.</span><em>Hardware</em></a>
-  <a href="./trezor.html"><strong>Trezor</strong><span>Trezor Suite shows each account's public key. Suite's gap limit is fixed at 20, so pair it with Sparrow.</span><em>Hardware</em></a>
+  <a href="./trezor.html"><strong>Trezor</strong><span>Trezor Suite shows each account's public key. Its guides describe no gap limit setting, so pair it with Sparrow.</span><em>Hardware</em></a>
   <a href="./ledger.html"><strong>Ledger</strong><span>Ledger Wallet (formerly Ledger Live) shows the key under the account's advanced settings, and has an experimental gap limit.</span><em>Hardware</em></a>
 </div>
 
 | Wallet | Key it shows | First address | Gap limit |
 | --- | --- | --- | --- |
-| Sparrow | `xpub`, with a copy as `zpub` | Addresses tab | Settings → Advanced |
+| Sparrow | `xpub`, or `zpub` with the **…** button | Addresses tab | Settings → Advanced |
 | Electrum | `zpub` | Addresses tab | Console command |
 | Blockstream app | `zpub` (from the app's source) | Receive → List of Addresses | Android: App Settings |
 | COLDCARD | `xpub`, or `zpub` on request | Address Explorer, on the device | In the companion app |
-| Trezor Suite | Public key, on the device too | Receive → Verify (unused account) | Fixed at 20: use Sparrow |
+| Trezor Suite | Public key, on the device too | Receive → Verify (unused account) | No documented setting: use Sparrow |
 | Ledger Wallet | `xpub` for every account type | Receive (unused account) | Experimental setting |
 
 ## Wallets that do not fit well

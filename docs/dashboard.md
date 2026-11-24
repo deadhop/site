@@ -62,3 +62,7 @@ pay.example.com {
 Use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser extension**. A key listed in `DEADHOP_ADMINS`, or added under **Operators**, gets the operator view. Use a key made only for this service.
 
 Pasting a secret key also works; the page keeps it in memory only.
+
+## Not run yet
+
+The Caddy example has not been run. The Compose dashboard behind a loopback port was tested on regtest.

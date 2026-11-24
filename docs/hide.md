@@ -72,3 +72,7 @@ The dashboard's Overview shows the proxy and whether it is reachable, and a **pr
 
 - [Your own relay on Tor, I2P or FIPS](./relay/networks.md): with the relay as an onion service too, neither end of the conversation has a public address.
 - [Security](./security.md) lists what relays can still see: timing, sizes, and which key talks to the service.
+
+## Not run yet
+
+The settings here are covered by the service's tests (proxies, offline policies, the lock). This guide as a whole has not been run against a real Tor daemon.

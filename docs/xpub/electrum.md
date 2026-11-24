@@ -25,11 +25,11 @@ DEADHOP_XPUB=zpub6…
 
 ## 4. Compare the first address
 
-Open the **Addresses** tab (**View → Show Addresses** if it is hidden). The first receiving address must be the one deadhop logged as index 0.
+Open the **Addresses** tab. If it is hidden, Electrum's **View** menu shows it (from the app; the documentation only names the tab). The first receiving address must be the one deadhop logged as index 0.
 
 ## 5. Raise the gap limit
 
-Electrum's documentation says the gap limit is 20 and may need raising, but not how ([FAQ](https://electrum.readthedocs.io/en/latest/faq.html)). From Electrum's source: open the console (**View → Show Console**, then the **Console** tab) and run
+Electrum's documentation says the gap limit is 20 and may need raising, but not how ([FAQ](https://electrum.readthedocs.io/en/latest/faq.html)). From Electrum's source: open the **Console** tab (shown from the **View** menu in the app; not in the documentation) and run
 
 ```python
 wallet.change_gap_limit(200)

@@ -76,11 +76,11 @@ Write the 24 words on paper. They are the only way to spend what deadhop receive
 
 ## 6. Watch the wallet in Sparrow
 
-In Sparrow, **File → New Wallet**, name it, choose **New or Imported Software Wallet**, then **Mnemonic Words (BIP39)**, choose 24 words, type the words in and choose **Import Keystore**. Leave the script type at **Native Segwit (P2WPKH)** and the path at `m/84'/0'/0'`, with no passphrase, and choose **Apply**.
+In Sparrow, name a wallet and choose **New Wallet**, then **New or Imported Software Wallet** and **Mnemonic Words (BIP39)** with 24 words. Type the words into the fields (rather than **Generate New**) and choose **Import Keystore**. Leave the script type at **Native Segwit (P2WPKH)** and the path at `m/84'/0'/0'`, with no passphrase, and choose **Apply**. [Sparrow's quick start](https://sparrowwallet.com/docs/quick-start.html) shows these screens.
 
 Check two things:
 
-- The key on the **Settings** tab is the `account key` that `deadhop wallet export` printed (Sparrow may show it as `xpub`; copy it as `zpub` to compare).
+- The key on the **Settings** screen is the `account key` that `deadhop wallet export` printed. Sparrow may show it as `xpub`; the **…** button beside it switches to `zpub` for comparing.
 - The first address on the **Addresses** tab is the one from step 4.
 
 If either differs, stop here and check the words.
@@ -126,3 +126,7 @@ Next:
 - Move the balance to cold storage on its own: [Sweep to your cold wallet](./wallet/sweep.md).
 - Hide where it runs: [Hide the service](./hide.md).
 - Before you share it: [Production checklist](./deployment.md).
+
+## Tested
+
+Every step here was run on a regtest chain with the same `compose.yaml` (see [Run it with Docker Compose](./deploy-compose.md#tested)), except paying from another wallet on mainnet and watching it in Sparrow.

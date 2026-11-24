@@ -34,3 +34,7 @@ Every signature covers every output (`ALL|ANYONECANPAY`): whatever set of inputs
 - **Peers.** Without enough peers, rounds keep being abandoned. The premix coin stays in the wallet and nothing leaves until a round fills, or you switch the mode. There is no fallback.
 - **Compatibility.** The message flow and field names follow the joinstr spec, but PSBTs are version 0 and the LSAG recovery phase is not implemented. Rounds have only been run between deadhop wallets, not with joinstr's Python or Kotlin clients.
 - **Script type.** P2WPKH (BIP-84) coins only.
+
+## Not run yet
+
+CoinJoin rounds run in the repository's regtest tests between three deadhop wallets. This Compose setup has not been run end to end, and no round has been run with other joinstr clients.

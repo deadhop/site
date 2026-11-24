@@ -34,7 +34,7 @@ There are no published images or binaries yet: the guides build them from the so
 
 | | What you get | Guide |
 | --- | --- | --- |
-| **Docker Compose** (recommended) | The service, an offline wallet, the dashboard, and an optional sweeper, each locked down: read-only, no capabilities, no published port except the dashboard's | [Run it with Docker Compose](./deploy-compose.md) |
+| **Docker Compose** (recommended) | The service, an offline wallet, the dashboard, and an optional sweeper, each locked down: read-only, no capabilities, no published port | [Run it with Docker Compose](./deploy-compose.md) |
 | **systemd** | One binary under a supervisor, and the dashboard as static files on any web server | [Run it under systemd](./deploy-systemd.md) |
 
 ## 2. Where payments land
@@ -57,14 +57,19 @@ deadhop never holds a key that can spend. It only needs your wallet's **account 
 
 ## Common setups
 
+Each one in detail, with what runs on which machine and its settings: [Deployment setups](./setups.md).
+
 <div class="choices">
-  <a href="./first-payment.html"><strong>Shop next to the node</strong><span>Compose on the node box, a generated wallet, the dashboard behind your TLS proxy. You invoice customers by hand.</span><em>Compose · generated wallet · only you</em></a>
-  <a href="./xpub/index.html"><strong>Straight to cold storage</strong><span>Your hardware wallet's account key, so nothing on the server can spend. Raise the wallet's gap limit and you are done.</span><em>Compose · your own wallet · only you</em></a>
-  <a href="./integrate.html"><strong>Pay button on a website</strong><span>React, Solid, Svelte or plain JavaScript components. Your backend checks every payment before it ships the order.</span><em>Any · your own wallet · your backend</em></a>
-  <a href="./wallet/sweep.html"><strong>Hands-off cold storage</strong><span>A generated wallet takes the payments; the sweeper moves them to your cold wallet past a threshold you set.</span><em>Compose · generated, then swept</em></a>
-  <a href="./hide.html"><strong>Nobody can find it</strong><span>All relay traffic through Tor or a VPN, the proxy locked against remote changes, onion relays, and nothing listening.</span><em>Any · add to any setup</em></a>
-  <a href="./relay/quickstart.html"><strong>Your own relay</strong><span>deadhop relay carries only your service's messages, on clearnet, Tor, I2P or FIPS. Use it next to public relays.</span><em>Tool · add to any setup</em></a>
-  <a href="./lnaddr/quickstart.html"><strong>Lightning too</strong><span>deadhop lnaddr gives your Lightning node an address like you@yourdomain, with no port open at home.</span><em>Tool · separate from payments</em></a>
+  <a href="./setups.html#_1-shop-next-to-the-node"><strong>Shop next to the node</strong><span>Compose on the node box, a generated wallet, the dashboard behind your TLS proxy. You invoice customers by hand.</span><em>Compose · generated wallet · only you</em></a>
+  <a href="./setups.html#_2-straight-to-cold-storage"><strong>Straight to cold storage</strong><span>Your hardware wallet's account key, so nothing on the server can spend. Raise the wallet's gap limit and you are done.</span><em>Compose · your own wallet · only you</em></a>
+  <a href="./setups.html#_3-hands-off-cold-storage"><strong>Hands-off cold storage</strong><span>A generated wallet takes the payments; the sweeper moves them to your cold wallet past a threshold you set.</span><em>Compose · generated, then swept</em></a>
+  <a href="./setups.html#_4-pay-button-on-your-website"><strong>Pay button on your website</strong><span>Visitors create invoices with proof of work; your backend checks every payment before it ships the order.</span><em>Any · public invoicing</em></a>
+  <a href="./setups.html#_5-your-shop-s-backend-creates-invoices"><strong>Your backend creates invoices</strong><span>One invoice per order from your server's own key; nobody else can create one.</span><em>Any · operator key on the backend</em></a>
+  <a href="./setups.html#_6-nobody-can-find-it"><strong>Nobody can find it</strong><span>All relay traffic through Tor, the proxy locked against remote changes, onion relays, and nothing listening.</span><em>Add to any setup</em></a>
+  <a href="./setups.html#_7-your-own-relay-next-to-public-ones"><strong>Your own relay</strong><span>deadhop relay carries only your service's messages, on clearnet, Tor, I2P or FIPS, next to public relays.</span><em>Tool · add to any setup</em></a>
+  <a href="./setups.html#_8-admin-traffic-stays-at-home"><strong>Admin traffic stays at home</strong><span>Customers use public relays; your dashboard goes through a relay on your own network.</span><em>Tool · add to any setup</em></a>
+  <a href="./setups.html#_9-lightning-too"><strong>Lightning too</strong><span>deadhop lnaddr gives your Lightning node an address like you@yourdomain, with no port open at home.</span><em>Tool · separate from payments</em></a>
+  <a href="./setups.html#_10-no-docker"><strong>No Docker</strong><span>One binary under systemd, your own wallet's key, the dashboard on any static host.</span><em>systemd · your own wallet</em></a>
 </div>
 
 ## Before the first real payment

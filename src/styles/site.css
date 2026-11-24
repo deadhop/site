@@ -721,3 +721,9 @@ p {
     padding: 1.5rem;
   }
 }
+
+/* "Screenshots from a test chain" under a section's heading or lede. */
+.band__lede + .fine,
+h2 + .fine {
+  margin: -0.75rem 0 1.5rem;
+}

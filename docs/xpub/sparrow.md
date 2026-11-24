@@ -9,13 +9,13 @@ description: Copy the account key of a Sparrow Native SegWit wallet for deadhop,
 
 ## 1. Use a Native SegWit wallet
 
-A new wallet in Sparrow is **Single Signature** with script type **Native Segwit (P2WPKH)** by default: **File → New Wallet**, then choose a keystore. It can be a new or imported software wallet (**Mnemonic Words (BIP39)**), a connected or airgapped hardware wallet, or **xPub / Watch Only Wallet**.
+Sparrow makes a single signature wallet with the **Native Segwit (P2WPKH)** script type by default. Name the wallet and choose **New Wallet**, then a keystore: **Connected Hardware Wallet**, **Airgapped Hardware Wallet**, **New or Imported Software Wallet**, or **xPub / Watch Only Wallet**.
 
 On an existing wallet, the **Settings** tab shows the policy and script type. It must read Single Signature and Native Segwit (P2WPKH).
 
 ## 2. Copy the account key
 
-The **Settings** tab shows the keystore's key for its derivation path, `m/84'/0'/0'`. Copy it. deadhop accepts it as `xpub`, or as `zpub` if you copy that form instead.
+Sparrow calculates the key for the derivation path, `m/84'/0'/0'`, and shows it on the **Settings** screen. The **…** button beside it switches between `xpub` and its alias `zpub`. Copy either: deadhop accepts both.
 
 Neither form is a secret, but anyone who has it can see every payment you receive. Treat it as private.
 
@@ -37,4 +37,4 @@ In the **Settings** tab, choose **Advanced**, raise the gap limit, choose **Clos
 
 ## Spending what the service generated
 
-deadhop's [generated wallet](../deploy-compose.md#_4-write-down-the-recovery-phrase) can be restored in Sparrow from its 24 words: a new wallet with a **Mnemonic Words (BIP39)** keystore, script type Native Segwit, path `m/84'/0'/0'`, no passphrase. Compare the account key Sparrow shows with the one `deadhop wallet export` prints.
+deadhop's [generated wallet](../deploy-compose.md#_4-write-down-the-recovery-phrase) can be restored in Sparrow from its 24 words: a **New Wallet** with a **New or Imported Software Wallet** keystore, **Mnemonic Words (BIP39)**, 24 words. Sparrow's quick start shows that screen for new words (**Generate New**); type the existing words into the same fields instead (this step is from the app, not its documentation). Keep the script type Native Segwit and the path `m/84'/0'/0'`, no passphrase, choose **Import Keystore**, then **Apply**. Compare the account key Sparrow shows with the one `deadhop wallet export` prints.

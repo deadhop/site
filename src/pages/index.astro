@@ -64,6 +64,7 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
       <p class="band__lede">
         The dashboard is a static page. It reaches the service through Nostr relays like any customer does, so it can be hosted anywhere and the service still opens no port. Sign in with your Nostr key; there are no accounts.
       </p>
+      <p class="fine">Screenshots from a test chain (regtest), not a live shop.</p>
       <div class="gallery">
         {shots.gallery.map((s) => <Shot {...s} />)}
       </div>
@@ -103,9 +104,7 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
                 {toolShots[t.id] ? (
                   <img src={at(toolShots[t.id]!.src)} alt={toolShots[t.id]!.alt} width={toolShots[t.id]!.width} height={toolShots[t.id]!.height} loading="lazy" decoding="async" />
                 ) : (
-                  <pre class="tools__term" aria-label="The sweeper's log after a sweep">
-                    <code>sweeping by send once 60000 sat are confirmed{'\n'}send: moved 96409 sat of 100000 to bcrt1qkh5n…5ah2 in 7205…fd9b</code>
-                  </pre>
+                  <pre class="tools__term" aria-label="The sweeper's log after a sweep"><code>sweeping by send once 60000 sat are confirmed{'\n'}send: moved 96409 sat of 100000 to bcrt1qkh5n…5ah2 in 7205…fd9b</code></pre>
                 )}
                 <span class="tools__name">{t.label}</span>
                 <span class="tools__body">{t.blurb}</span>
