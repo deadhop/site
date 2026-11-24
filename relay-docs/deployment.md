@@ -20,6 +20,10 @@ journalctl -u deadhop-relay              # "listening on 0.0.0.0:7447 for 2 whit
 
 The unit runs the relay as a throwaway user with no write access anywhere. It allows 65,536 open files and caps memory at 256 MiB.
 
+## On Tor, I2P or FIPS
+
+Run your Tor daemon, I2P router or FIPS node as usual, and point an onion service, server tunnel or listener at the relay's adapter for that network. [Tor, I2P and FIPS](./networks.md) has the settings for each, and every network can run at once.
+
 ## With Docker
 
 ```sh
