@@ -18,13 +18,14 @@ You invoice customers yourself from the dashboard. One machine does everything.
 | Your node box | Bitcoin Core and Fulcrum or electrs (already there); deadhop with Compose: `wallet`, `deadhop`, `dashboard`; Caddy for HTTPS |
 
 ```sh
-DEADHOP_ELECTRUM=192.168.1.20:50001       # the box's address on your network, not 127.0.0.1
+DEADHOP_ELECTRUM=192.168.1.20:50001       # the box's address on your network, not 127.0.0.1;
+                                          # plain TCP warns: prefer tls:// (see Connect your Electrum server)
 DEADHOP_ADMINS=npub1you…
 DEADHOP_NAME=Corner Bakery
 ```
 
 1. [Run it with Docker Compose](./deploy-compose.md), steps 1 to 7.
-2. [Host the dashboard](./dashboard.md#with-compose): Caddy in front of `127.0.0.1:8080`.
+2. [Host the dashboard](./dashboard.md#with-compose): Caddy in front of `127.0.0.1:8080`, on a public HTTPS address, so customers can open the [payment links](./dashboard.md#sending-an-invoice-to-a-customer) you send them.
 3. [Production checklist](./deployment.md).
 
 **Tested** on regtest with this `compose.yaml`, except Caddy.
@@ -123,6 +124,7 @@ Relays learn nothing about where the service runs. Combine with any setup above.
 | Machine | Runs |
 | --- | --- |
 | Your node box | deadhop, and Tor with its SOCKS port reachable from the service |
+| A static host, elsewhere | The dashboard, so its address is not the node's ([Host the dashboard](./dashboard.md#anywhere-else)) |
 | Optional, anywhere | Your own [relay as an onion service](./relay/networks.md) |
 
 ```sh

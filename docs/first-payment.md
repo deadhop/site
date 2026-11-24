@@ -9,6 +9,10 @@ In this tutorial you run deadhop next to your own bitcoin node, invoice yourself
 
 We make the choices for you: Docker Compose, a generated wallet, the dashboard opened on the machine itself. Once it works, [Choose a setup](./install.md) shows the other ways.
 
+::: tip Payments straight to your hardware wallet?
+Follow the same steps with your wallet's key: in step 3 add `DEADHOP_XPUB` from [your wallet's guide](./xpub/index.md), skip step 5, and in step 6 watch that key instead.
+:::
+
 ## What you need
 
 - A bitcoin node with **Fulcrum or electrs**, on this machine or your local network.
@@ -26,13 +30,17 @@ cd deadhop
 
 ## 2. Find your Electrum server
 
-If it runs on another machine, read its certificate's fingerprint (Fulcrum's TLS port is usually `50002`):
+Find your Electrum server's address and port in your node's app or settings. Fulcrum usually offers TLS on `50002`; electrs often offers only plain TCP on `50001`.
+
+**With a TLS port**, read its certificate's fingerprint:
 
 ```sh
 docker compose run --rm --no-deps deadhop fingerprint 192.168.1.20:50002
 ```
 
 The command builds the image the first time, so give it a few minutes. It prints two lines starting with `DEADHOP_ELECTRUM`. Keep them. [Connect your Electrum server](./electrum.md) explains how to check the fingerprint on the node.
+
+**With plain TCP only**, use `DEADHOP_ELECTRUM=192.168.1.20:50001` in the next step, on your own network. The service will warn that the link is unencrypted ([why](./electrum.md#a-server-with-no-tls-port)).
 
 ## 3. Write `.env`
 
@@ -76,14 +84,13 @@ Write the 24 words on paper. They are the only way to spend what deadhop receive
 
 ## 6. Watch the wallet in Sparrow
 
-In Sparrow, name a wallet and choose **New Wallet**, then **New or Imported Software Wallet** and **Mnemonic Words (BIP39)** with 24 words. Type the words into the fields (rather than **Generate New**) and choose **Import Keystore**. Leave the script type at **Native Segwit (P2WPKH)** and the path at `m/84'/0'/0'`, with no passphrase, and choose **Apply**. [Sparrow's quick start](https://sparrowwallet.com/docs/quick-start.html) shows these screens.
+You watch the wallet with its **account key** only: Sparrow sees every payment, and your 24 words stay on paper.
 
-Check two things:
+In Sparrow, name a wallet and choose **New Wallet**. Leave the policy at single signature and the script type at **Native Segwit (P2WPKH)**, the default. As the keystore choose **xPub / Watch Only Wallet**, paste the `account key` that `deadhop wallet export` printed (the `zpub…`), and choose **Apply**. Sparrow's [quick start](https://sparrowwallet.com/docs/quick-start.html) describes these choices.
 
-- The key on the **Settings** screen is the `account key` that `deadhop wallet export` printed. Sparrow may show it as `xpub`; the **…** button beside it switches to `zpub` for comparing.
-- The first address on the **Addresses** tab is the one from step 4.
+Check that the first address on the **Addresses** tab is the one from step 4. If it differs, stop here and check the key you pasted.
 
-If either differs, stop here and check the words.
+Then raise the gap limit: **Settings**, **Advanced**, a gap limit of 100, **Close**, **Apply** ([Sparrow FAQ](https://sparrowwallet.com/docs/faq.html)). deadhop uses a new address for every invoice, paid or not.
 
 ## 7. Open the dashboard
 
@@ -108,13 +115,15 @@ Choose **Use browser extension** and approve. You see the operator Overview: the
 
 **Invoices → New invoice**. Amount `10000`, note `My first payment`, **Create invoice**. The drop shows a QR code and a fresh address, one that has never been used.
 
+For a customer you would send **Copy payment link**: it opens this invoice on its own page. That needs the dashboard on a public HTTPS address ([Host the dashboard](./dashboard.md#sending-an-invoice-to-a-customer)); for this tutorial, pay it yourself.
+
 ## 9. Pay it
 
 Pay the exact amount from your other wallet. Within a few seconds the drop says **Payment seen, confirming**. After one block, about ten minutes, it says **Paid**.
 
 ## 10. See it arrive
 
-In Sparrow, the payment appears on the **Transactions** tab, to an address deadhop made from your wallet's key. deadhop never had a key that could spend it, and still does not.
+In Sparrow, the payment appears on the **Transactions** tab, to an address deadhop made from your wallet's key. deadhop never had a key that could spend it, and still does not. To spend it later, restore the 24 words in a wallet: see [Spending what the service generated](./xpub/sparrow.md#spending-what-the-service-generated), or move it out automatically with the [sweeper](./wallet/sweep.md).
 
 ## What you have
 
@@ -129,4 +138,4 @@ Next:
 
 ## Tested
 
-Every step here was run on a regtest chain with the same `compose.yaml` (see [Run it with Docker Compose](./deploy-compose.md#tested)), except paying from another wallet on mainnet and watching it in Sparrow.
+Every step here was run on a regtest chain with the same `compose.yaml` (see [Run it with Docker Compose](./deploy-compose.md#tested)), except paying from another wallet on mainnet and watching it in Sparrow. Watching an account key in Sparrow is covered by Sparrow's own documentation.

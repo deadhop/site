@@ -16,18 +16,18 @@ Go through this before the first real payment. Each item links to the guide that
 ## Checklist
 
 - [ ] Electrum server is your own and reachable only locally or over a private network
-- [ ] If it is not on the same machine: `tls://` with a pinned `DEADHOP_ELECTRUM_CERT_SHA256`
+- [ ] If it is not on the same machine: `tls://` with a pinned `DEADHOP_ELECTRUM_CERT_SHA256`, or plain TCP only on a network you trust ([details](./electrum.md#a-server-with-no-tls-port))
 - [ ] Either `DEADHOP_XPUB` is your wallet's BIP-84 account key and the first receive
       address logged at startup appears in that wallet, or the wallet was generated and its
       recovery phrase has been exported (`deadhop wallet export`) and stored offline
-- [ ] Wallet gap limit raised if public invoicing is on
+- [ ] Wallet gap limit raised: every invoice uses a new address, paid or not ([why](./watch-only.md#the-gap-limit))
 - [ ] Public invoicing off unless you need it; `DEADHOP_POW_BITS` at 20 or more if on
 - [ ] `DEADHOP_MIN_CONFIRMATIONS` chosen for your amounts
 - [ ] Service runs as its own user, behind a VPN or Tor, with inbound traffic dropped
 - [ ] A supervisor restarts the process if it exits
-- [ ] Two or more relays, at least one you control, all `wss://`
+- [ ] Two or more relays, at least one you control, all `wss://` (or `ws://` to `.onion`, `.i2p` or `.fips` relays, which encrypt the path themselves)
 - [ ] Data directory backed up with its permissions intact
-- [ ] Dashboard served over HTTPS with the headers above
+- [ ] Dashboard served over HTTPS with the headers in [Host the dashboard](./dashboard.md)
 - [ ] Operators use a browser extension and a key made only for this service
 - [ ] Someone watches for `chain_ok = false` and `watch_errors > 0` in the operator view
 - [ ] `DEADHOP_PROXY` and `DEADHOP_PROXY_LOCKED=true` set on the host if the service's location

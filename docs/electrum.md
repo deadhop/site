@@ -54,6 +54,16 @@ A pinned certificate is accepted whatever its name, issuer or expiry, which suit
 
 Without a pin, `tls://` checks the certificate against the public authorities and the service warns that it is not pinned.
 
+## A server with no TLS port
+
+electrs, and some node packages, offer plain TCP only. On a network you trust, the plain address works across machines:
+
+```sh
+DEADHOP_ELECTRUM=192.168.1.20:50001
+```
+
+The service then warns on every start, and on the dashboard: *DEADHOP_ELECTRUM is not on this machine: the link is unencrypted and whoever runs or can intercept that server decides which invoices look paid.* Use it only on your own network, or put a TLS proxy in front of the server and pin that.
+
 ## Check it
 
 The service refuses to start if the server is on another chain than `DEADHOP_NETWORK`, or if the certificate does not match the pin. Once it runs, the dashboard's Overview shows the chain's height under **Chain**, and when it was last polled.

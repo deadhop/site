@@ -50,6 +50,12 @@ pay.example.com {
    Referrer-Policy: no-referrer
    ```
 
+## Sending an invoice to a customer
+
+On **Invoices**, choose the drop and **Copy payment link**. The link opens the invoice's own page (`…/#/pay/<id>`) on your dashboard, without signing in, and follows the payment live: awaiting, seen, paid. **Open payment page** shows it to you.
+
+For a customer to open that link, the dashboard must be reachable over HTTPS at a public address. That is only the static page: the service behind it still opens no port.
+
 ## What the page does
 
 - It has a strict Content-Security-Policy and requests nothing but `config.json` and the relay websockets.

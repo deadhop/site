@@ -23,7 +23,7 @@ DEADHOP_RELAYS=wss://relay.example.com,ws://abcd…xyz.onion
 
 Only relay connections use the proxy. The Electrum server is always reached directly, so keep it on the same machine or a private network.
 
-With [Compose](./deploy-compose.md), `127.0.0.1` is the container: use the address of a Tor container on the same Docker network, or the host's address on your network.
+With [Compose](./deploy-compose.md), `127.0.0.1` is the container: use the address of a Tor container on the same Docker network, or the host's address on your network. `compose.yaml` does not include a Tor container, and this guide has no tested recipe for one yet.
 
 ## 2. Decide what happens when the proxy is down
 
@@ -60,7 +60,11 @@ DEADHOP_TRANSPARENT_PROXY=true
 
 The service cannot check this. The privacy audit then says it cannot see the path.
 
-## 6. Drop inbound traffic
+## 6. Keep the dashboard elsewhere
+
+The dashboard is a static page and the only public part. Host it away from the service, on a static host or another server ([Host the dashboard](./dashboard.md#anywhere-else)), so its address says nothing about where the service runs.
+
+## 7. Drop inbound traffic
 
 The service needs no inbound connection at all. Allow outbound connections to the relays (or the proxy) and to the Electrum server, and drop the rest.
 

@@ -17,6 +17,8 @@ Select the account, open the **Details** tab and choose **Show public key**. The
 
 ## 3. Give it to deadhop
 
+In `.env` with [Docker Compose](../deploy-compose.md#_2-write-env), or the service's environment under [systemd](../deploy-systemd.md#_3-the-environment-file), before the first start:
+
 ```sh
 DEADHOP_XPUB=xpub6…        # or the zpub, whichever Suite shows
 ```

@@ -7,11 +7,13 @@ description: Run lnaddr-node next to your Lightning node and lnaddr-gateway on a
 
 You need a Lightning node (LND, Core Lightning, phoenixd or LNbits), a public host with a domain, and a reverse proxy that terminates TLS for that domain. Each service is one static binary, or one image.
 
-## 1. Build or pull the two images
+## 1. Build the two images
 
-From a checkout of the repository:
+There are no published images yet. From a checkout of the repository:
 
 ```sh
+git clone https://github.com/sandwichfarm/deadhop
+cd deadhop
 docker build -f lnaddr/Dockerfile --target node    -t deadhop-lnaddr-node .
 docker build -f lnaddr/Dockerfile --target gateway -t deadhop-lnaddr-gateway .
 ```
@@ -49,6 +51,9 @@ docker run -d --name lnaddr-node --restart unless-stopped \
 ```
 
 It publishes no port. To confirm the backend works before pairing, run the same container with `check`. It makes a 1 sat test invoice and checks it.
+
+- **Reaching LND.** `https://lnd:8080` is LND's REST port seen from this container: here LND runs in a container named `lnd` on a Docker network that `lnaddr-node` joins (add `--network <that network>`). Use your own address. LND must listen for REST there (`restlisten=0.0.0.0:8080` in `lnd.conf`), and its `tls.cert` must name that host (`tlsextradomain=lnd`, then let LND regenerate the certificate). `127.0.0.1` would be the container itself.
+- **Relays.** Both sides use `wss://relay.contextvm.org` and `wss://relay2.contextvm.org` unless you set `LNADDR_NODE_RELAYS` and `LNADDR_GATEWAY_RELAYS` ([node](./node.md), [gateway](./gateway.md)).
 
 ## 4. Run the gateway
 

@@ -26,6 +26,8 @@ deadhop would accept both and make addresses your wallets never show.
 
 ## 3. Give it to deadhop
 
+In `.env` with [Docker Compose](../deploy-compose.md#_2-write-env), or the service's environment under [systemd](../deploy-systemd.md#_3-the-environment-file), before the first start:
+
 ```sh
 DEADHOP_XPUB=xpub6…
 ```

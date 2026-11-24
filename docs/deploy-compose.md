@@ -30,7 +30,8 @@ cd deadhop
 Compose reads a file named `.env` next to `compose.yaml`. It is in `.gitignore`.
 
 ```sh
-# Your Electrum server. tls:// with a pinned certificate across a network.
+# Your Electrum server: tls:// with a pinned certificate across a network,
+# or plain host:port on a network you trust (the service warns).
 DEADHOP_ELECTRUM=tls://node.lan:50002
 DEADHOP_ELECTRUM_CERT_SHA256=<fingerprint>
 
@@ -101,7 +102,7 @@ The generated wallet is meant for small balances. Sweep it to a wallet you keep 
 
 ## 5. Check the first address
 
-Restore the words in [Sparrow](./xpub/sparrow.md#spending-what-the-service-generated) (or look in your own wallet, if you gave `DEADHOP_XPUB`): its first receive address must be the one the service logged. Do this before the first real payment.
+Watch the `account key` the export printed in a wallet, without the words: in [Sparrow](./xpub/sparrow.md), a **xPub / Watch Only Wallet** keystore. With your own `DEADHOP_XPUB`, look in your own wallet. Its first receive address must be the one the service logged. Do this before the first real payment.
 
 ## 6. Reach the dashboard
 
@@ -124,7 +125,7 @@ and put your TLS proxy in front of `127.0.0.1:8080`. [Host the dashboard](./dash
 
 ## 7. Sign in
 
-Open the dashboard and choose **Use browser extension**. Your key is in `DEADHOP_ADMINS`, so you get the operator view: Overview, Invoices, Network, Settings, Operators and Maintenance. **Invoices → New invoice** creates one.
+Open the dashboard and choose **Use browser extension**. Your key is in `DEADHOP_ADMINS`, so you get the operator view: Overview, Invoices, Network, Settings, Operators and Maintenance. **Invoices → New invoice** creates one, and **Copy payment link** gives you a link to send the customer ([Sending an invoice to a customer](./dashboard.md#sending-an-invoice-to-a-customer)).
 
 Any other key, or **Continue as guest**, gets the invoice form only if public invoicing is on. It is off by default, and a guest sees:
 

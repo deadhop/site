@@ -12,7 +12,7 @@ deadhop's [generated wallet](../deploy-compose.md#_4-write-down-the-recovery-phr
 | Mode | What happens |
 | --- | --- |
 | `send` (default) | One transaction pays every confirmed coin to the next unused address of your cold wallet. |
-| `payjoin` | A [BIP-78](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) PayJoin with a receiver you name. The receiver adds a coin of its own, so the transaction does not show which inputs are whose. |
+| `payjoin` | A [BIP-78](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) PayJoin to an online receiver you run, named by a fresh URI for each sweep. The receiver adds a coin of its own, so the transaction does not show which inputs are whose. The funds go to that receiver, not to your cold wallet. |
 | `coinjoin` | A [joinstr](https://docs.joinstr.xyz/protocol/) round over Nostr: your coins are mixed with equal-amount outputs of other peers before they reach your cold wallet. |
 
 ## What it will not do

@@ -5,7 +5,15 @@ description: Sweep deadhop's generated wallet by a BIP-78 PayJoin to a receiver 
 
 # Sweep with PayJoin
 
-In a [PayJoin](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) the receiver adds one of its own coins to the transaction. An outside observer can no longer assume that all inputs belong to the sender. You need a receiver that supports BIP-78, for example a wallet or a server you run.
+In a [PayJoin](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) the receiver adds one of its own coins to the transaction. An outside observer can no longer assume that all inputs belong to the sender.
+
+Know three things before you choose it:
+
+- **The receiver is online.** It must answer the sweeper and sign a coin of its own, so it is a hot wallet or a payment server you run that supports receiving BIP-78 PayJoins (BTCPay Server and JoinMarket are two that do). It is not your cold storage.
+- **The money goes to the receiver.** The sweep pays the address in the receiver's `bitcoin:` URI. `DEADHOP_WALLET_DESTINATION` is not used for it. Move the funds on to cold storage from the receiver yourself.
+- **It is not hands-off.** Each URI is paid once, so you write a fresh one before every sweep. Without one, the sweeper waits.
+
+For cold storage without any of that, use a [plain send](./sweep.md).
 
 Set the sweeper up as in [Sweep to your cold wallet](./sweep.md) first. Then:
 

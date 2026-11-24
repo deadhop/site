@@ -22,7 +22,7 @@ export const wallet: Tool = {
     { kicker: 'service', title: 'Takes payments', body: 'To fresh addresses of the generated wallet. It holds only the public key.' },
     { kicker: 'wallet', title: 'Keeps the words offline', body: 'In a container with no network at all. The sweeper reads them, read-only, and never makes new ones.' },
     { kicker: 'sweeper', title: 'Checks, then signs', body: 'Only its own coins in, at least the right amount to your cold wallet, no more than the fee cap lost.' },
-    { kicker: 'cold wallet', title: 'Receives it all', body: 'At its next unused address, by a send, a PayJoin, or the far side of a CoinJoin.' },
+    { kicker: 'cold wallet', title: 'Receives it all', body: 'At its next unused address, by a plain send or from the far side of a CoinJoin. A PayJoin pays an online receiver you run instead.' },
   ],
   gallery: [
     {
@@ -44,7 +44,7 @@ export const wallet: Tool = {
   ],
   ways: [
     { title: 'Plain send to cold storage', body: 'Everything confirmed, past the threshold, to the next address of your cold wallet.', href: at('/docs/wallet/sweep.html') },
-    { title: 'PayJoin', body: 'The receiver adds a coin of its own, so the transaction does not show which inputs are whose.', href: at('/docs/wallet/payjoin.html') },
+    { title: 'PayJoin', body: 'To an online receiver you run, which adds a coin of its own: the transaction does not show which inputs are whose. A fresh URI per sweep.', href: at('/docs/wallet/payjoin.html') },
     { title: 'CoinJoin', body: 'Mixed with equal-amount outputs of other peers before it reaches your cold wallet.', href: at('/docs/wallet/coinjoin.html') },
   ],
   setupTitle: 'Three lines and a profile',

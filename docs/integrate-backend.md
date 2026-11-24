@@ -43,7 +43,7 @@ export const deadhop = createDeadhop({
 
 export async function startCheckout(orderId: string, amountSat: number): Promise<string> {
   const invoice = await deadhop.createInvoice({ amount_sat: amountSat, memo: `Order ${orderId}` });
-  await db.orders.update(orderId, { invoiceId: invoice.id });
+  await db.orders.update(orderId, { invoiceId: invoice.id, amountSat }); // db: your own order store
   return invoice.id; // send this to the page
 }
 ```

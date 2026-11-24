@@ -19,6 +19,8 @@ If it starts with `xpub`, the wallet is not native segwit: Electrum shows `xpub`
 
 ## 3. Give it to deadhop
 
+In `.env` with [Docker Compose](../deploy-compose.md#_2-write-env), or the service's environment under [systemd](../deploy-systemd.md#_3-the-environment-file), before the first start:
+
 ```sh
 DEADHOP_XPUB=zpub6…
 ```
@@ -36,6 +38,8 @@ wallet.change_gap_limit(200)
 ```
 
 with at least the number of addresses deadhop shows as created, plus 20. The command-line equivalent is `electrum changegaplimit 200 --iknowwhatimdoing` ([wallet.py](https://github.com/spesmilo/electrum/blob/master/electrum/wallet.py), [commands.py](https://github.com/spesmilo/electrum/blob/master/electrum/commands.py)).
+
+To stay within steps a wallet's own documentation covers, also watch the same `zpub` in [Sparrow](./sparrow.md): its documentation shows a watch-only wallet and the gap limit setting.
 
 ## Watching only
 

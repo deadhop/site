@@ -19,6 +19,8 @@ The help pages do not say which encoding the app shows. The library behind it re
 
 ## 3. Give it to deadhop
 
+In `.env` with [Docker Compose](../deploy-compose.md#_2-write-env), or the service's environment under [systemd](../deploy-systemd.md#_3-the-environment-file), before the first start:
+
 ```sh
 DEADHOP_XPUB=zpub6…
 ```

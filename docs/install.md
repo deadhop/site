@@ -8,7 +8,7 @@ description: Pick how you run deadhop, where payments land and who creates invoi
 deadhop runs next to your own bitcoin node. Three choices decide your setup. Each answer below links to the guide that does it.
 
 <div class="choices">
-  <a href="./quickstart.html"><strong>Just looking?</strong><span>Run everything on a throwaway test chain on your laptop and pay an invoice. Nothing to configure.</span><em>Tutorial · 10 minutes</em></a>
+  <a href="./quickstart.html"><strong>Just looking?</strong><span>Run everything on a throwaway test chain on your laptop and pay an invoice. Needs Rust, Node, Docker and just; nothing to configure.</span><em>Tutorial · minutes, after one build</em></a>
   <a href="./first-payment.html"><strong>Ready for real money?</strong><span>The whole path on one machine next to your node, from the source to a payment you can spend.</span><em>Tutorial · about an hour</em></a>
 </div>
 
@@ -16,6 +16,8 @@ deadhop runs next to your own bitcoin node. Three choices decide your setup. Eac
 
 - **A bitcoin node with an Electrum server**: Bitcoin Core with Fulcrum or electrs, which most node packages offer. deadhop asks it about your addresses, so use your own. See [Connect your Electrum server](./electrum.md).
 - **A machine to run deadhop on**: the node itself is fine. It needs outbound access to the internet and to the Electrum server, and nothing inbound.
+
+**On a node package** (Umbrel, Start9, RaspiBlitz, myNode and the like): these run Bitcoin Core with electrs or Fulcrum, and their app shows the Electrum server's address and port. deadhop is not packaged for any of them. Run it with Docker Compose wherever Compose runs: on the node box if your package allows it, or on another Linux machine on the same network, pointed at that address ([Connect your Electrum server](./electrum.md), including [a server with no TLS port](./electrum.md#a-server-with-no-tls-port)).
 - **Docker with Compose**, or Rust 1.88 and Node 22 to build it yourself.
 - **A Nostr key for yourself**, in a browser extension (NIP-07). It is how you sign in to the dashboard. There are no accounts or passwords.
 

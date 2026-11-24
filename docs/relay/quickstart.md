@@ -53,6 +53,6 @@ Then set `DEADHOP_RELAY_TRUSTED_PROXIES=127.0.0.1` so the relay limits each clie
 ## 4. Point deadhop at it
 
 - **Service:** add `wss://relay.example.com` in the dashboard under **Network › Relays** (or to `DEADHOP_RELAYS`). The service authenticates on its own when the relay asks.
-- **Dashboard and checkout:** add the same URL to `relays` in the dashboard's `config.json`, or to the relays your checkout passes to `@deadhop/client`.
+- **Dashboard and checkout:** add the same URL to `relays` in the dashboard's `config.json`, or to the relays your checkout passes to `@deadhop/client`. With Compose, `config.json` is written at every start: set `DEADHOP_DASHBOARD_RELAYS` (and `DEADHOP_DASHBOARD_ADMIN_RELAYS` for the administration key) instead.
 
 Open `https://relay.example.com/` to see the status page. On the relay's host, `http://127.0.0.1:7448/` shows the operator page: each whitelisted key with a green dot while the service is connected and authenticated.

@@ -18,13 +18,22 @@ A checkout of the repository (`git clone https://github.com/sandwichfarm/deadhop
 
 ## Start it
 
+Three terminals, in the repository's root:
+
 ```sh
+just install     # once: the JavaScript workspace (packages and dashboard)
 just up          # regtest bitcoind + Fulcrum + private relay, a funded "miner" and a "merchant" wallet
-just server      # builds and runs deadhop; writes dashboard/public/config.json
-just dashboard   # serves the dashboard at http://127.0.0.1:4173
 ```
 
-Run `npm install` in `dashboard/` once before `just dashboard`.
+```sh
+just server      # second terminal: builds and runs deadhop (stays in the foreground)
+```
+
+```sh
+just dashboard   # third terminal: serves the dashboard at http://127.0.0.1:4173
+```
+
+The first `just server` compiles the service in release mode, which takes a few minutes. After that, it starts in seconds.
 
 ## Pay an invoice
 
