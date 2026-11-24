@@ -20,8 +20,8 @@ wallet ──https──▶ reverse proxy ──▶ lnaddr-gateway ──Nostr r
 
 ## What it is for
 
-- **Nothing to reach at home.** The node service only dials out, so nothing at home listens, and changing ISP or network changes nothing.
-- **Nothing to spend on the public host.** The gateway holds no Lightning credential. The node holds an invoice-only one: LND's `invoice.macaroon`, a Core Lightning rune limited to `method=invoice`, phoenixd's limited password, or an LNbits invoice key.
+- **No open port at home.** The node service only dials out, so nothing at home listens, and changing ISP or network changes nothing.
+- **No spending credential on the public host.** The gateway holds no Lightning credential. The node holds an invoice-only one: LND's `invoice.macaroon`, a Core Lightning rune limited to `method=invoice`, phoenixd's limited password, or an LNbits invoice key.
 - **Two small static binaries.** No runtime, no system libraries, no certificates to install. Each image is about 8 MB on an empty base.
 
 ## Where to go next

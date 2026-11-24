@@ -35,7 +35,7 @@ Every page says at the top which kind it is.
 
 ## Tools built the same way
 
-Each one does one job with nothing to reach from outside.
+Each one does one job, built the same way.
 
 | Tool | What it does | Start |
 | --- | --- | --- |

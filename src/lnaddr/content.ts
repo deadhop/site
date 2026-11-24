@@ -43,8 +43,8 @@ export const lnaddr: Tool = {
     },
   ],
   points: [
-    { title: 'Nothing to reach at home', body: 'lnaddr-node only dials out to relays. No VPN, no Tailscale, no tunnel, no forwarded port, no dynamic DNS.' },
-    { title: 'Nothing to spend in public', body: 'The gateway holds no Lightning credential. The node holds an invoice-only one: a macaroon, rune, limited password or invoice key.' },
+    { title: 'No open port at home', body: 'lnaddr-node only dials out to relays. No VPN, no Tailscale, no tunnel, no forwarded port, no dynamic DNS.' },
+    { title: 'No spending credential in public', body: 'The gateway holds no Lightning credential. The node holds an invoice-only one: a macaroon, rune, limited password or invoice key.' },
     { title: 'Any proxy, any host', body: 'One path prefix to forward. Caddy, nginx, Traefik, HAProxy, Apache, a Unix socket or a Tor onion service.' },
     { title: 'Two static binaries', body: 'About 8 MB each, no runtime and no system libraries. Configure by file, environment, built-in values or, if you allow it, over Nostr.' },
     { title: 'Every invoice checked twice', body: 'Amount, description hash, network, expiry and, if pinned, the signing node: by the node, then by the gateway.' },
