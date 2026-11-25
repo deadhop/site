@@ -153,7 +153,10 @@ Settings that can be patched: `name`, `relays`, `public_invoicing`, `pow_bits`,
 `offline`; `transparent`; `rules`, each `{ name, match, keys, to, fallback }`; `i2p_registries`.
 `list`, `groups`, `default_keys`, `rules` and `i2p_registries` each replace the whole value.
 A destination is `"direct"`, `"block"`, `{ "proxy": id }` or `{ "group": id }`; a fallback is
-`"offline"`, `"policy"` or `{ "to": destination }`. The fields from before proxy groups,
+`"offline"`, `"policy"` or `{ "to": destination }`. A `list` that gives proxies to a setup
+that had none (and a direct default route), in a patch that does not set `default`, also
+points the default route at its first proxy that is not an I2P router's, as the dashboard
+does; send `"default": "direct"` to keep relays straight. The fields from before proxy groups,
 `mode`, `rotate_secs`, `chaos_min_secs`, `chaos_max_secs` and a proxy's `pool` and `keys`,
 are refused) and
 `sweep` (`enabled`, `mode` = `payjoin` or `coinjoin`, `threshold_sat`,
