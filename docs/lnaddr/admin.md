@@ -53,3 +53,5 @@ It uses no JavaScript and works under a strict Content-Security-Policy. See [sec
 ## The node's relays and proxies
 
 Neither the web interface nor the CLI changes the node's relays or proxies. The standalone network console does, signed in with a key listed in the node's `admins` (see [node configuration](./node.md#the-network-console)). Every change is recorded in the node's `audit.jsonl`.
+
+The gateway's own relays and proxies are managed the same way: the console signs in to the gateway's admin key (`lnaddr-gateway admin-pubkey`) with a key listed in the gateway's `admins` (see [gateway configuration](./gateway.md#relays-and-proxies)). Changes are recorded in the gateway's `audit.jsonl`.
