@@ -28,7 +28,7 @@ The two meet only through Nostr relays. Each request is a ContextVM (MCP over No
 
 ## The tools on the node
 
-The node is an MCP server with seven tools. Gateways may call the first two; admins may call all seven.
+The node is an MCP server with one key for gateways and admins. Gateways are shown and may call the first two tools; admins may call all of them. The list is filtered by caller, so a gateway never sees the rest.
 
 | Tool | Who | What |
 | --- | --- | --- |
@@ -38,6 +38,10 @@ The node is an MCP server with seven tools. Gateways may call the first two; adm
 | `get_config` | admins | the configuration in effect, secrets shown as `(set)` |
 | `set_address` / `remove_address` | admins | change the address table (when remote settings are on) |
 | `set_limits` | admins | change invoice rates and expiry (when remote settings are on) |
+| `get_info` | admins | what the node is, in the shape the network console reads at sign-in |
+| `get_health` | admins | the node's key and relays, relay connections, proxies and routes in use, last relay checks |
+| `get_network` / `update_network` / `reset_network` | admins | the relays and proxies, live and configured; change them; go back to the configuration (changes when remote settings are on) |
+| `check_proxy`, `check_relays`, `get_relay_history`, `get_privacy_audit`, `resolve_i2p_name` | admins | the network engine's tools, as on the payment service |
 
 Inputs refuse unknown fields; outputs have published JSON schemas.
 
@@ -57,9 +61,9 @@ The node takes its settings from up to four layers, each later one winning:
 1. **Built-in**: TOML compiled into the binary (`LNADDR_NODE_BUILTIN` at build time).
 2. **File**: TOML at `LNADDR_NODE_CONFIG` or `--config FILE`.
 3. **Environment**: `LNADDR_NODE_*`.
-4. **Remote**: addresses and limits saved by an admin over ContextVM, kept in `remote.toml` in the data directory.
+4. **Remote**: addresses and limits saved by an admin over ContextVM, kept in `remote.toml` in the data directory, and relays and proxies, kept in `network.json`.
 
-Any layer can switch a later source off with `sources = { file = false, env = false, remote = false }`, and nothing later can switch it back on. A binary built with every later source off runs on its built-in values only. Remote settings are off unless switched on. They can only ever touch addresses and limits: never the backend, the credential, the certificate pin, the allowed keys, the relays or the data directory. The gateway has the first three layers.
+Any layer can switch a later source off with `sources = { file = false, env = false, remote = false }`, and nothing later can switch it back on. A binary built with every later source off runs on its built-in values only. Remote settings are off unless switched on. They can only ever touch addresses and limits, relays and proxies (proxies not at all with `proxy_locked`): never the backend, the credential, the certificate pin, the allowed keys or the data directory. The configured relays and proxy stay the baseline that `reset_network` and the node's own fallbacks return to. The gateway has the first three layers, and its relays and proxy come from its configuration only.
 
 ## Why this shape
 
