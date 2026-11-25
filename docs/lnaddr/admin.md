@@ -49,3 +49,7 @@ Set `admin.listen` (for example `127.0.0.1:8081`) and sign in with the token fro
 - **Node**: the node's backend, network, counters, uptime and last error; its addresses with edit and remove; forms to add an address and to change limits. Changes are saved on the node and the gateway's cache refreshes at once.
 
 It uses no JavaScript and works under a strict Content-Security-Policy. See [security](./security.md#the-admin-web-interface) for sessions and CSRF.
+
+## The node's relays and proxies
+
+Neither the web interface nor the CLI changes the node's relays or proxies. The standalone network console does, signed in with a key listed in the node's `admins` (see [node configuration](./node.md#the-network-console)). Every change is recorded in the node's `audit.jsonl`.
