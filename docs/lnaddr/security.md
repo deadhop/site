@@ -38,7 +38,7 @@ Using an invoice-only credential matters most. See [Lightning backends](./backen
 
 - Off unless `admin.listen` is set. It refuses to share the public listener.
 - Sign-in token in `admin.token` (owner-only), compared in constant time, 5 attempts per minute per address.
-- Sessions are random 256-bit cookies, `HttpOnly`, `SameSite=Strict`, `Secure` unless on loopback, 12 hours, at most 32 at once.
+- Sessions are random 256-bit cookies, `HttpOnly`, `SameSite=Strict`, `Secure` unless on loopback, 12 hours, at most 32 at once. A `Secure` session cookie is named `__Host-lnaddr_session`, so a browser refuses it from a subdomain or a plain-HTTP response.
 - Every form carries the session's CSRF token, and a request whose `Origin` is another site is refused.
 - Pages are rendered on the server with no JavaScript, under `default-src 'none'` with `frame-ancestors 'none'`.
 
