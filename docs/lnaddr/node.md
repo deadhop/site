@@ -97,7 +97,9 @@ The node's relay connections run on deadhop's network engine, the same one as th
 
 The configuration is the baseline. `relays` are the relays, and `socks5` (if set) becomes a list of one proxy with the default route through it and the kill switch when it is down, so the node never connects straight, as before. Existing configurations keep working unchanged.
 
-With remote settings on, an admin can change the relays, relay names, proxies, groups, routing rules, the offline policy and the I2P name registries (`update_network`), and go back to the configuration (`reset_network`). With `proxy_locked`, every proxy setting stays host-only; relays and relay names can still be changed. While nothing reachable is left on the default route, the offline policy decides:
+With remote settings on, an admin can change the relays, relay names, proxies, groups, routing rules, the offline policy and the I2P name registries (`update_network`), and go back to the configuration (`reset_network`). With `proxy_locked`, every proxy setting stays host-only: proxies saved in `network.json` are ignored and the configured one is used, and relays and relay names can still be changed. Whenever admins cannot change the proxies (`proxy_locked`, or remote settings off), they can test only the listed proxies, by id, and cannot look up I2P names, so no admin key can make the node connect out through a proxy of its choosing.
+
+A remote relay list must keep at least one of the configured relays. The gateways were set up with those, and the node cannot know which relays they listen on: a list without any of them would cut every gateway off, and nothing would undo it, since the new relays do connect. While nothing reachable is left on the default route, the offline policy decides:
 
 | Policy | Relays | Served |
 | --- | --- | --- |
@@ -111,7 +113,7 @@ The node protects its own way back in:
 - A change that would point the default route at a proxy or group that is down now is refused.
 - After a change of proxy list, if none of the new proxies is reachable within 3 minutes, the previous proxies come back.
 - New relays get 30 seconds to connect; if none does, the previous relays come back.
-- If saved relays have had nothing connected for 10 minutes, or none connects at start, the node goes back to the configured relays.
+- If saved relays have had nothing connected for 10 minutes, or none connects at start, the node goes back to the configured relays. Only the relays: saved proxies stay, and with them the offline policy, so the kill switch still holds.
 
 ## Files in the data directory
 
@@ -128,6 +130,6 @@ Relay results (each health check and each reply sent) are kept in memory only, t
 
 The standalone network console (`console/` in the repository) manages these settings from a browser: it signs in with an admin key over ContextVM and reads `get_info`, `get_network`, `get_health`, `get_relay_history`, `check_relays`, `check_proxy`, `resolve_i2p_name` and `get_privacy_audit`, and saves with `update_network`. Only admins are answered; a gateway never sees these tools. The node's `get_info` answers in the shape the console expects (the payment fields are fixed: no public invoicing, no proof of work). The node accepts only ephemeral gift wraps (kind 21059), so the console's client must send those.
 
-The privacy audit on the node has no Electrum checks (it has no chain backend), never announces itself, and names `LNADDR_NODE_PROXY_LOCKED` for the proxy lock.
+The privacy audit on the node has no Electrum checks (it has no chain backend), never announces itself, and names `LNADDR_NODE_PROXY_LOCKED` for the proxy lock (or, with remote settings off, `LNADDR_NODE_REMOTE`).
 
 The gateway is unchanged: it still takes one `socks5` proxy, and its relays are its configuration's.
