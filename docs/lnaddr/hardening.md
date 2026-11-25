@@ -38,6 +38,6 @@ The rule: **as long as one relay works and the node is up, invoices flow.** Ever
 
 - Each service stops cleanly on SIGINT or SIGTERM, installed at start so a signal during start-up is not lost.
 - If the node's request loop ever ends, or its relay connections cannot be remade, the process exits with an error, so the supervisor (Docker, systemd) restarts it.
-- If the gateway's console server ends or cannot be remade, the gateway logs it and keeps serving LNURL; the server is brought back on the next look.
+- If the gateway's console server cannot start, ends or cannot be remade, or its saved network settings cannot be used, the gateway logs it, says so in `get_health`, and keeps serving LNURL; the server is brought back on the next look.
 - The node's and the gateway's audit logs (`audit.jsonl`) are kept under 1 MiB, and its relay results in memory under 20,000 entries, so neither grows without bound.
 - Logs are quiet by default: libraries that would log every refused or undecryptable event are silenced, so junk traffic cannot fill the disk.

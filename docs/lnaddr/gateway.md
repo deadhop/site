@@ -94,11 +94,14 @@ With `admins` set, the gateway runs a ContextVM server on its admin key (`admin.
 The gateway and its nodes only meet on relays they share. So:
 
 - A remote change of relays (or of which key uses which relay) that would leave a node with no relay in common with the gateway key is refused, naming the node and its relays.
+- So is any change (of relays or proxies) that would leave the gateway key a node it could reach before with no relay it may use: every shared relay blocked by the default route or a rule.
 - `get_network` and `get_health` warn about any node a key shares no relay with (for example after the configuration changed under saved relays).
 
 While nothing reachable is left on the default route, the offline policy decides per lane: `kill_switch` connects neither, `admin_only` connects the admin lane straight (the console can reach the gateway; no invoices), `invoicing_only` the gateway lane (invoices; no console or node admin), and `open` both.
 
-As on the node, new relays get 30 seconds to connect (judged by the console's server) or the previous ones come back, and saved relays with nothing connected for 10 minutes (or none at start) give way to the configured ones. Unlike the node, a console server that stops or cannot be remade does not stop the gateway: the LNURL side keeps serving and the server is brought back on the next look, every 30 seconds.
+Both lanes are judged when relays change: the console's server (when `admins` are set) must reach a relay, and the gateway key at least one node, within 30 seconds, or the previous relays come back. Saved relays on which either has had nothing connected for 10 minutes (or none at start) give way to the configured ones; a console server with no route at all counts as one that reaches nothing. This holds with no `admins` too, judged by the gateway key alone. After a change of proxies, if none of the new ones is reachable within 3 minutes the previous proxies come back, and on the gateway that includes going back to straight connections when there was no proxy before (its address is public anyway).
+
+The gateway never stops for its network. A console server that cannot start, stops or cannot be remade, or a `network.json` that cannot be read or does not fit, is logged and named in `get_network` and `get_health` (`warnings`): the LNURL side keeps serving (on the configured relays and proxy when the saved ones are not used), and the server is tried again every 30 seconds.
 
 `get_info` reports the bitcoin network its nodes report (`bitcoin` before any answered), the smallest and largest amounts of their addresses, and 600 seconds for the invoice expiry (the nodes set it). The privacy audit counts the gateway's public HTTP listener under "Ports are open next to the service": it is meant to be public.
 
@@ -109,7 +112,7 @@ As on the node, new relays get 30 seconds to connect (judged by the console's se
 | `gateway.key` | the key that asks nodes for invoices |
 | `admin.key` | the key the nodes list as admin, and the console's sign-in identity |
 | `admin.token` | the web interface's sign-in token |
-| `network.json` | relays and proxies saved by an admin, as changes over the configuration (owner-only; read and written only while remote settings are on; one that does not fit stops the gateway at start) |
+| `network.json` | relays and proxies saved by an admin, as changes over the configuration (owner-only; read and written only while remote settings are on; one that cannot be read or does not fit is not used, and the warnings say why) |
 | `audit.jsonl` | one JSON line per network change, by admin key or `gateway` for what the gateway did itself; kept under 1 MiB |
 
 ## Health
