@@ -5,7 +5,7 @@ description: Configure lnaddr-gateway with a TOML file or environment variables,
 
 # Gateway configuration
 
-The gateway has the same first three layers as the node (built-in, file, environment) and no remote settings. Two variables are enough to start:
+The gateway has the same first three layers as the node (built-in, file, environment). Its only remote settings are its relays and proxies, changed from the network console by the keys in `admins` (see [relays and proxies](#relays-and-proxies)). Two variables are enough to start:
 
 ```sh
 LNADDR_GATEWAY_DOMAIN=yourdomain.com
@@ -41,6 +41,12 @@ max_connections = 1024
 [admin]
 listen = "127.0.0.1:8081"              # the web interface; off when unset
 # secure_cookie = true                 # default: on unless listening on loopback
+
+# The network console (optional): who may manage the gateway's relays and proxies.
+# admins = ["npub1you…"]
+# sources = { remote = true }          # let them change anything (off by default)
+# proxy_locked = true                  # proxies stay host-only even then
+# socks5 = "127.0.0.1:9050"            # the one proxy for relay connections
 ```
 
 ## Domains
@@ -61,11 +67,53 @@ listen = "127.0.0.1:8081"              # the web interface; off when unset
 | `LNADDR_GATEWAY_NODE` / `_NODES` | comma-separated node keys, each serving every name it lists |
 | `LNADDR_GATEWAY_RELAYS` | comma-separated relay URLs |
 | `LNADDR_GATEWAY_TRUSTED_PROXIES` | comma-separated addresses or networks |
-| `LNADDR_GATEWAY_SOCKS5` | SOCKS5 proxy for relay connections |
+| `LNADDR_GATEWAY_SOCKS5` | the proxy for relay connections (`host:port` for SOCKS5, or a `socks5://`, `http://` or `https://` URL) |
+| `LNADDR_GATEWAY_ADMINS` | comma-separated keys (npub or hex) that may sign in to the gateway from the network console |
+| `LNADDR_GATEWAY_REMOTE` | `on` to let them change the relays and proxies (off by default) |
+| `LNADDR_GATEWAY_PROXY_LOCKED` | `on` to keep the proxies host-only |
 | `LNADDR_GATEWAY_SCHEME` | `http` to build http callback URLs |
 | `LNADDR_GATEWAY_PER_IP_PER_MINUTE`, `_GLOBAL_PER_MINUTE`, `_TIMEOUT_SECS`, `_CACHE_SECS`, `_MAX_CONNECTIONS` | limits |
 | `LNADDR_GATEWAY_ADMIN_LISTEN`, `_ADMIN_SECURE_COOKIE` | the web interface |
 | `LNADDR_GATEWAY_LOG` | log filter |
+
+## Relays and proxies
+
+The gateway's relay connections run on deadhop's network engine, as the node's do, with one lane per key:
+
+| Lane | Key | Used for |
+| --- | --- | --- |
+| `gateway` | `gateway.key` | asking the nodes for invoices and address lists |
+| `admin` | `admin.key` | the admin page and `node …` commands, and the network console's sign-in |
+
+Each node is reached on the lane's relays that are also that node's relays in the configuration (`nodes[].relays`, or the global `relays`), so no request goes to a relay the node does not read. Each pool to a node is made when it is first needed, moved in place when a proxy switch changes only its routes, and remade when its relays change.
+
+The configuration is the baseline: every node's relays, once each, and `socks5` (if set) as a list of one proxy with the default route through it and the kill switch while it is down, as before. Existing configurations keep working unchanged.
+
+With `admins` set, the gateway runs a ContextVM server on its admin key (`admin.key`, made at start if missing; print it with `lnaddr-gateway admin-pubkey`). It answers only the keys in `admins`, accepts ephemeral gift wraps only and is never announced. It serves `get_info`, `get_network`, `update_network`, `reset_network`, `get_health` and the network engine's tools (`check_proxy`, `check_relays`, `get_relay_history`, `get_privacy_audit`, `resolve_i2p_name`). With remote settings on (`sources = { remote = true }` or `LNADDR_GATEWAY_REMOTE=on`), those admins can change the relays, relay names, proxies, groups, routing rules, the offline policy and the I2P registries, and go back to the configuration. The rules are the node's (see [node configuration](./node.md#relays-and-proxies)): `proxy_locked` keeps the proxies host-only, and while admins cannot change the proxies they can test only the listed ones and cannot look up I2P names.
+
+The gateway and its nodes only meet on relays they share. So:
+
+- A remote change of relays (or of which key uses which relay) that would leave a node with no relay in common with the gateway key is refused, naming the node and its relays.
+- So is any change (of relays or proxies) that would leave the gateway key a node it could reach before with no relay it may use: every shared relay blocked by the default route or a rule.
+- `get_network` and `get_health` warn about any node a key shares no relay with (for example after the configuration changed under saved relays).
+
+While nothing reachable is left on the default route, the offline policy decides per lane: `kill_switch` connects neither, `admin_only` connects the admin lane straight (the console can reach the gateway; no invoices), `invoicing_only` the gateway lane (invoices; no console or node admin), and `open` both.
+
+Both lanes are judged when relays change: the console's server (when `admins` are set) must reach a relay, and the gateway key at least one node, within 30 seconds, or the previous relays come back. Saved relays on which either has had nothing connected for 10 minutes (or none at start) give way to the configured ones; a console server with no route at all counts as one that reaches nothing. This holds with no `admins` too, judged by the gateway key alone. After a change of proxies, if none of the new ones is reachable within 3 minutes the previous proxies come back, and on the gateway that includes going back to straight connections when there was no proxy before (its address is public anyway).
+
+The gateway never stops for its network. A console server that cannot start, stops or cannot be remade, or a `network.json` that cannot be read or does not fit, is logged and named in `get_network` and `get_health` (`warnings`): the LNURL side keeps serving (on the configured relays and proxy when the saved ones are not used), and the server is tried again every 30 seconds.
+
+`get_info` reports the bitcoin network its nodes report (`bitcoin` before any answered), the smallest and largest amounts of their addresses, and 600 seconds for the invoice expiry (the nodes set it). The privacy audit counts the gateway's public HTTP listener under "Ports are open next to the service": it is meant to be public.
+
+## Files in the data directory
+
+| File | What |
+| --- | --- |
+| `gateway.key` | the key that asks nodes for invoices |
+| `admin.key` | the key the nodes list as admin, and the console's sign-in identity |
+| `admin.token` | the web interface's sign-in token |
+| `network.json` | relays and proxies saved by an admin, as changes over the configuration (owner-only; read and written only while remote settings are on; one that cannot be read or does not fit is not used, and the warnings say why) |
+| `audit.jsonl` | one JSON line per network change, by admin key or `gateway` for what the gateway did itself; kept under 1 MiB |
 
 ## Health
 

@@ -11,7 +11,7 @@ The rule: **as long as one relay works and the node is up, invoices flow.** Ever
 
 - Every event goes to every configured relay; the first relay to accept it wins. A relay that hangs or refuses is skipped, not waited for.
 - Relays reconnect by themselves. A test takes the only relay away and brings it back on the same address: while it is gone invoices fail with `503`, and once it is back they resume with neither service restarted. The gateway and node can each list their own relays; they only need one in common.
-- The node's relays run on the network engine: proxies are probed every minute against the relays they carry, a proxy switch moves only the relays whose route changed, and every relay is checked end to end every 5 minutes. New relays that do not connect within 30 seconds are undone, and saved relays with nothing connected for 10 minutes (or none at start) give way to the configured ones. See [node configuration](./node.md#relays-and-proxies).
+- The node's relays run on the network engine: proxies are probed every minute against the relays they carry, a proxy switch moves only the relays whose route changed, and every relay is checked end to end every 5 minutes. New relays that do not connect within 30 seconds are undone, and saved relays with nothing connected for 10 minutes (or none at start) give way to the configured ones. See [node configuration](./node.md#relays-and-proxies). The gateway's relays run on the same engine, a lane per key; a proxy switch moves each node pool in place when its relays stay the same (see [gateway configuration](./gateway.md#relays-and-proxies)).
 - Encrypted messages are **ephemeral gift wraps** (kind 21059). Relays forward them and store nothing, so a stored reply can never be replayed to a later request. Tests found this: with persistent gift wraps (kind 1059) a restarted client could receive an old reply.
 
 ## Node restarts
@@ -38,5 +38,6 @@ The rule: **as long as one relay works and the node is up, invoices flow.** Ever
 
 - Each service stops cleanly on SIGINT or SIGTERM, installed at start so a signal during start-up is not lost.
 - If the node's request loop ever ends, or its relay connections cannot be remade, the process exits with an error, so the supervisor (Docker, systemd) restarts it.
-- The node's audit log (`audit.jsonl`) is kept under 1 MiB, and its relay results in memory under 20,000 entries, so neither grows without bound.
+- If the gateway's console server cannot start, ends or cannot be remade, or its saved network settings cannot be used, the gateway logs it, says so in `get_health`, and keeps serving LNURL; the server is brought back on the next look.
+- The node's and the gateway's audit logs (`audit.jsonl`) are kept under 1 MiB, and its relay results in memory under 20,000 entries, so neither grows without bound.
 - Logs are quiet by default: libraries that would log every refused or undecryptable event are silenced, so junk traffic cannot fill the disk.

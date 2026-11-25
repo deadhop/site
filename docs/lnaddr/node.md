@@ -132,4 +132,4 @@ The standalone network console (`console/` in the repository) manages these sett
 
 The privacy audit on the node has no Electrum checks (it has no chain backend), never announces itself, and names `LNADDR_NODE_PROXY_LOCKED` for the proxy lock (or, with remote settings off, `LNADDR_NODE_REMOTE`).
 
-The gateway is unchanged: it still takes one `socks5` proxy, and its relays are its configuration's.
+The gateway runs its relays on the same engine and serves the same console tools to its own admins: see [gateway configuration](./gateway.md#relays-and-proxies).
