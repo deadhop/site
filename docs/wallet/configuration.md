@@ -11,7 +11,7 @@ description: Every environment variable of deadhop's sweeping wallet, its defaul
 | --- | --- |
 | `deadhop-wallet run` | The default: poll until stopped. |
 | `deadhop-wallet once` | One poll, then exit. |
-| `deadhop-wallet status` | The recent sweeps: time (Unix seconds), mode, amount, destination and transaction id. |
+| `deadhop-wallet status` | The recent sweeps: time (Unix seconds), mode, amount, destination, transaction id, and whether the transaction is confirmed (with its block), still unconfirmed, or abandoned (dropped without being mined, so the coins did not move). |
 
 With Compose: `docker compose --profile sweep exec sweeper deadhop-wallet status`.
 
