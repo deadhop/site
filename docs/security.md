@@ -293,10 +293,12 @@ It still cannot spend funds, change the receiving wallet, change the Electrum se
 read the service's private key, or remove the operators configured on the host.
 
 **Proxy scope.** Only relay connections use a proxy (`socks5://`, `https://` or
-`http://`, with optional credentials). Up to 8 can be listed; by default only the first
-is used (strategy off), or failover, round robin and chaos choose among the reachable ones, and what happens when none is reachable is a
-setting that defaults to the kill switch: no relay connection at all (see
-[configuration](configuration.md)). The other policies connect straight, so they
+`http://`, with optional credentials). Up to 8 can be listed. Routing rules send each relay
+to one proxy, a group of proxies (where failover, round robin or chaos choose among the
+reachable ones), direct or nowhere, and the default route, the last rule, takes the rest;
+by default that is one proxy, the first, and nothing rotates. What happens when the default
+route has nothing reachable is a setting that defaults to the kill switch: no connection
+for those relays (see [configuration](configuration.md)). The other policies connect straight, so they
 are an operator's explicit trade of privacy for availability. Passwords stay hidden in
 every view: entries have stable ids, so saving a reordered list does not overwrite a
 password with its `***` mask. Changes of proxy are not audited one by one (a rotation
