@@ -95,7 +95,7 @@ Without the lock, anyone holding an operator key could change the proxy from the
 
 ## 4. More than one proxy (optional)
 
-`DEADHOP_PROXIES` adds proxies after the first, and `DEADHOP_PROXY_MODE` chooses how they are used: `failover`, `round_robin` or `chaos` (a random other proxy after a random time). The modes and their timing are in [Configuration](./configuration.md#proxies).
+`DEADHOP_PROXIES` adds proxies after the first. On its own the first proxy carries everything; `DEADHOP_PROXY_MODE` set to `failover`, `round_robin` or `chaos` (a random other proxy after a random time) puts them all in a group with that strategy instead. In the dashboard, groups are under **Network → Proxies**, and rules under **Network → Rules** can send some relays another way, such as `.onion` relays through Tor. Groups, strategies and rules are in [Configuration](./configuration.md#proxies).
 
 ## 5. Or route the whole host
 

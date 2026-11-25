@@ -122,11 +122,11 @@ recorded in the audit log.
 
 | Tool | Arguments | Returns |
 | --- | --- | --- |
-| `get_health` | none | `service` (version, start, uptime, online since, paused, restarts), `relays` (url, status, connected), `proxy` (the proxy in use now, password hidden), `proxy_check` (the last test of that proxy, or null), `proxy_pool` (`state`: `transparent`, `direct`, `active`, `suspended` or `offline`; `posture`; `mode`; `offline`; `transparent`; `active` (a proxy id); `reachable`; `total`; `next_switch_at`; and `proxies`, each `{ id, name, url, reachable, checked_at, status, reason }`), `chain`, `database` (integrity, size, invoices, backups), `warnings` |
+| `get_health` | none | `service` (version, start, uptime, online since, paused, restarts), `relays` (url, status, connected), `proxy` (the proxy in use now, password hidden), `proxy_check` (the last test of that proxy, or null), `proxy_pool` (the default route of the public invoices key: `default` (a destination), `state` (`transparent`, `direct`, `active`, `suspended`, `offline` or `blocked`), `active` (a proxy id), `reachable`; then `posture`; `offline`; `transparent`; `total`; `next_switch_at` (the soonest switch of any group a key uses); `proxies`, each `{ id, name, url, reachable, checked_at, status, reason }`; `lanes`, per key `{ key, default, state, active, reachable, next_switch_at, uses_default, groups }`, where `groups` lists each group the key may use as `{ group, state, active, reachable, next_switch_at }`; and `routes`, per key and relay `{ key, relay, rule, via, proxy, reason }`), `chain`, `database` (integrity, size, invoices, backups), `warnings` |
 | `get_metrics` | none | `addresses_created`, `invoices`, `payments`, `received_sat`, `windows` for `24h`, `7d`, `30d`, `365d` with `available` (false until the service has been online that long), `sweep` status |
 | `get_payment_series` | `range`: `day`, `week`, `month` or `year` | `points` of `{ start, count, sat }`: 24 hourly, 7 or 30 daily, or 52 weekly buckets, gap-filled |
 | `get_settings` | none | `settings` (live), `defaults` (environment), `overridden` (names), `fixed` (host-only values), `operators`, `restart_pending`, `warnings` |
-| `update_settings` | `patch`: only the settings to change; `sweep` and `proxies` may be partial; `proxies.list` replaces the whole proxy list (entries `{ id?, name?, url }`; a new entry has no `id`, a url shown with `***` keeps its saved password); `proxy: ""` (the old single-address form) still works | Same as `get_settings` |
+| `update_settings` | `patch`: only the settings to change; `sweep` and `proxies` may be partial; `proxies.list` replaces the whole proxy list (entries `{ id?, name?, url, i2p? }`; a new entry may bring its own `id` (`[a-z0-9_-]`, at most 24) so that groups, rules and the default route in the same patch can name it, or have one made; a url shown with `***` keeps its saved password); `proxy: ""` (the old single-address form) still works | Same as `get_settings` |
 | `reset_settings` | none | Same as `get_settings` |
 | `add_operator` | `pubkey` (hex, `npub` or `nprofile`), optional `label` | Same as `get_settings` |
 | `remove_operator` | `pubkey` | Same as `get_settings`; environment keys are refused |
@@ -147,8 +147,15 @@ Settings that can be patched: `name`, `relays`, `public_invoicing`, `pow_bits`,
 `pow_window_secs`, `min_confirmations`, `default_expiry_secs`, `max_expiry_secs`,
 `min_amount_sat`, `max_amount_sat`, `max_open_invoices`, `max_invoices_per_day`,
 `rate_global_per_min`, `rate_per_key_per_min`, `rate_requests_per_min`,
-`rate_requests_per_key_per_min`, `poll_secs`, `late_grace_secs`, `proxies` (`list`, `mode`, `rotate_secs`,
-`chaos_min_secs`, `chaos_max_secs`, `offline`, `transparent`) and
+`rate_requests_per_key_per_min`, `poll_secs`, `late_grace_secs`, `proxies` (`list`; `groups`, each
+`{ id, name, proxies, strategy, rotate_secs, chaos_min_secs, chaos_max_secs }` with `strategy`
+`failover`, `round_robin` or `chaos`; `default` and `default_keys` (key id to destination);
+`offline`; `transparent`; `rules`, each `{ name, match, keys, to, fallback }`; `i2p_registries`.
+`list`, `groups`, `default_keys`, `rules` and `i2p_registries` each replace the whole value.
+A destination is `"direct"`, `"block"`, `{ "proxy": id }` or `{ "group": id }`; a fallback is
+`"offline"`, `"policy"` or `{ "to": destination }`. The fields from before proxy groups,
+`mode`, `rotate_secs`, `chaos_min_secs`, `chaos_max_secs` and a proxy's `pool` and `keys`,
+are refused) and
 `sweep` (`enabled`, `mode` = `payjoin` or `coinjoin`, `threshold_sat`,
 `max_fee_rate_sat_vb`, `min_anonymity_set`). Unknown fields are refused.
 
