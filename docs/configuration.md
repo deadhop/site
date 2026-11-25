@@ -210,7 +210,16 @@ destination and follows the offline policy, and "fall back to the default route"
 fallback to that destination. The old saved settings stay in the database, under
 `settings_pre_groups`. A client that still sends `mode`, `rotate_secs`, `chaos_min_secs`,
 `chaos_max_secs`, or proxies with `pool` or `keys`, is refused with an error that names
-what replaced them.
+what replaced them. After upgrading, do not start an older version against the same data
+directory: it cannot read the new shape and would drop the saved settings.
+
+**Saved routes name the environment's proxies by position.** The proxies from
+`DEADHOP_PROXY` and `DEADHOP_PROXIES` are `env1`, `env2`, … in that order, and saved
+groups, default routes and rules refer to them by those ids. Reordering the variables
+changes which proxy each id is; removing one leaves a saved route pointing at nothing. When
+the saved proxy settings no longer fit the environment, the service starts with the
+environment's proxies instead, keeps every other saved setting, says so in health, and
+keeps the saved proxy settings aside under `settings_dropped_proxies`.
 
 **Transparent proxy.** If you have set up a transparent proxy yourself (the host's
 routing, a Tor gateway, a VPN), tell the service with `DEADHOP_TRANSPARENT_PROXY=true`
