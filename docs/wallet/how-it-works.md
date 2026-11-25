@@ -29,6 +29,8 @@ Whoever built the transaction (the sweeper itself, a PayJoin receiver, or CoinJo
 
 `sweeper.json` in `DEADHOP_WALLET_STATE_DIR` records the next destination and change index, every PayJoin URI already paid (each is paid once), and the last 100 sweeps (`deadhop-wallet status`).
 
+A sweep is recorded as soon as the Electrum server accepts its transaction, and is marked unconfirmed at first. Every poll checks unconfirmed sweeps against the destination's history. A mined sweep is marked confirmed with its block height. A sweep the server has not known for an hour is marked abandoned: it was dropped without being mined, its coins are still in the wallet, and the next sweep picks them up.
+
 ## When something fails
 
 - **Many coins.** At most 400 inputs go into one transaction, largest first. A coin worth less than the fee of its own input is left alone. The rest goes at the next poll.
