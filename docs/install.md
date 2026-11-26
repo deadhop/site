@@ -23,11 +23,15 @@ deadhop runs next to your own bitcoin node. Three choices decide your setup. Eac
 
 ## Get the source
 
-Every deadhop product is built from this repository:
+The payment service runs from [deadhop/stack](https://github.com/deadhop/stack). Its `compose.yaml`
+builds the service, the dashboard and the sweeper from their own repositories
+([server](https://github.com/deadhop/server), [js](https://github.com/deadhop/js),
+[wallet](https://github.com/deadhop/wallet)); the [relay](./relay/quickstart.md) and
+[lnaddr](./lnaddr/quickstart.md) have their own repositories and quick starts.
 
 ```sh
-git clone https://github.com/sandwichfarm/deadhop
-cd deadhop
+git clone https://github.com/deadhop/stack
+cd stack
 ```
 
 There are no published images or binaries yet: the guides build them from the source.

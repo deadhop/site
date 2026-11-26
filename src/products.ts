@@ -13,6 +13,8 @@ export interface Product {
   href: string;
   install: string;
   installLabel: string;
+  /** The repository to clone to install it (github.com/deadhop/<repo>). */
+  repo: string;
   docs: string;
   blurb: string;
 }
@@ -26,6 +28,7 @@ export const products: Product[] = [
     href: at('/'),
     install: at('/docs/install.html'),
     installLabel: 'Choose a setup',
+    repo: 'stack',
     docs: at('/docs/'),
     blurb: 'On-chain bitcoin invoices from your own node, with no open port and no spending key.',
   },
@@ -37,6 +40,7 @@ export const products: Product[] = [
     href: at('/lud16-lnaddr/'),
     install: at('/docs/lnaddr/quickstart.html'),
     installLabel: 'Quick start',
+    repo: 'lnaddr',
     docs: at('/docs/lnaddr/'),
     blurb: 'you@yourdomain for a Lightning node at home, with no port open at home.',
   },
@@ -48,6 +52,7 @@ export const products: Product[] = [
     href: at('/relay/'),
     install: at('/docs/relay/quickstart.html'),
     installLabel: 'Quick start',
+    repo: 'relay',
     docs: at('/docs/relay/'),
     blurb: 'A Nostr relay that carries your service and nothing else, on clearnet, Tor, I2P or FIPS.',
   },
@@ -59,6 +64,7 @@ export const products: Product[] = [
     href: at('/wallet/'),
     install: at('/docs/wallet/sweep.html'),
     installLabel: 'Sweep to your cold wallet',
+    repo: 'stack',
     docs: at('/docs/wallet/'),
     blurb: 'Moves what you received to your cold wallet once it is worth moving, by a send, a PayJoin or a CoinJoin.',
   },

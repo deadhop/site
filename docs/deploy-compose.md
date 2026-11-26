@@ -5,7 +5,7 @@ description: Build and run deadhop, its offline wallet and the dashboard with Do
 
 # Run it with Docker Compose
 
-`compose.yaml` in the repository runs four containers:
+`compose.yaml` in [deadhop/stack](https://github.com/deadhop/stack) runs four containers:
 
 | Container | What it does | Network |
 | --- | --- | --- |
@@ -18,12 +18,15 @@ Every container has a read-only root filesystem, no Linux capabilities and a mem
 
 You need Docker with Compose v2, and an [Electrum server](./electrum.md) the service can reach.
 
-## 1. Get the source
+## 1. Get the compose file
 
 ```sh
-git clone https://github.com/sandwichfarm/deadhop
-cd deadhop
+git clone https://github.com/deadhop/stack
+cd stack
 ```
+
+`docker compose up --build` builds each image from its repository's `main` branch on GitHub;
+`git pull` here picks up changes to the compose file itself.
 
 ## 2. Write `.env`
 

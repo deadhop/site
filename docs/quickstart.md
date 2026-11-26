@@ -9,7 +9,14 @@ In this tutorial you run the whole system on a throwaway regtest chain, on loopb
 
 ## Requirements
 
-A checkout of the repository (`git clone https://github.com/sandwichfarm/deadhop`), and:
+A checkout of [deadhop/stack](https://github.com/deadhop/stack) with the components it builds:
+
+```sh
+git clone https://github.com/deadhop/stack && cd stack
+just clone       # server/, js/, lnaddr/, wallet/ and relay/ next to the stack's files
+```
+
+And:
 
 - Rust 1.88 or newer
 - Node 22 or newer
@@ -18,7 +25,7 @@ A checkout of the repository (`git clone https://github.com/sandwichfarm/deadhop
 
 ## Start it
 
-Three terminals, in the repository's root:
+Three terminals, in the `stack` checkout:
 
 ```sh
 just install     # once: the JavaScript workspace (packages and dashboard)
@@ -29,7 +36,7 @@ just up          # regtest bitcoind + Fulcrum + private relay, a funded "miner" 
 just server      # second terminal: builds and runs deadhop (stays in the foreground)
 ```
 
-Wait until the second terminal logs `deadhop is serving`: only then has it written the dashboard's settings (`dashboard/public/config.json`: the service's key and the relay `ws://127.0.0.1:7777`).
+Wait until the second terminal logs `deadhop is serving`: only then has it written the dashboard's settings (`js/dashboard/public/config.json`: the service's key and the relay `ws://127.0.0.1:7777`).
 
 ```sh
 just dashboard   # third terminal: serves the dashboard at http://127.0.0.1:4173
@@ -62,7 +69,7 @@ The first `just server` compiles the service in release mode, which takes a few 
 just down        # removes the stack and its chain data
 ```
 
-Stop the other two terminals with Ctrl-C. `data/dev/` (the service's database and keys) and `dashboard/public/config.json` stay; they are gitignored.
+Stop the other two terminals with Ctrl-C. `data/dev/` (the service's database and keys) and `js/dashboard/public/config.json` stay; they are gitignored.
 
 To build an app against this stack, see [Develop against a local service](./integrate.md#develop-against-a-local-service).
 

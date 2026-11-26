@@ -139,7 +139,7 @@ const others = products.filter((p) => p.id !== t.id);
           </div>
         </div>
         <div class="install__go">
-          <pre><code>git clone https://github.com/sandwichfarm/deadhop{'\n'}cd deadhop</code></pre>
+          <pre><code>{`git clone https://github.com/deadhop/${me.repo}\ncd ${me.repo}`}</code></pre>
           <p class="actions">
             <a class="button button--primary" href={me.install}>{me.installLabel}</a>
             <a class="button" href={me.docs}>All the docs</a>

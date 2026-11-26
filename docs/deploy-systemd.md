@@ -14,8 +14,8 @@ Under systemd, give the service your own wallet's account key (`DEADHOP_XPUB`). 
 Rust 1.88 or newer:
 
 ```sh
-git clone https://github.com/sandwichfarm/deadhop
-cd deadhop/server && cargo build --release
+git clone https://github.com/deadhop/server
+cd server && cargo build --release
 sudo install -m 0755 target/release/deadhop /usr/local/bin/deadhop
 ```
 

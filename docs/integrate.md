@@ -45,7 +45,7 @@ it once per page (or per process) and pass it to every component.
 ### Develop against a local service
 
 [Try it on regtest](./quickstart.md) runs a service on your machine with test bitcoin.
-`just server` writes its values to `dashboard/public/config.json`: use its `serverPubkey`,
+`just server` writes its values to `js/dashboard/public/config.json`: use its `serverPubkey`,
 and the relay `ws://127.0.0.1:7777`. That relay is plain `ws://` on loopback, so while
 you develop, your page's `connect-src` must allow `ws://127.0.0.1:7777` as well as your
 `wss:` relays. `just pay <address> <sats>` pays an invoice from the test wallet.
