@@ -120,11 +120,12 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: HOME, target: '_self' },
       {
-        text: 'Products',
+        text: 'Parts',
         items: PRODUCTS.map((p) => ({ text: p.label, link: link(p.pages[0][0]) })),
       },
       { text: 'Install', link: '/install' },
     ],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/deadhop', ariaLabel: 'Source on GitHub' }],
     sidebar: sidebars,
     outline: { level: [2, 3] },
     search: { provider: 'local' },

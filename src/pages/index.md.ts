@@ -1,8 +1,9 @@
 // Markdown version of the landing page, for agents (linked with rel="alternate").
 import { at } from '../paths';
 import type { APIRoute } from 'astro';
-import { benefits, components, docLinks, limits, needs, paths, pricing, product, shots, steps } from '../content';
-import { products } from '../products';
+import { benefits, components, docLinks, limits, needs, paths, pricing, principles, product, steps } from '../content';
+import { products, repos, repoUrl } from '../products';
+import { tour } from '../tour';
 import { faq } from '../seo';
 
 const md = (href: string) => at(href.replace(/\.html$/, '.md').replace(/\/$/, '/index.md'));
@@ -11,11 +12,15 @@ export const GET: APIRoute = () => {
   const out = [
     `# ${product.name}`,
     '',
-    `> ${product.tagline}`,
+    `> ${product.headline}`,
     '',
-    `**${product.motto}**`,
+    product.pitch,
     '',
     product.summary,
+    '',
+    '## What every part shares',
+    '',
+    ...principles.map((p) => `- **${p.title}.** ${p.body}`),
     '',
     `Install: [Choose a setup](${md('/docs/install.html')}). Try it first: [Try it on regtest](${md('/docs/quickstart.html')}).`,
     '',
@@ -23,17 +28,30 @@ export const GET: APIRoute = () => {
     '',
     ...paths.map((p) => `- [${p.title}](${md(p.href)}) (${p.kind.toLowerCase()}): ${p.body}`),
     '',
-    '## What you get',
+    '## The tour',
     '',
-    `- ![${shots.hero.alt}](${at(shots.hero.src)})`,
-    ...shots.gallery.map((s) => `- ![${s.alt}](${at(s.src)}) ${s.caption}`),
+    'Every screen of every part, from a test chain (regtest). The numbered points are what each screen shows.',
     '',
+    ...tour.flatMap((a) => [
+      `### ${a.label}`,
+      '',
+      ...a.views.flatMap((v) => [
+        `#### ${v.group}: ${v.title}`,
+        '',
+        `![${v.alt}](${at(v.src)})`,
+        '',
+        v.body,
+        '',
+        ...v.points.map((p, i) => `${i + 1}. **${p.title}.** ${p.body}`),
+        '',
+      ]),
+    ]),
     '## How a payment travels',
     '',
     ...steps.flatMap((s) => [`### ${s.title}`, '', s.body, '']),
-    '## Tools built the same way',
+    '## The parts',
     '',
-    ...products.filter((p) => p.id !== 'payments').map((p) => `- [${p.name}](${p.href}index.md): ${p.blurb}`),
+    ...products.map((p) => `- [${p.name}](${p.id === 'payments' ? md('/docs/install.html') : `${p.href}index.md`}): ${p.blurb} Source: ${p.source.map((r) => `[deadhop/${r}](${repoUrl(r)})`).join(', ')}.`),
     '',
     '## Security benefits',
     '',
@@ -52,6 +70,10 @@ export const GET: APIRoute = () => {
     '## Questions',
     '',
     ...faq.flatMap((f) => [`**${f.q}**`, '', f.a, '']),
+    '## Source',
+    '',
+    ...repos.map((r) => `- [deadhop/${r.name}](${repoUrl(r.name)}): ${r.body}`),
+    '',
     '## Install',
     '',
     'You need:',

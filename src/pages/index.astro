@@ -2,17 +2,13 @@
 import Base from '../layouts/Base.astro';
 import SiteNav from '../components/SiteNav.astro';
 import Shot from '../components/Shot.astro';
-import { benefits, components, docLinks, limits, needs, paths, pricing, product, shots, steps } from '../content';
-import { products } from '../products';
+import Tour from '../components/Tour.astro';
+import { benefits, components, docLinks, limits, needs, paths, pricing, principles, product, steps, system } from '../content';
+import { products, repos, repoUrl, GITHUB } from '../products';
 import { faq, landingJsonLd } from '../seo';
 import { at } from '../paths';
 
-const tools = products.filter((p) => p.id !== 'payments');
-const toolShots: Record<string, { src: string; width: number; height: number; alt: string } | null> = {
-  lnaddr: { src: '/shots/lnaddr-overview.webp', width: 1600, height: 938, alt: 'The lnaddr gateway admin: nodes, latency and the Lightning addresses it serves.' },
-  relay: { src: '/shots/relay-operator.webp', width: 1600, height: 938, alt: 'The relay operator page: connections, events and a card per network (clearnet, Tor, I2P, FIPS).' },
-  wallet: null,
-};
+const link = (href: string) => (href.startsWith('#') ? href : at(href));
 ---
 
 <Base
@@ -25,19 +21,55 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
   <SiteNav current="payments" />
 
   <main id="content">
-    <section class="intro" aria-labelledby="hero-title">
+    <section class="intro home-hero" aria-labelledby="hero-title">
       <div class="intro__copy">
-        <p class="stamp">ports open: 0</p>
-        <h1 id="hero-title">{product.motto.split(/(?<=\.)\s+/).map((line) => <span class="line">{line}</span>)}</h1>
-        <p class="motto-sub">{product.tagline}</p>
-        <p class="lede">{product.summary}</p>
+        <p class="stamp">ports open at home: 0</p>
+        <h1 id="hero-title">{product.headline}</h1>
+        <p class="motto-sub">{product.pitch}</p>
         <p class="actions">
-          <a class="button button--primary" href={at('/docs/install.html')}>Install it</a>
-          <a class="button" href="#product">See what you get</a>
+          <a class="button button--primary" href={at('/docs/install.html')}>Accept payments</a>
+          <a class="button" href="#tour">Take the tour</a>
         </p>
-        <p class="fine">Self-hosted · free · MIT · runs next to your own bitcoin node</p>
       </div>
-      <Shot class="intro__shot" eager {...shots.hero} />
+      <figure class="system" aria-labelledby="system-cap">
+        <div class="system__map">
+          <div class="system__side">
+            <p class="system__zone">At home</p>
+            <ul>
+              {system.home.map((n) => <li><a class:list={['system__node', { 'system__node--main': n.main }]} href={link(n.href)}>{n.label}</a></li>)}
+            </ul>
+          </div>
+          <div class="system__wires" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="system__side">
+            <p class="system__zone">In public</p>
+            <ul>
+              {system.public.map((n) => <li><a class:list={['system__node', { 'system__node--big': n.main }]} href={link(n.href)}>{n.label}</a></li>)}
+            </ul>
+          </div>
+        </div>
+        <figcaption id="system-cap">{system.caption} <a href="#parts">All four parts</a></figcaption>
+      </figure>
+    </section>
+
+    <section class="band band--flush" aria-label="What every part shares">
+      <ul class="rules">
+        {
+          principles.map((p, i) => (
+            <li>
+              <span class="rules__n">0{i + 1}</span>
+              <h2 class="rules__title">{p.title}</h2>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="tour" class="band" aria-labelledby="tour-title">
+      <p class="kicker">The tour</p>
+      <h2 id="tour-title">Every screen, before you install</h2>
+      <p class="band__lede">Pick a part, then a screen. The numbered dots say what you are looking at. Screens come from a test chain (regtest), not a live shop.</p>
+      <Tour />
     </section>
 
     <section id="start" class="band" aria-labelledby="start-title">
@@ -58,19 +90,7 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
       </ul>
     </section>
 
-    <section id="product" class="band" aria-labelledby="product-title">
-      <p class="kicker">What you get</p>
-      <h2 id="product-title">A checkout for your customers, a dashboard for you</h2>
-      <p class="band__lede">
-        The dashboard is a static page. It reaches the service through Nostr relays like any customer does, so it can be hosted anywhere and the service still opens no port. Sign in with your Nostr key; there are no accounts.
-      </p>
-      <p class="fine">Screenshots from a test chain (regtest), not a live shop.</p>
-      <div class="gallery">
-        {shots.gallery.map((s) => <Shot {...s} />)}
-      </div>
-    </section>
-
-    <div class="stage">
+    <div class="stage" id="how">
       <div class="stage__copy">
         <section id="story" aria-labelledby="story-title">
           <header class="story__head">
@@ -93,21 +113,19 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
       </div>
     </div>
 
-    <section id="tools" class="band" aria-labelledby="tools-title">
-      <p class="kicker">Tools built the same way</p>
-      <h2 id="tools-title">One job each, built the same way</h2>
+    <section id="parts" class="band" aria-labelledby="parts-title">
+      <p class="kicker">The parts</p>
+      <h2 id="parts-title">Start with payments. Add what you need.</h2>
+      <p class="band__lede">Each part is its own repository and its own binary. They share the rules above, not a server.</p>
       <ul class="tools">
         {
-          tools.map((t) => (
+          products.map((p) => (
             <li>
-              <a class="tools__card" href={t.href}>
-                {toolShots[t.id] ? (
-                  <img src={at(toolShots[t.id]!.src)} alt={toolShots[t.id]!.alt} width={toolShots[t.id]!.width} height={toolShots[t.id]!.height} loading="lazy" decoding="async" />
-                ) : (
-                  <pre class="tools__term" aria-label="The sweeper's log after a sweep"><code>sweeping by send once 60000 sat are confirmed{'\n'}send: moved 96409 sat of 100000 to bcrt1qkh5n…5ah2 in 7205…fd9b</code></pre>
-                )}
-                <span class="tools__name">{t.label}</span>
-                <span class="tools__body">{t.blurb}</span>
+              <a class:list={['tools__card', { 'tools__card--main': p.id === 'payments' }]} href={p.id === 'payments' ? at('/docs/install.html') : p.href}>
+                <span class="tools__stamp">{p.stamp}</span>
+                <span class="tools__name">{p.label}</span>
+                <span class="tools__body">{p.blurb}</span>
+                <span class="tools__repo">{p.source.map((r) => `deadhop/${r}`).join(' · ')}</span>
               </a>
             </li>
           ))
@@ -135,8 +153,8 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
       <p><a href={at('/docs/security.html')}>Full security analysis</a></p>
     </section>
 
-    <section class="band" aria-labelledby="parts-title">
-      <h2 id="parts-title" data-reveal>What you run</h2>
+    <section class="band" aria-labelledby="run-title">
+      <h2 id="run-title" data-reveal>What you run</h2>
       <ul class="parts" data-stagger>
         {
           components.map((c) => (
@@ -162,6 +180,22 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
           ))
         }
       </dl>
+    </section>
+
+    <section id="source" class="band" aria-labelledby="source-title">
+      <p class="kicker">Source</p>
+      <h2 id="source-title">Read every line</h2>
+      <p class="band__lede">Eight public repositories under the MIT license. The payment service is tested to 100% line coverage, and end to end on regtest.</p>
+      <ul class="repos">
+        {
+          repos.map((r) => (
+            <li>
+              <a href={repoUrl(r.name)} rel="noopener">deadhop/{r.name}</a>
+              <p>{r.body}</p>
+            </li>
+          ))
+        }
+      </ul>
     </section>
 
     <section id="install" class="band" aria-labelledby="install-title">
@@ -205,6 +239,7 @@ const toolShots: Record<string, { src: string; width: number; height: number; al
       <ul>
         {products.map((p) => <li><a href={p.href}>{p.label}</a></li>)}
         <li><a href={at('/docs/')}>Documentation</a></li>
+        <li><a href={GITHUB} rel="noopener">GitHub</a></li>
         <li><a href={at('/index.md')}>This page as Markdown</a></li>
         <li><a href={at('/llms.txt')}>llms.txt</a></li>
       </ul>

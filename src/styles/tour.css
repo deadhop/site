@@ -1,0 +1,412 @@
+/* The tour (components/Tour.astro). Without JavaScript: every screen stacked,
+   each with its notes. With it (.is-ready): tabs, one screen, a strip. */
+
+.tour [hidden] {
+  display: none !important;
+}
+
+.tour__app + .tour__app {
+  margin-top: 3rem;
+}
+
+.tour__app-title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.tour__view {
+  margin: 0 0 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.tour__stage {
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.tour__bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem 0.5rem 2.9rem;
+  border-bottom: 1.5px dashed var(--line);
+  font: 500 0.68rem/1.2 var(--mono);
+  color: var(--muted);
+  background: radial-gradient(circle at 0.85rem 50%, var(--line) 0.22rem, transparent 0.24rem),
+    radial-gradient(circle at 1.55rem 50%, var(--line) 0.22rem, transparent 0.24rem),
+    radial-gradient(circle at 2.25rem 50%, var(--line) 0.22rem, transparent 0.24rem);
+}
+
+.tour__pos {
+  margin-left: auto;
+}
+
+.tour__shot {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Tall screens (a phone, a checkout card) are capped in height and sit in the
+   middle of the stage; the points are placed on the image itself. */
+.tour__stage {
+  background: var(--bg);
+}
+
+.tour__shot picture {
+  display: block;
+}
+
+.tour__shot img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 40rem;
+}
+
+.tour__pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--primary-ink);
+  font: 700 0.75rem/1 var(--mono);
+  cursor: pointer;
+  box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (prefers-color-scheme: light) {
+  .tour__pin {
+    color: #f5f4f0;
+  }
+}
+
+.tour__pin:hover {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.tour__pin[aria-pressed='true'] {
+  background: var(--tag);
+  color: var(--tag-ink);
+  box-shadow: 0 0 0 0.45rem color-mix(in srgb, var(--tag) 35%, transparent);
+}
+
+.tour__callout {
+  position: absolute;
+  width: 17rem;
+  max-width: 46%;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--tag);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.tour__callout-title {
+  margin: 0 0 0.25rem;
+  font: 700 0.95rem/1.25 var(--display);
+  letter-spacing: -0.01em;
+}
+
+.tour__callout-body {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.tour__notes {
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.tour__crumb {
+  margin: 0 0 0.6rem;
+  font: 500 0.68rem/1.3 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.tour__title {
+  margin: 0 0 0.5rem;
+  font: 800 1.6rem/1.05 var(--display);
+  letter-spacing: -0.03em;
+}
+
+.tour__body {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.tour__points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tour__point {
+  width: 100%;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.55rem 0.6rem;
+  border: 1.5px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tour__point:hover {
+  border-color: var(--line);
+}
+
+.tour__n {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--primary-ink);
+  font: 700 0.68rem/1 var(--mono);
+}
+
+@media (prefers-color-scheme: light) {
+  .tour__n {
+    color: #f5f4f0;
+  }
+}
+
+.tour__point-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.tour__point-text b {
+  font-size: 0.92rem;
+}
+
+.tour__point-text span {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.tour__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1.5px dashed var(--line);
+}
+
+.tour__step {
+  min-height: 2.6rem;
+  padding: 0 0.9rem;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: none;
+  color: var(--fg);
+  font: 600 0.9rem/1 var(--body);
+  cursor: pointer;
+}
+
+.tour__step:hover {
+  border-color: var(--fg);
+}
+
+.tour__docs {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+/* ---- The browser, once scripts/tour.ts has run ---- */
+
+.tour.is-ready .tour__app-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.tour.is-ready .tour__app + .tour__app {
+  margin-top: 0;
+}
+
+.tour.is-ready .tour__view {
+  margin: 0;
+}
+
+.tour.is-ready .tour__points li:not(.is-on) .tour__point-text span {
+  display: none;
+}
+
+.tour__points li.is-on .tour__point {
+  border-color: var(--tag);
+  background: var(--bg);
+}
+
+.tour__points li.is-on .tour__n {
+  background: var(--tag);
+  color: var(--tag-ink);
+}
+
+.tour__apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tour__apps [role='tab'] {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: none;
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+}
+
+.tour__apps [role='tab']:hover {
+  border-color: var(--fg);
+}
+
+.tour__apps [aria-selected='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+
+.tour__app-name {
+  font: 700 1rem/1.1 var(--display);
+  letter-spacing: -0.02em;
+}
+
+.tour__app-count {
+  font: 500 0.66rem/1 var(--mono);
+  color: var(--muted);
+}
+
+.tour__strip {
+  position: relative;
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding-bottom: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tour__thumb {
+  flex: 0 0 8.75rem;
+  padding: 0.4rem;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.tour__thumb:hover,
+.tour__thumb[aria-current='true'] {
+  opacity: 1;
+}
+
+.tour__thumb[aria-current='true'] {
+  border-color: var(--accent);
+}
+
+.tour__thumb img {
+  display: block;
+  width: 100%;
+  height: 4rem;
+  object-fit: cover;
+  object-position: top left;
+  border-radius: 2px;
+}
+
+.tour__thumb-group {
+  display: block;
+  margin-top: 0.4rem;
+  font: 500 0.58rem/1.2 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tour__thumb-title {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Narrow: the notes go under the screen and the callout gives way to them. */
+@media (max-width: 52rem) {
+  .tour__view {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .tour__callout {
+    display: none;
+  }
+  .tour__pin {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.66rem;
+  }
+  .tour__apps {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--gutter)) 1rem;
+    padding: 0 var(--gutter);
+    scrollbar-width: none;
+  }
+  .tour__apps [role='tab'] {
+    flex: none;
+  }
+  .tour__docs {
+    margin-left: 0;
+  }
+}

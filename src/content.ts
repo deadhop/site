@@ -5,6 +5,8 @@ export const product = {
   name: 'deadhop',
   title: 'deadhop: on-chain bitcoin payments with no public server',
   motto: 'Dials out. Never listens.',
+  headline: 'Accept bitcoin on your own node. Open no port.',
+  pitch: 'Invoices, a checkout and a dashboard, confirmed by your own node. Nothing it holds can spend.',
   tagline: 'Accept on-chain bitcoin payments without exposing a server.',
   summary:
     'deadhop creates bitcoin invoices, watches the chain and reports payments. Customers and operators reach it only through Nostr relays. It opens no ports and holds no spending keys.',
@@ -94,14 +96,27 @@ export const paths: { title: string; body: string; kind: string; href: string }[
   { title: 'I just want to see it work', body: 'The whole system on a throwaway test chain on your laptop: Rust, Node, Docker and just, no configuration. Pay an invoice minutes after the first build.', kind: 'Tutorial', href: '/docs/quickstart.html' },
 ];
 
-// Real screenshots, taken on a regtest chain.
-export const shots = {
-  hero: { src: '/shots/payments-overview.webp', light: '/shots/payments-overview-light.webp', width: 1600, height: 1121, alt: 'The operator Overview: service running, relays connected, chain height, privacy score, and the totals received.' },
-  gallery: [
-    { src: '/shots/payments-checkout.webp', width: 900, height: 1000, alt: 'An invoice awaiting payment: amount, note, QR code and a fresh address.', caption: 'What your customer sees: one fresh address per invoice, a QR code, and the status as it changes.' },
-    { src: '/shots/payments-invoices.webp', width: 1600, height: 1121, alt: 'The Invoices tab: a list of drops with status, note and amount, and the selected one in detail.', caption: 'Every invoice, its address and its progress from created to seen to confirmed.' },
-    { src: '/shots/payments-paid-phone.webp', width: 520, height: 733, alt: 'A paid invoice on a phone.', caption: 'Paid. The page moves on its own; no refresh, no account.' },
+// What every part shares, said under the hero.
+export const principles: { title: string; body: string }[] = [
+  { title: 'Home only dials out', body: 'Nothing at home listens: no port to scan and no IP to attack. Tor or a VPN hides even where it dials from.' },
+  { title: 'Encrypted over Nostr', body: 'Requests and replies are gift-wrapped ContextVM messages. Relays carry them and cannot read them.' },
+  { title: 'Public parts cannot spend', body: 'An account public key, an invoice-only credential, or no key at all. Taking one over moves nothing.' },
+  { title: 'Small, yours, open', body: 'One Rust binary each, on your own hardware. MIT licensed, no fees, no account.' },
+];
+
+// The hero's diagram: what runs at home and what is public, joined by Nostr.
+export const system = {
+  home: [
+    { label: 'Payments', href: '#tour', main: true },
+    { label: 'Lightning address', href: '/lud16-lnaddr/' },
+    { label: 'Sweeper', href: '/wallet/' },
   ],
+  public: [
+    { label: 'Relays', href: '/relay/', main: true },
+    { label: 'Address gateway', href: '/lud16-lnaddr/' },
+    { label: 'Checkout page', href: '/docs/integrate.html' },
+  ],
+  caption: 'Home only dials out. Public parts cannot spend.',
 };
 
 // What installing needs, said once on the landing page and in the docs.

@@ -620,13 +620,6 @@ p {
   font-size: 0.94rem;
 }
 
-.gallery {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr) minmax(0, 0.55fr);
-  gap: 1.25rem;
-  align-items: start;
-}
-
 .story__head {
   padding: 5rem 0 0;
 }
@@ -637,30 +630,6 @@ p {
 
 .tools {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-}
-
-.tools__card img,
-.tools__term {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1600 / 938;
-  object-fit: cover;
-  object-position: top left;
-  border: 1.5px solid var(--line);
-  border-radius: 4px;
-  margin: 0 0 1.1rem;
-}
-
-.tools__term {
-  margin-top: 0;
-  padding: 1rem;
-  background: var(--surface);
-  font: 400 0.68rem/1.7 var(--mono);
-  color: var(--fg);
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow: hidden;
 }
 
 .install {
@@ -708,15 +677,6 @@ p {
     padding-top: 2.25rem;
   }
 
-  .gallery {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
-  }
-
-  .gallery .shot:nth-child(2) {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
   .install {
     padding: 1.5rem;
   }
@@ -726,4 +686,212 @@ p {
 .band__lede + .fine,
 h2 + .fine {
   margin: -0.75rem 0 1.5rem;
+}
+
+/* ---- The home page: hero diagram, shared rules, parts, source ---- */
+
+.home-hero {
+  padding-top: 4.5rem;
+  padding-bottom: 3rem;
+}
+
+.home-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 0.98;
+  margin-bottom: 1.4rem;
+}
+
+.home-hero .motto-sub {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--fg) 82%, var(--bg));
+  max-width: 30rem;
+  margin-bottom: 1.5rem;
+}
+
+.system {
+  margin: 0;
+}
+
+.system__map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
+  align-items: end;
+}
+
+.system__side ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.system__zone {
+  font: 500 0.68rem/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.85rem;
+}
+
+.system__node {
+  display: block;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  font: 700 1rem/1.2 var(--display);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.system__node:hover {
+  border-color: var(--accent);
+}
+
+.system__node--main,
+.system__node--big {
+  padding: 1.15rem 1rem;
+  font-size: 1.3rem;
+}
+
+.system__node--main {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+
+/* Dashed = in transit (brand): the encrypted Nostr messages between the two sides. */
+.system__wires {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-self: stretch;
+  padding: 2.2rem 0.35rem 0;
+}
+
+.system__wires span {
+  border-top: 2px dashed var(--accent);
+  opacity: 0.75;
+}
+
+.system figcaption {
+  margin-top: 1.1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.system figcaption a {
+  color: var(--accent);
+}
+
+.band--flush {
+  padding-top: 0;
+}
+
+.rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  border: 1.5px solid var(--line);
+  border-radius: 4px;
+}
+
+.rules li {
+  padding: 1.3rem 1.4rem;
+  border-right: 1.5px solid var(--line);
+  margin-right: -1.5px;
+}
+
+.rules__n {
+  display: block;
+  font: 500 0.66rem/1 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.7rem;
+}
+
+.rules__title {
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+
+.rules p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.tools__card--main {
+  border-color: var(--accent);
+}
+
+.tools__stamp {
+  align-self: flex-start;
+  font: 500 0.62rem/1 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.45rem;
+  border-radius: 2px;
+  background: var(--tag);
+  color: var(--tag-ink);
+  margin-bottom: 1rem;
+}
+
+.tools__repo {
+  margin-top: auto;
+  padding-top: 1rem;
+  font: 500 0.72rem/1.3 var(--mono);
+  color: var(--accent);
+}
+
+#parts .tools {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.repos {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.5px 1.5px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.repos li {
+  padding: 1.1rem 1.25rem;
+  border: 1.5px solid var(--line);
+  margin: 0 -1.5px -1.5px 0;
+}
+
+.repos a {
+  font: 500 0.88rem/1.3 var(--mono);
+  color: var(--accent);
+}
+
+.repos p {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 52rem) {
+  .home-hero {
+    padding-top: 2.25rem;
+  }
+  .system__map {
+    grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr);
+  }
+  .system__node--main,
+  .system__node--big {
+    font-size: 1.1rem;
+  }
+  .rules li {
+    border-right: 0;
+    border-bottom: 1.5px solid var(--line);
+    margin: 0 0 -1.5px;
+  }
 }
