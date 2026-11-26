@@ -29,7 +29,7 @@ export const repoUrl = (name: string) => `${GITHUB}/${name}`;
 export const products: Product[] = [
   {
     id: 'payments',
-    label: 'Payments',
+    label: 'On-chain payments',
     name: 'deadhop',
     page: '/',
     href: at('/'),

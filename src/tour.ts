@@ -38,7 +38,7 @@ export interface App {
 export const tour: App[] = [
   {
     id: 'payments',
-    label: 'Payments',
+    label: 'On-chain payments',
     docs: '/docs/',
     views: [
       {

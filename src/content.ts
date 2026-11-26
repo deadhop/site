@@ -107,7 +107,7 @@ export const principles: { title: string; body: string }[] = [
 // The hero's diagram: what runs at home and what is public, joined by Nostr.
 export const system = {
   home: [
-    { label: 'Payments', href: '#tour', main: true },
+    { label: 'On-chain payments', href: '#tour', main: true },
     { label: 'Lightning address', href: '/lud16-lnaddr/' },
     { label: 'Sweeper', href: '/wallet/' },
   ],
