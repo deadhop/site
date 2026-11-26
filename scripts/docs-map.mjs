@@ -64,6 +64,7 @@ export const PRODUCTS = [
       ['api', 'reference', 'Tools API'],
       ['roadmap', 'reference', 'Roadmap'],
       ['agents', 'reference', 'Markdown and llms.txt'],
+      ['skills', 'reference', 'Agent skills'],
     ],
   },
   {

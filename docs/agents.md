@@ -22,3 +22,6 @@ Each HTML page links its Markdown version with
 
 To use deadhop itself from an agent, see the [Tools API](./api.md): it is an MCP server, so
 an agent with a ContextVM transport can call its tools directly.
+
+To teach a coding agent a deadhop job (adding payments to an app, deploying, sweeping,
+running a relay), install the [agent skills](./skills.md).

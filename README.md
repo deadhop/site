@@ -111,6 +111,22 @@ On bunny, `deadhop.run` is a Bunny DNS zone whose apex is a pull-zone record for
 a Let's Encrypt certificate and forced HTTPS. An edge rule serves `*.md` as
 `text/markdown; charset=utf-8`.
 
+## Agent skills
+
+This repository ships [agent skills](https://deadhop.run/docs/skills.html) for Claude Code,
+Codex, Cursor and other agents that read `SKILL.md`:
+
+```sh
+npx skills add deadhop/site
+```
+
+| Skill | Use it to |
+| --- | --- |
+| `deadhop-site-docs` | write or change a deadhop.run docs page: pick its kind, add it to the docs map, and pass `just check` |
+
+Install one with `--skill <name>`. Every deadhop skill is listed on
+[Agent skills](https://deadhop.run/docs/skills.html).
+
 ## Contributing
 
 Pull requests are welcome; `check.yml` builds and checks every one. Keep to the page's kind: a
