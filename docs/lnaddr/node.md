@@ -1,6 +1,6 @@
 ---
 title: Node configuration
-description: Configure lnaddr-node with built-in values, a TOML file, environment variables, or remote settings from an admin key (addresses, limits, relays and proxies), and lock any source.
+description: Configure lnaddr-node with built-in values, a TOML file, environment variables or settings from an admin key (addresses, limits, relays, proxies), and lock any source.
 ---
 
 # Node configuration
