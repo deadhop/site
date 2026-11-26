@@ -25,11 +25,11 @@ Set up [Hide the service](./hide.md) before step 4: relays see the address from 
 - **Sparrow Wallet** on your computer, to see the money arrive.
 - Another wallet with a little bitcoin, to pay with.
 
-## 1. Get the source
+## 1. Get the compose file
 
 ```sh
-git clone https://github.com/sandwichfarm/deadhop
-cd deadhop
+git clone https://github.com/deadhop/stack
+cd stack
 ```
 
 ## 2. Find your Electrum server
