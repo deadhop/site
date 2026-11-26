@@ -23,7 +23,7 @@ export const PRODUCTS = [
   {
     id: 'payments',
     name: 'deadhop',
-    label: 'Payments',
+    label: 'On-chain payments',
     tagline: 'On-chain bitcoin invoices from your own node, with no open port.',
     page: '/',
     dir: '',
