@@ -9,16 +9,16 @@ You need a Lightning node (LND, Core Lightning, phoenixd or LNbits), a public ho
 
 ## 1. Build the two images
 
-There are no published images yet. From a checkout of the repository:
+There are no published images yet. From a checkout of [deadhop/lnaddr](https://github.com/deadhop/lnaddr):
 
 ```sh
-git clone https://github.com/sandwichfarm/deadhop
-cd deadhop
-docker build -f lnaddr/Dockerfile --target node    -t deadhop-lnaddr-node .
-docker build -f lnaddr/Dockerfile --target gateway -t deadhop-lnaddr-gateway .
+git clone https://github.com/deadhop/lnaddr
+cd lnaddr
+docker build --target node    -t deadhop-lnaddr-node .
+docker build --target gateway -t deadhop-lnaddr-gateway .
 ```
 
-Or build the binaries with Rust 1.88 or newer: `cd lnaddr && cargo build --release`.
+Or build the binaries with Rust 1.88 or newer: `cargo build --release` in that checkout.
 
 ## 2. Make both keys
 

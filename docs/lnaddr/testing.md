@@ -5,10 +5,10 @@ description: How deadhop lnaddr is tested. Whole-system tests over a real relay,
 
 # Testing
 
+In a checkout of [deadhop/lnaddr](https://github.com/deadhop/lnaddr) (its CI runs the same):
+
 ```sh
-cd lnaddr
-cargo fmt --check && cargo clippy --all-targets -- -D warnings
-cargo llvm-cov --all-targets --fail-under-lines 100 --fail-under-functions 100
+just check   # cargo fmt --check, clippy -D warnings, cargo llvm-cov at 100% lines and functions
 ```
 
 Coverage is enforced at 100% of lines and functions, including both binaries. The binaries are run as processes and stopped with SIGINT and SIGTERM.
@@ -23,7 +23,7 @@ Coverage is enforced at 100% of lines and functions, including both binaries. Th
 
 ## Against live relays
 
-The demo stage (`lnaddr/demo`) with the default relays `relay.contextvm.org` and `relay2.contextvm.org` gives a full flow in 170 to 280 ms per invoice (see [performance](./performance.md)).
+The demo stage (`demo/` in deadhop/lnaddr) with the default relays `relay.contextvm.org` and `relay2.contextvm.org` gives a full flow in 170 to 280 ms per invoice (see [performance](./performance.md)).
 
 ## Not covered
 

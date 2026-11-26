@@ -7,7 +7,7 @@ description: Benchmark results for deadhop relay, with round trips per second, l
 
 ## How it was measured
 
-`relay/bench` starts the relay and plays every part over real WebSockets:
+`bench/` in [deadhop/relay](https://github.com/deadhop/relay) starts the relay and plays every part over real WebSockets:
 
 - **the service:** one connection that authenticates as the whitelisted key, subscribes to its requests, and answers each one with a signed ContextVM reply, as deadhop does;
 - **clients:** each one on its own connection and its own address, sending requests at a fixed rate and waiting for the answers;
@@ -47,7 +47,7 @@ Do not run the floods on a desktop: they open thousands of sockets and can exhau
 ## Run it yourself
 
 ```sh
-just relay-bench          # about 4 minutes, in a 2-CPU, 1 GiB container; writes relay/bench/results/<date>/
+just bench                # in deadhop/relay: about 4 minutes, in a 2-CPU, 1 GiB container; writes bench/results/<date>/
 ```
 
-Or run one case: `relay/bench/target/release/deadhop-relay-bench <relay binary> <out.json> <clients> <rate/s> <secs> <attackers>`.
+Or run one case: `bench/target/release/deadhop-relay-bench <relay binary> <out.json> <clients> <rate/s> <secs> <attackers>`.

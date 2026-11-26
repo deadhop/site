@@ -8,7 +8,7 @@ description: How deadhop relay is tested, with 100 percent line and function cov
 ## Unit and socket tests
 
 ```sh
-just relay
+just check     # in a checkout of deadhop/relay; its CI runs the same
 ```
 
 This runs `cargo fmt --check` and `cargo clippy -D warnings`, then every test under `cargo llvm-cov` with **100% line and function coverage enforced**, then the release build.
@@ -35,11 +35,11 @@ The relay was checked against the real deadhop service and dashboard on the regt
 | Suite | Tests | Result |
 | --- | ---: | --- |
 | Dashboard end-to-end (`management`, `payment`, `browser` in real Chrome) | 11 | pass |
-| Components (`packages/e2e`: each framework's PayButton from click to paid, and the proof-of-work miners) | 6 | pass |
-| Client (`packages/client` checkout) | 4 | pass |
+| Components (deadhop/js `packages/e2e`: each framework's PayButton from click to paid, and the proof-of-work miners) | 6 | pass |
+| Client (deadhop/js `packages/client` checkout) | 4 | pass |
 
 Across those runs the relay refused nothing and dropped nothing. deadhop's relay health check passed against it, and both keys showed as authenticated on the operator page.
 
 ## Load
 
-See [Performance](./performance.md): `just relay-bench` (in a container, never on a desktop).
+See [Performance](./performance.md): `just bench` in deadhop/relay (in a container, never on a desktop).

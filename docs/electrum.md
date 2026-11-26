@@ -68,7 +68,7 @@ The service then warns on every start, and on the dashboard: *DEADHOP_ELECTRUM i
 
 The service refuses to start if the server is on another chain than `DEADHOP_NETWORK`, or if the certificate does not match the pin. Once it runs, the dashboard's Overview shows the chain's height under **Chain**, and when it was last polled.
 
-`just live-electrum` in a development checkout runs a read-only check against a server named in `.env.local` (`DEADHOP_TEST_ELECTRUM_HOST`, `DEADHOP_TEST_ELECTRUM_PORT`).
+`just live-electrum` in a checkout of [deadhop/server](https://github.com/deadhop/server) runs a read-only check against a server named in `.env.local` (`DEADHOP_TEST_ELECTRUM_HOST`, `DEADHOP_TEST_ELECTRUM_PORT`).
 
 ## Keep it private
 

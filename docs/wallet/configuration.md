@@ -48,6 +48,6 @@ The destination, mode, threshold and fee cap come from the environment only.
 ## Tests
 
 ```sh
-cd wallet && cargo test                                   # hermetic
-DEADHOP_WALLET_REGTEST=1 cargo test --test regtest        # needs `just up`: send, PayJoin, fallback, three-wallet CoinJoin
+cargo test                                                # in deadhop/wallet; hermetic
+DEADHOP_WALLET_REGTEST=1 cargo test --test regtest        # needs the regtest stack: send, PayJoin, fallback, three-wallet CoinJoin
 ```

@@ -36,8 +36,8 @@ Go through this before the first real payment. Each item links to the guide that
 
 ## Testing against a real Electrum server
 
-A read-only smoke test asks a server for its genesis hash and chain tip. Put the host in the
-gitignored `.env.local`:
+A read-only smoke test asks a server for its genesis hash and chain tip. In a checkout of
+[deadhop/server](https://github.com/deadhop/server), put the host in the gitignored `.env.local`:
 
 ```sh
 # .env.local:  DEADHOP_TEST_ELECTRUM_HOST=...   [DEADHOP_TEST_ELECTRUM_PORT=50001]
