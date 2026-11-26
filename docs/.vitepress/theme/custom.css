@@ -2,19 +2,19 @@
    night/depot dark, self-hosted Schibsted Grotesk, Geist and Martian Mono. */
 @font-face {
   font-family: 'Schibsted Grotesk';
-  src: url('../../../../brand/fonts/schibsted-grotesk.woff2') format('woff2');
+  src: url('../../../brand/fonts/schibsted-grotesk.woff2') format('woff2');
   font-weight: 400 900;
   font-display: swap;
 }
 @font-face {
   font-family: 'Geist';
-  src: url('../../../../brand/fonts/geist.woff2') format('woff2');
+  src: url('../../../brand/fonts/geist.woff2') format('woff2');
   font-weight: 400 700;
   font-display: swap;
 }
 @font-face {
   font-family: 'Martian Mono';
-  src: url('../../../../brand/fonts/martian-mono.woff2') format('woff2');
+  src: url('../../../brand/fonts/martian-mono.woff2') format('woff2');
   font-weight: 400 700;
   font-display: swap;
 }

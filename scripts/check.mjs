@@ -117,8 +117,8 @@ expect(/Security benefits<\/h2>/.test(landing), '/index.html', 'security benefit
 expect(/<meta http-equiv="Content-Security-Policy"/.test(landing), '/index.html', 'missing CSP');
 expect(!/<script(?![^>]*(src=|application\/ld\+json))[^>]*>/.test(landing), '/index.html', 'inline script would violate the CSP');
 
-// Brand files served from fixed paths are copies of brand/; they must not drift.
-const brand = resolve(root, '..', 'brand');
+// Brand files served from fixed paths are copies of brand/ (itself a copy of deadhop/brand); they must not drift.
+const brand = resolve(root, 'brand');
 for (const [served, source] of [
   ['favicon.svg', 'icons/favicon.svg'],
   ['og.png', 'og.png'],
@@ -189,9 +189,11 @@ for (const p of PAGES) {
   }
 }
 
-// Every setting the docs name exists in the source.
+// Every setting the docs name exists in the source. The sources are the other deadhop
+// repositories, checked out next to this one in the deadhop workspace; a lone clone of
+// this repository skips this check.
 const repo = resolve(root, '..');
-const sources = ['server/src', 'server/crates', 'server/tests', 'wallet/src', 'relay/src', 'lnaddr/src', 'dashboard/deploy', 'scripts', 'relay/deploy']
+const sources = ['server/src', 'server/crates', 'server/tests', 'wallet/src', 'wallet/tests', 'relay/src', 'lnaddr/src', 'js/dashboard/deploy', 'scripts', 'relay/deploy']
   .map((d) => join(repo, d))
   .filter(existsSync)
   .flatMap(walk)

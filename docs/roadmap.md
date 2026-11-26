@@ -8,7 +8,7 @@ description: What deadhop does not do yet, including driving the sweeper from th
 Not built yet:
 
 - **Driving the sweeper from the dashboard.** The sweeping wallet
-  ([`deadhop-wallet`](https://github.com/sandwichfarm/deadhop/tree/main/wallet)) is built. It
+  ([`deadhop-wallet`](https://github.com/deadhop/wallet)) is built. It
   makes a simple send, a PayJoin or a CoinJoin once the balance reaches a threshold, with its
   destination and limits set on the host. The sweep policy in the dashboard is still a separate,
   stored setting that the sweeper does not read.
