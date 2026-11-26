@@ -206,9 +206,10 @@ for (const f of sources.filter((f) => f.includes(`${'/'}relay${'/'}src${'/'}`)))
   for (const [, n] of text.matchAll(/"([A-Z][A-Z0-9_]+)"/g)) known.add(`DEADHOP_RELAY_${n}`);
   for (const [, n] of text.matchAll(/"\{\}_([A-Z0-9_]+)"/g)) for (const net of ['TOR', 'I2P', 'FIPS']) known.add(`DEADHOP_RELAY_${net}_${n}`);
 }
+if (!sources.length) console.log('settings check skipped: the other deadhop repositories are not next to this one');
 // Names the docs ask the reader to define in their own code.
 known.add('DEADHOP_BACKEND_NSEC');
-if (known.size) {
+if (sources.length) {
   for (const f of docFiles) {
     const text = readFileSync(join(docsRoot, `${f}.md`), 'utf8');
     for (const v of new Set(text.match(/\b(?:DEADHOP|LNADDR)_[A-Z0-9_]*[A-Z0-9]\b/g) ?? [])) {
