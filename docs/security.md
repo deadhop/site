@@ -316,7 +316,7 @@ kept). Copy them off the host yourself.
 - Dashboard runtime dependencies: `npm audit --omit=dev` reports **0** vulnerabilities.
 - Dashboard development tooling: 8 "high" entries, all one advisory (a regular-expression
   denial of service in `picomatch`, a glob matcher inside the build and test tools). It
-  runs only at build time on patterns in this repository and is not part of the shipped
+  runs only at build time on patterns in its own repository and is not part of the shipped
   bundle. The offered "fix" is a major-version downgrade of the toolchain and was not
   applied.
 - Rust (`cargo audit`, 229 crates in the release build):

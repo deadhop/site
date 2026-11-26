@@ -47,8 +47,8 @@ Each one does one job, built the same way.
 
 | Part | Technology | Role |
 | --- | --- | --- |
-| Service (`server/`) | Rust, one binary (about 8 MB), SQLite | Issues invoices, polls the chain, answers requests |
-| Dashboard (`dashboard/`) | Svelte 5 static page | Checkout for customers, overview for operators |
+| Service ([deadhop/server](https://github.com/deadhop/server)) | Rust, one binary (about 8 MB), SQLite | Issues invoices, polls the chain, answers requests |
+| Dashboard ([deadhop/js](https://github.com/deadhop/js) `dashboard/`) | Svelte 5 static page | Checkout for customers, overview for operators |
 | Chain backend | Fulcrum or electrs | Reports transactions for each invoice address |
 | Transport | Any Nostr relays | Carry encrypted requests and responses |
 

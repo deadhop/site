@@ -37,4 +37,4 @@ Every signature covers every output (`ALL|ANYONECANPAY`): whatever set of inputs
 
 ## Not run yet
 
-CoinJoin rounds run in the repository's regtest tests between three deadhop wallets. This Compose setup has not been run end to end, and no round has been run with other joinstr clients.
+CoinJoin rounds run in [deadhop/wallet](https://github.com/deadhop/wallet)'s regtest tests between three deadhop wallets. This Compose setup has not been run end to end, and no round has been run with other joinstr clients.
