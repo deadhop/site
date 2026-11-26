@@ -6,7 +6,7 @@ description: Security analysis of deadhop. Benefits of the design, threat model,
 # Security
 
 Analysis dated 2026-11-18, covering the service and dashboard at version 0.1.0. The same
-document is `SECURITY.md` in the repository.
+document is [`SECURITY.md` in deadhop/server](https://github.com/deadhop/server/blob/main/SECURITY.md).
 
 ## Security benefits
 
@@ -149,7 +149,7 @@ Severity is the reviewer's. "Fixed" means changed in code and covered by a test.
 | 10c | In-browser mining had no upper bound. | **Fixed.** Refuses above 28 bits and stops after 25 seconds. |
 | 10d | Responses were not bound to requests. | **Fixed.** Amount and id are compared with what was asked. |
 | 10e | `config.json` is a single point of trust. | **Accepted, documented.** The page now shows the service key so it can be compared. See "Open risks". |
-| 11 | The development stack is unsafe if copied to production. | **Documented** in `deploy/docker-compose.yml`; dev scripts now use a private umask and validate their arguments. |
+| 11 | The development stack is unsafe if copied to production. | **Documented** in the development stack's compose file; dev scripts now use a private umask and validate their arguments. |
 
 ### Red-team review (GitHub issues)
 
@@ -316,7 +316,7 @@ kept). Copy them off the host yourself.
 - Dashboard runtime dependencies: `npm audit --omit=dev` reports **0** vulnerabilities.
 - Dashboard development tooling: 8 "high" entries, all one advisory (a regular-expression
   denial of service in `picomatch`, a glob matcher inside the build and test tools). It
-  runs only at build time on patterns in this repository and is not part of the shipped
+  runs only at build time on patterns in its own repository and is not part of the shipped
   bundle. The offered "fix" is a major-version downgrade of the toolchain and was not
   applied.
 - Rust (`cargo audit`, 229 crates in the release build):

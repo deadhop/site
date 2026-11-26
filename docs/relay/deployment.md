@@ -5,7 +5,7 @@ description: Run deadhop relay on a tiny VPS with systemd or Docker, behind Cadd
 
 # Deployment
 
-The relay is one static binary. It needs no disk, and no database or runtime. Everything below is in `relay/deploy/` in the repository.
+The relay is one static binary. It needs no disk, and no database or runtime. Everything below is in `deploy/` in [deadhop/relay](https://github.com/deadhop/relay).
 
 ## On a small VPS with systemd
 
@@ -27,8 +27,8 @@ Run your Tor daemon, I2P router or FIPS node as usual, and point an onion servic
 ## With Docker
 
 ```sh
-docker build -f relay/Dockerfile -t deadhop-relay .           # from the repository root; about 2 MB
-DEADHOP_RELAY_WHITELIST="invoices=npub1…" docker compose -f relay/deploy/compose.yaml up -d
+docker build -t deadhop-relay .                               # in the deadhop/relay checkout; about 2 MB
+DEADHOP_RELAY_WHITELIST="invoices=npub1…" docker compose -f deploy/compose.yaml up -d
 ```
 
 The image is the binary on an empty base, running as an unprivileged user. Inside a container the operator page listens on `0.0.0.0:7448`, so publish it to the host's loopback only (`127.0.0.1:7448:7448`, as the compose file does).

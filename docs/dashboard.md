@@ -24,10 +24,11 @@ pay.example.com {
 
 ## Anywhere else
 
-1. Build it (Node 22 or newer):
+1. Build it from [deadhop/js](https://github.com/deadhop/js) (Node 22 or newer):
 
    ```sh
-   cd dashboard && npm ci && npm run build      # → dashboard/dist/
+   git clone https://github.com/deadhop/js && cd js
+   npm ci && npm run build --workspace dashboard      # → dashboard/dist/
    ```
 
 2. Put a `config.json` next to `index.html`, from `dashboard/public/config.example.json`:

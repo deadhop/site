@@ -62,8 +62,8 @@ If the receiver is unreachable, answers with an error, or proposes a transaction
 
 ## Limits
 
-BIP-78 (v1) only: no BIP-77 directory, no OHTTP. Tested in the repository's regtest suite against a receiver built on the `payjoin` crate, including the fallback.
+BIP-78 (v1) only: no BIP-77 directory, no OHTTP. Tested in [deadhop/wallet](https://github.com/deadhop/wallet)'s regtest suite against a receiver built on the `payjoin` crate, including the fallback.
 
 ## Not run yet
 
-PayJoin sweeps run in the repository's regtest tests, but this Compose setup (the override and the URI file) has not been run end to end.
+PayJoin sweeps run in deadhop/wallet's regtest tests, but this Compose setup (the override and the URI file) has not been run end to end.

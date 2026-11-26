@@ -128,7 +128,7 @@ Relay results (each health check and each reply sent) are kept in memory only, t
 
 ## The network console
 
-The standalone network console (`console/` in the repository) manages these settings from a browser: it signs in with an admin key over ContextVM and reads `get_info`, `get_network`, `get_health`, `get_relay_history`, `check_relays`, `check_proxy`, `resolve_i2p_name` and `get_privacy_audit`, and saves with `update_network`. Only admins are answered; a gateway never sees these tools. The node's `get_info` answers in the shape the console expects (the payment fields are fixed: no public invoicing, no proof of work). The node accepts only ephemeral gift wraps (kind 21059), so the console's client must send those.
+The standalone network console (`console/` in [deadhop/js](https://github.com/deadhop/js)) manages these settings from a browser: it signs in with an admin key over ContextVM and reads `get_info`, `get_network`, `get_health`, `get_relay_history`, `check_relays`, `check_proxy`, `resolve_i2p_name` and `get_privacy_audit`, and saves with `update_network`. Only admins are answered; a gateway never sees these tools. The node's `get_info` answers in the shape the console expects (the payment fields are fixed: no public invoicing, no proof of work). The node accepts only ephemeral gift wraps (kind 21059), so the console's client must send those.
 
 The privacy audit on the node has no Electrum checks (it has no chain backend), never announces itself, and names `LNADDR_NODE_PROXY_LOCKED` for the proxy lock (or, with remote settings off, `LNADDR_NODE_REMOTE`).
 

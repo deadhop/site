@@ -5,23 +5,23 @@ description: How deadhop is tested. Unit and integration tests at enforced 100% 
 
 # Testing
 
-```sh
-just test      # unit + integration tests, fails below 100% coverage
-just e2e      # real payments on regtest: dashboard, built client, every framework's components in Chrome
-just check    # rustfmt, clippy (warnings are errors), tsc, svelte-check
-just packages # pack, install into fresh React/Solid/Svelte 5/Svelte 4 apps, build, publint, attw, JSR dry run
-```
+Each repository runs its own gate, and its CI runs the same on every pull request:
 
-| Suite | Tests | Coverage (enforced) |
+| Repository | Gate | Coverage (enforced) |
 | --- | --- | --- |
-| Rust service (`cargo llvm-cov`) | 143 | 100% lines, 100% functions |
-| `@deadhop/client` (`vitest`, v8) | 72 | 100% statements, branches, functions, lines |
-| `@deadhop/react` (`vitest`, v8) | 12, plus 1 server-rendering | 100% statements, branches, functions, lines |
-| `@deadhop/solid` (`vitest`, v8) | 13, plus 1 server-rendering | 100% statements, branches, functions, lines |
-| `@deadhop/svelte`: Svelte 5 and Svelte 4 syntax (`vitest`, v8) | 27, plus 2 server-rendering | 100% statements, branches, functions, lines |
-| `@deadhop/svelte/svelte4` on the real Svelte 4 runtime | 15 | n/a |
-| Dashboard (`vitest`, v8) | 98 | 100% statements, branches, functions, lines |
-| End to end (regtest) | 21 | n/a |
+| [deadhop/server](https://github.com/deadhop/server): the service and its crates | `just check`: rustfmt, clippy (warnings are errors), `cargo llvm-cov` for the service and each crate | 100% lines, 100% functions |
+| [deadhop/js](https://github.com/deadhop/js): `@deadhop/client`, `react`, `solid`, `svelte`, `network-ui`, the dashboard and console | `just test` (`vitest`, v8), `just check` (tsc, svelte-check), `just packages` | 100% statements, branches, functions, lines |
+| [deadhop/lnaddr](https://github.com/deadhop/lnaddr), [deadhop/relay](https://github.com/deadhop/relay) | `just check` | 100% lines, 100% functions |
+| [deadhop/wallet](https://github.com/deadhop/wallet) | `just check` (hermetic); `just regtest` on the regtest stack | 100% functions on regtest |
+| [deadhop/site](https://github.com/deadhop/site) | `just check`: build, links, metadata, `llms.txt`, sitemap, brand copies | n/a |
+
+`just packages` packs the npm packages, installs them into fresh React, Solid, Svelte 5 and
+Svelte 4 apps, builds them, and runs publint, Are the Types Wrong and a JSR dry run.
+`@deadhop/svelte/svelte4` is also tested on the real Svelte 4 runtime.
+
+End to end, on a regtest chain (bitcoind, Fulcrum, a real relay and the service), the
+dashboard, the console, the built client and every framework's components pay real
+invoices in Chrome.
 
 ## What the numbers mean
 

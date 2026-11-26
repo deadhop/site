@@ -237,7 +237,7 @@ package re-exports `createDeadhop`, so the client needs no separate import.
   headless Chrome, under a strict CSP) pay real invoices through a real relay and service.
   So does a page using notemine, once with a policy that allows it and once with the
   strict policy, where the built-in miner takes over.
-- **Packaging:** `just packages` packs all four packages, installs them into fresh React,
+- **Packaging:** `just packages` in [deadhop/js](https://github.com/deadhop/js) packs all four packages, installs them into fresh React,
   Solid, Svelte 5 and Svelte 4 projects, and builds and type-checks each one. It also
   checks tree shaking (notemine stays out of apps that don't use it, and loads lazily in
   apps that do), then runs publint, Are the Types Wrong and a JSR dry run.

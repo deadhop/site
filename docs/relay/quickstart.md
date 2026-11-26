@@ -13,10 +13,11 @@ Whitelist the keys you want this relay to carry. For an admin-only relay on your
 
 ## 2. Run the relay
 
-With Docker, from the repository root:
+With Docker, from a checkout of [deadhop/relay](https://github.com/deadhop/relay):
 
 ```sh
-docker build -f relay/Dockerfile -t deadhop-relay .
+git clone https://github.com/deadhop/relay && cd relay
+docker build -t deadhop-relay .
 docker run -d --name deadhop-relay --restart unless-stopped \
   -p 7447:7447 -p 127.0.0.1:7448:7448 \
   -e DEADHOP_RELAY_WHITELIST="invoices=npub1…,admin=npub1…" \
@@ -26,7 +27,7 @@ docker run -d --name deadhop-relay --restart unless-stopped \
 Or build the binary (Rust 1.88 or later):
 
 ```sh
-cd relay && cargo build --release
+cargo build --release          # in the deadhop/relay checkout
 DEADHOP_RELAY_WHITELIST="invoices=npub1…,admin=npub1…" ./target/release/deadhop-relay
 ```
 
