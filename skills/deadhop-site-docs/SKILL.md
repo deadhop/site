@@ -111,7 +111,8 @@ npm run docs:dev   # live reload for the docs (npm run dev for the Astro pages)
 - a docs page without its kind badge, or (other than the product's install page) without a
   working next step;
 - a product page without a screenshot from `/shots/` or a real terminal shot, without a link to
-  its install page, or without the shared header;
+  its install page, or without the shared header (on a tool page, with its parts bar; on the
+  home page, with a link to every tool page);
 - an inline script or missing Content-Security-Policy on the landing page;
 - an `llms.txt` or sitemap entry that does not resolve, or a Markdown twin that does not start
   with a single `# ` heading;

@@ -1,0 +1,101 @@
+---
+// The tour: a tab per part, a strip of its screens, and numbered points of
+// interest on each. Without JavaScript every screen and every note is shown,
+// one after another; scripts/tour.ts turns it into the browser.
+import '../styles/tour.css';
+import { at } from '../paths';
+import { tour } from '../tour';
+---
+
+<div class="tour" data-tour>
+  <div class="tour__apps" role="tablist" aria-label="Parts" hidden>
+    {
+      tour.map((a, i) => (
+        <button type="button" role="tab" id={`tour-tab-${a.id}`} aria-controls={`tour-${a.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+          <span class="tour__app-name">{a.label}</span>
+          <span class="tour__app-count">{a.views.length} {a.views.length === 1 ? 'screen' : 'screens'}</span>
+        </button>
+      ))
+    }
+  </div>
+  {
+    tour.map((a) => (
+      <section class="tour__app" id={`tour-${a.id}`} role="tabpanel" aria-labelledby={`tour-tab-${a.id}`} data-app={a.id}>
+        <h3 class="tour__app-title">{a.label}</h3>
+        {a.views.map((v, vi) => (
+          <figure class="tour__view" id={`tour-${a.id}-${v.id}`} data-view={v.id}>
+            <div class="tour__stage">
+              <div class="tour__bar">
+                <span class="tour__where">{v.where}</span>
+                <span class="tour__pos">
+                  {vi + 1} / {a.views.length}
+                </span>
+              </div>
+              <div class="tour__shot">
+                <picture>
+                  {v.light && <source srcset={at(v.light)} media="(prefers-color-scheme: light)" />}
+                  <img src={at(v.src)} alt={v.alt} width={v.width} height={v.height} loading="lazy" decoding="async" />
+                </picture>
+                {v.points.map((p, pi) => (
+                  <button type="button" class="tour__pin" data-x={p.x} data-y={p.y} data-i={pi} aria-label={`${pi + 1}: ${p.title}`} hidden>
+                    {pi + 1}
+                  </button>
+                ))}
+                <div class="tour__callout" role="status" hidden>
+                  <p class="tour__callout-title"></p>
+                  <p class="tour__callout-body"></p>
+                </div>
+              </div>
+            </div>
+            <figcaption class="tour__notes">
+              <p class="tour__crumb">
+                {a.label} · {v.group}
+              </p>
+              <h4 class="tour__title">{v.title}</h4>
+              <p class="tour__body">{v.body}</p>
+              <ol class="tour__points">
+                {v.points.map((p, pi) => (
+                  <li data-i={pi}>
+                    <button type="button" class="tour__point" data-i={pi}>
+                      <span class="tour__n" aria-hidden="true">
+                        {pi + 1}
+                      </span>
+                      <span class="tour__point-text">
+                        <b>{p.title}</b>
+                        <span>{p.body}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <p class="tour__nav" hidden>
+                <button type="button" class="tour__step" data-step="-1" aria-label="Previous screen">
+                  ← Previous
+                </button>
+                <button type="button" class="tour__step" data-step="1" aria-label="Next screen">
+                  Next →
+                </button>
+                <a class="tour__docs" href={at(a.docs)}>
+                  {a.label} docs
+                </a>
+              </p>
+            </figcaption>
+          </figure>
+        ))}
+        <div class="tour__strip" role="group" aria-label={`${a.label} screens`} hidden>
+          {a.views.map((v, vi) => (
+            <button type="button" class="tour__thumb" data-view={v.id} aria-current={vi === 0 ? 'true' : undefined}>
+              <img src={at(v.src)} alt="" width={v.width} height={v.height} loading="lazy" decoding="async" />
+              <span class="tour__thumb-group">{v.group}</span>
+              <span class="tour__thumb-title">{v.title}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<script>
+  import '../scripts/tour';
+</script>

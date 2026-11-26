@@ -17,7 +17,14 @@ export interface Product {
   repo: string;
   docs: string;
   blurb: string;
+  /** The label stamped on its card, like the stamp on its own page. */
+  stamp: string;
+  /** Where its source lives (github.com/deadhop/<name>). */
+  source: string[];
 }
+
+export const GITHUB = 'https://github.com/deadhop';
+export const repoUrl = (name: string) => `${GITHUB}/${name}`;
 
 export const products: Product[] = [
   {
@@ -30,7 +37,9 @@ export const products: Product[] = [
     installLabel: 'Choose a setup',
     repo: 'stack',
     docs: at('/docs/'),
-    blurb: 'On-chain bitcoin invoices from your own node, with no open port and no spending key.',
+    blurb: 'On-chain bitcoin invoices from your own node, a checkout for customers and a dashboard for you, with no open port and no spending key.',
+    stamp: 'payments · ports open: 0',
+    source: ['server', 'js'],
   },
   {
     id: 'lnaddr',
@@ -43,6 +52,8 @@ export const products: Product[] = [
     repo: 'lnaddr',
     docs: at('/docs/lnaddr/'),
     blurb: 'you@yourdomain for a Lightning node at home, with no port open at home.',
+    stamp: 'LUD-16 · home node',
+    source: ['lnaddr'],
   },
   {
     id: 'relay',
@@ -55,6 +66,8 @@ export const products: Product[] = [
     repo: 'relay',
     docs: at('/docs/relay/'),
     blurb: 'A Nostr relay that carries your service and nothing else, on clearnet, Tor, I2P or FIPS.',
+    stamp: 'nostr relay · dropped: 0',
+    source: ['relay'],
   },
   {
     id: 'wallet',
@@ -67,7 +80,21 @@ export const products: Product[] = [
     repo: 'stack',
     docs: at('/docs/wallet/'),
     blurb: 'Moves what you received to your cold wallet once it is worth moving, by a send, a PayJoin or a CoinJoin.',
+    stamp: 'send · PayJoin · CoinJoin',
+    source: ['wallet'],
   },
 ];
 
 export const product = (id: ProductId) => products.find((p) => p.id === id)!;
+
+// Every public repository, for the Source section and the footer.
+export const repos: { name: string; body: string }[] = [
+  { name: 'server', body: 'The payment service and the crates the other parts share. Rust.' },
+  { name: 'js', body: 'The dashboard, the network console and the @deadhop packages.' },
+  { name: 'lnaddr', body: 'The Lightning address node and gateway.' },
+  { name: 'relay', body: 'The whitelist-only Nostr relay.' },
+  { name: 'wallet', body: 'The sweeper.' },
+  { name: 'stack', body: 'The Compose file and the regtest stack to try it all.' },
+  { name: 'site', body: 'This website and every docs page.' },
+  { name: 'brand', body: 'The logo, icons and fonts.' },
+];

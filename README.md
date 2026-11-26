@@ -13,7 +13,7 @@ The website and the documentation for every deadhop component.
 [![License](https://img.shields.io/github/license/deadhop/site?style=for-the-badge)](LICENSE)
 [![Site](https://img.shields.io/badge/site-deadhop.run-e8c547?style=for-the-badge)](https://deadhop.run)
 
-<img alt="The deadhop.run landing page: Dials out. Never listens., what deadhop does, Install it, and a screenshot of the operator dashboard" src=".github/readme/landing.png" width="800">
+<img alt="The deadhop.run landing page: Accept bitcoin on your own node. Open no port., a diagram of the parts at home and in public, and the four rules every part shares" src=".github/readme/landing.png" width="800">
 
 </div>
 
@@ -93,11 +93,21 @@ include a path. Local builds fall back to the preview server.
 │   ├── check.mjs         the checks
 │   ├── docs-map.mjs      every docs page, its product and kind
 │   └── site-url.mjs      SITE_URL handling
-├── src/                  the Astro landing page and tool pages
+├── src/                  the Astro landing page and tool pages; tour.ts is the home page's tour
 ├── astro.config.mjs
 ├── justfile
 └── package.json
 ```
+
+### The tour
+
+The home page's tour shows every screen of every part, with numbered points of interest. Its
+screens and notes live in `src/tour.ts`. The page and its Markdown twin both render from that
+file. The screenshots are in `public/shots/tour/`, as `<name>.webp` (dark) and
+`<name>-light.webp`, 1600 px wide, taken on a regtest chain. Each point is the centre of what it
+explains, as a percentage of the image. To add a screen, add both images and an entry in
+`tour.ts`, then check where its dots land with `just preview`. Without JavaScript, the tour shows
+every screen and every note, one after another.
 
 ## Deploy
 

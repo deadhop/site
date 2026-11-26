@@ -175,7 +175,10 @@ for (const prod of PRODUCTS) {
   const install = `${BASE}docs/${htmlOf(prod.install)}`;
   expect(/<img [^>]*src="[^"]*\/shots\/[^"]+"/.test(html) || /class="shot t-termshot"/.test(html), where, 'no screenshot of the product');
   expect(html.includes(`href="${install}"`) && exists(install), where, `no working link to its install page ${install}`);
-  expect(/<header[\s>]/.test(html) && /aria-label="Products"/.test(html), where, 'missing the shared header');
+  expect(/<header[\s>]/.test(html) && /aria-label="Site"/.test(html), where, 'missing the shared header');
+  // The parts leave the header: the home page links each one, a part's page has the parts bar.
+  if (prod.page === '/') for (const other of PRODUCTS.filter((x) => x.page !== '/')) expect(html.includes(`href="${BASE}${other.page.replace(/^\//, '')}"`), where, `no link to ${other.page}`);
+  else expect(/aria-label="Products"/.test(html), where, 'missing the parts bar');
 }
 for (const p of PAGES) {
   const file = join(dist, 'docs', htmlOf(p.path) || 'index.html');
