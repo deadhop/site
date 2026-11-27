@@ -65,6 +65,7 @@ Operators, and the public when `public_invoicing` is on (with proof of work).
 | `amount_sat` | integer, required | Amount in satoshis, within the bounds above |
 | `memo` | string, optional | Note stored with the invoice, at most 200 characters, no control or invisible characters |
 | `expiry_secs` | integer, optional | Lifetime in seconds, from 60 up to `max_expiry_secs` |
+| `key` | string, optional | The invoice key to book it to. Left out, it is the key the request came in on. On an invoice key only that key may be named; operators on the administration key may name any invoice key in use (left out: the original one). See [Invoice keys](#invoice-keys). |
 
 Returns an **Invoice**:
 
@@ -95,9 +96,11 @@ Operators only. Newest first.
 | `status` | string, optional | Only invoices in this state |
 | `before` | integer, optional | Only derivation indices below this (pagination cursor) |
 | `limit` | integer, optional | Page size, 1 to 200, default 50 |
+| `key` | string, optional | Only invoices of this invoice key |
+| `with_key` | boolean, optional | Add `key` (the invoice key it came in on) to each entry |
 
 Returns `{ invoices, next_before }`. Each entry is an Invoice plus `index` (derivation index)
-and `creator` (hex key that created it). Pass `next_before` as `before` for the next page; it
+and `creator` (hex key that created it), and `key` when asked for. Pass `next_before` as `before` for the next page; it
 is absent on the last page.
 
 ### `get_stats`
@@ -124,10 +127,15 @@ recorded in the audit log.
 | --- | --- | --- |
 | `get_health` | none | `service` (version, start, uptime, online since, paused, restarts), `relays` (url, status, connected), `proxy` (the proxy in use now, password hidden), `proxy_check` (the last test of that proxy, or null), `proxy_pool` (the default route of the public invoices key: `default` (a destination), `state` (`transparent`, `direct`, `active`, `suspended`, `offline` or `blocked`), `active` (a proxy id), `reachable`; then `posture`; `offline`; `transparent`; `total`; `next_switch_at` (the soonest switch of any group a key uses); `proxies`, each `{ id, name, url, reachable, checked_at, status, reason }`; `lanes`, per key `{ key, default, state, active, reachable, next_switch_at, uses_default, groups }`, where `groups` lists each group the key may use as `{ group, state, active, reachable, next_switch_at }`; and `routes`, per key and relay `{ key, relay, rule, via, proxy, reason }`), `chain`, `database` (integrity, size, invoices, backups), `warnings` |
 | `get_metrics` | none | `addresses_created`, `invoices`, `payments`, `received_sat`, `windows` for `24h`, `7d`, `30d`, `365d` with `available` (false until the service has been online that long), `sweep` status |
-| `get_payment_series` | `range`: `day`, `week`, `month` or `year` | `points` of `{ start, count, sat }`: 24 hourly, 7 or 30 daily, or 52 weekly buckets, gap-filled |
+| `get_payment_series` | `range`: `day`, `week`, `month` or `year`; optional `key` (only that invoice key's payments) | `points` of `{ start, count, sat }`: 24 hourly, 7 or 30 daily, or 52 weekly buckets, gap-filled |
 | `get_settings` | none | `settings` (live), `defaults` (environment), `overridden` (names), `fixed` (host-only values), `operators`, `restart_pending`, `warnings` |
 | `update_settings` | `patch`: only the settings to change; `sweep` and `proxies` may be partial; `proxies.list` replaces the whole proxy list (entries `{ id?, name?, url, i2p? }`; a new entry may bring its own `id` (`[a-z0-9_-]`, at most 24) so that groups, rules and the default route in the same patch can name it, or have one made; a url shown with `***` keeps its saved password); `proxy: ""` (the old single-address form) still works | Same as `get_settings` |
 | `reset_settings` | none | Same as `get_settings` |
+| `list_invoice_keys` | optional `since` (unix seconds: count only invoices created since then) | `{ keys, max_keys, since }`; each key `{ id, label, description, color, name, public_invoicing, announce, created_at, created_by, archived_at, pubkey, original, relays, totals }`, where `totals` is `{ pending, detected, confirmed, expired, confirmed_sat, detected_sat, last_paid_at }`. The original key comes first, then the added ones, archived ones included |
+| `add_invoice_key` | `id` (2 to 24 of `a-z`, `0-9`, `-`, starting with a letter; permanent), `label`, optional `description`, `color` (0 to 7), `name` (the service name this key gives; empty: the service's), `public_invoicing` (default true), `announce` (default false), `copy_from` (the invoice key whose relays and routes it starts with, default `invoices`; `""`: none) | Same as `list_invoice_keys` |
+| `update_invoice_key` | `id`, then any of `label`, `description`, `color`, `name`, `public_invoicing`, `announce` (on `invoices` only the first three) | Same as `list_invoice_keys` |
+| `archive_invoice_key` | `id` of an added key | Same as `list_invoice_keys`. Refused while a relay or rule is set for that key alone |
+| `restore_invoice_key` | `id`, optional `copy_from` | Same as `list_invoice_keys` |
 | `add_operator` | `pubkey` (hex, `npub` or `nprofile`), optional `label` | Same as `get_settings` |
 | `remove_operator` | `pubkey` | Same as `get_settings`; environment keys are refused |
 | `control_service` | `action`: `stop` (refuse new invoices), `start`, `restart` (reconnect relays in-process) | `{ paused, restart_pending }` |
@@ -164,6 +172,18 @@ are refused) and
 
 A request sent while the service is reconnecting is not answered; clients should time
 out and retry.
+
+## Invoice keys
+
+One service can answer on several invoice keys, one per shop, site or app, so that each one's
+invoices are booked to it. The original key (`invoices`, what `deadhop pubkey` prints) never
+changes. Every added key has its own npub and serves the same three public tools; it starts
+with the relays and routes of another invoice key and can then be routed on its own, like any
+key, through `update_network`. All keys draw addresses from the one wallet, and share the
+service-wide limits. At most 7 invoice keys can be in use at once; an archived key stops
+serving, keeps its invoices (still watched for late payments) and can be restored with the same
+npub. `get_info` on an added key reports its own `name` and `public_invoicing` (off if either
+the key or the service has it off); the shape of every public answer is unchanged.
 
 ## Errors
 
