@@ -5,21 +5,40 @@ description: Configure lnaddr-gateway with a TOML file or environment variables,
 
 # Gateway configuration
 
-The gateway has the same first three layers as the node (built-in, file, environment). Its only remote settings are its relays and proxies, changed from the network console by the keys in `admins` (see [relays and proxies](#relays-and-proxies)). Two variables are enough to start:
+The gateway has the same first three layers as the node: built-in (`LNADDR_GATEWAY_BUILTIN` at build time), a TOML file (`lnaddr-gateway --config FILE` or `LNADDR_GATEWAY_CONFIG`; `--config` wins), then the `LNADDR_GATEWAY_*` environment variables, later ones winning. Its only remote settings are its relays and proxies, changed from the network console by the keys in `admins` (see [relays and proxies](#relays-and-proxies)). Two variables are enough to start:
 
 ```sh
 LNADDR_GATEWAY_DOMAIN=yourdomain.com
 LNADDR_GATEWAY_NODE=npub1node…
 ```
 
-## Example file
+## The TOML file
+
+### Layout
+
+The file has **top-level keys**, three tables (`[limits]`, `[admin]`, `[sources]`) and a list of nodes, one `[[nodes]]` block each.
+
+- **Top-level keys come first,** before the first `[table]` or `[[nodes]]` line. A key below a header belongs to it: `relays = […]` written under `[[nodes]]` sets that node's relays, not the gateway's, and `socks5` under `[limits]` is an error.
+- **`[[nodes]]` (double brackets) adds one node to the list** each time it appears; its keys follow it until the next header. Single brackets (`[nodes]`) are an error (`invalid type: map, expected a sequence`).
+- **Unknown keys are refused.** A misspelled or misplaced key stops the gateway at start with an error naming it (`unknown field …`).
+- **Values have TOML types:** text in double quotes, lists in brackets, numbers bare, switches `true` or `false` (not `"on"`).
+- **Tables can be inline:** `sources = { remote = true }` at the top level is the same as a `[sources]` table with `remote = true`. Nodes can be inline too: `nodes = [{ pubkey = "npub1…" }, { pubkey = "npub1…", names = ["shop"] }]`.
+
+### A complete file
+
+Every key is shown; only `domains` and one node's `pubkey` are required.
 
 ```toml
+# Top-level keys: before any [table] or [[nodes]].
 data_dir = "/var/lib/lnaddr-gateway"
 listen = "127.0.0.1:8080"              # or "unix:/run/lnaddr/gateway.sock"
 domains = ["yourdomain.com", "other.org"]
+# scheme = "http"                      # only for local testing
 trusted_proxies = ["127.0.0.1", "10.0.0.0/8"]
 relays = ["wss://relay.contextvm.org", "wss://relay2.contextvm.org"]
+socks5 = "127.0.0.1:9050"              # the one proxy for relay connections
+proxy_locked = true                    # proxies stay host-only, even for admins
+admins = ["npub1you…"]                 # may manage the relays and proxies from the network console
 
 [[nodes]]
 pubkey = "npub1node…"
@@ -42,11 +61,131 @@ max_connections = 1024
 listen = "127.0.0.1:8081"              # the web interface; off when unset
 # secure_cookie = true                 # default: on unless listening on loopback
 
-# The network console (optional): who may manage the gateway's relays and proxies.
-# admins = ["npub1you…"]
-# sources = { remote = true }          # let them change anything (off by default)
-# proxy_locked = true                  # proxies stay host-only even then
-# socks5 = "127.0.0.1:9050"            # the one proxy for relay connections
+[sources]
+remote = true                          # let admins change the relays and proxies (off by default)
+```
+
+## Every setting
+
+### Top level
+
+| TOML key | Environment variable | Value | Default |
+| --- | --- | --- | --- |
+| `data_dir` | `LNADDR_GATEWAY_DATA_DIR` | a directory path; holds the keys and the admin token | `~/.local/share/deadhop-lnaddr/gateway` (`/data` in the image) |
+| `listen` | `LNADDR_GATEWAY_LISTEN` | `IP:port`, or `unix:/path` for a Unix socket | `127.0.0.1:8080` (`0.0.0.0:8080` in the image) |
+| `domains` | `LNADDR_GATEWAY_DOMAIN` / `_DOMAINS` | lower-case domain names, each with an optional `:port` | required |
+| `scheme` | `LNADDR_GATEWAY_SCHEME` | `https`, or `http` to build http callback URLs for local testing | `https` (`http` for `.onion` domains) |
+| `trusted_proxies` | `LNADDR_GATEWAY_TRUSTED_PROXIES` | addresses or networks (`10.0.0.0/8`) whose `X-Forwarded-For` and `X-Forwarded-Host` are believed | none |
+| `relays` | `LNADDR_GATEWAY_RELAYS` | relay URLs: `wss://`, or `ws://` for loopback, `.onion` and `.i2p` only | `["wss://relay.contextvm.org", "wss://relay2.contextvm.org"]` |
+| `socks5` | `LNADDR_GATEWAY_SOCKS5` | proxy for relay connections: `host:port` (SOCKS5), or a `socks5://`, `http://` or `https://` URL | none: straight connections |
+| `proxy_locked` | `LNADDR_GATEWAY_PROXY_LOCKED` | keep the proxies host-only | `false` |
+| `admins` | `LNADDR_GATEWAY_ADMINS` | keys (npub or hex) that may sign in from the network console | none: no console server |
+
+`LNADDR_GATEWAY_DOMAIN` and `_DOMAINS` are the same setting; if both are set, `_DOMAINS` is used. The same holds for `LNADDR_GATEWAY_NODE` and `_NODES`.
+
+### `[[nodes]]`
+
+One block per node. The environment can only give keys: `LNADDR_GATEWAY_NODE` (or `_NODES`) is a comma-separated list of node keys, each with the defaults below. For names, relays or a payee per node, use the file.
+
+| TOML key | Value | Default |
+| --- | --- | --- |
+| `pubkey` | the node's key (npub or hex), from `lnaddr-node pubkey` | required |
+| `names` | the names this gateway asks this node for (`a-z 0-9 - _ .`); `["*"]` for whatever the node lists | `["*"]` |
+| `relays` | this node's relays, replacing the top-level `relays` for it | the top-level `relays` |
+| `payee` | the Lightning node key (66 hex characters) every invoice from this node must be signed by | none: not checked |
+
+### `[limits]`
+
+These variables have no `LIMITS_` in their names.
+
+| TOML key | Environment variable | Value | Default |
+| --- | --- | --- | --- |
+| `limits.per_ip_per_minute` | `LNADDR_GATEWAY_PER_IP_PER_MINUTE` | invoices per client per minute (lookups: 4×), at least 1 | `30` |
+| `limits.global_per_minute` | `LNADDR_GATEWAY_GLOBAL_PER_MINUTE` | invoices per minute for all clients, at least 1 | `600` |
+| `limits.timeout_secs` | `LNADDR_GATEWAY_TIMEOUT_SECS` | the deadline for answering a wallet, 2 to 60 | `15` |
+| `limits.cache_secs` | `LNADDR_GATEWAY_CACHE_SECS` | how often each node's address list is refreshed, 5 to 3600 | `60` |
+| `limits.max_connections` | `LNADDR_GATEWAY_MAX_CONNECTIONS` | open HTTP connections at once, 16 to 65536 | `1024` |
+
+Values outside these ranges are brought into them, without an error.
+
+### `[admin]`
+
+| TOML key | Environment variable | Value | Default |
+| --- | --- | --- | --- |
+| `admin.listen` | `LNADDR_GATEWAY_ADMIN_LISTEN` | where the [admin web interface](./admin.md) listens: `IP:port` or `unix:/path`; must differ from `listen` | none: the web interface is off |
+| `admin.secure_cookie` | `LNADDR_GATEWAY_ADMIN_SECURE_COOKIE` | mark the sign-in cookie HTTPS-only | `true`, or `false` when `admin.listen` is loopback or a Unix socket |
+
+### `[sources]`
+
+| TOML key | Environment variable | Value | Default |
+| --- | --- | --- | --- |
+| `sources.file` | none | read the file | `true` |
+| `sources.env` | none | read the `LNADDR_GATEWAY_*` variables | `true` |
+| `sources.remote` | `LNADDR_GATEWAY_REMOTE` | let `admins` change the relays and proxies | `false` |
+
+As on the node, a source switched off stays off.
+
+### Environment only
+
+| Variable | Meaning |
+| --- | --- |
+| `LNADDR_GATEWAY_CONFIG` | the TOML file to read (`--config` wins) |
+| `LNADDR_GATEWAY_LOG` | log filter, e.g. `debug` (default `warn,deadhop_lnaddr=info`) |
+| `LNADDR_GATEWAY_BUILTIN` | at **build** time: the TOML text compiled in as the built-in layer |
+
+## How the layers combine
+
+| Kind | Settings | A later layer… |
+| --- | --- | --- |
+| single values | `data_dir`, `listen`, `scheme`, `socks5`, `proxy_locked`, every `limits.*` and `admin.*` key | replaces that value; the other keys of the same table stay |
+| lists | `domains`, `trusted_proxies`, `relays`, `admins` | replaces the **whole list** |
+| nodes | `[[nodes]]` | replaces the **whole node list** |
+| sources | `sources.*` | can switch a source off for good, or switch on one nobody switched off |
+
+So `LNADDR_GATEWAY_NODE=npub1…` next to a file with `[[nodes]]` blocks replaces them all with that one node, serving every name it lists. Keep the nodes in one place. An empty variable counts as unset.
+
+## From environment variables to TOML
+
+Drop `LNADDR_GATEWAY_` and write the rest in lower case. The exceptions:
+
+| Environment variable | TOML |
+| --- | --- |
+| `LNADDR_GATEWAY_DOMAIN`, `_DOMAINS` | `domains = [ … ]` |
+| `LNADDR_GATEWAY_NODE`, `_NODES` | one `[[nodes]]` block per key, with `pubkey = "…"` |
+| `LNADDR_GATEWAY_PER_IP_PER_MINUTE`, `_GLOBAL_PER_MINUTE`, `_TIMEOUT_SECS`, `_CACHE_SECS`, `_MAX_CONNECTIONS` | `per_ip_per_minute` … `max_connections` in `[limits]` |
+| `LNADDR_GATEWAY_ADMIN_LISTEN`, `_ADMIN_SECURE_COOKIE` | `listen`, `secure_cookie` in `[admin]` |
+| `LNADDR_GATEWAY_REMOTE=on` | `remote = true` in `[sources]` |
+| comma-separated lists | TOML lists: `"a,b"` becomes `["a", "b"]` |
+| `on` / `off` | `true` / `false` |
+
+In the environment, switches take `1`, `true`, `yes` or `on` and `0`, `false`, `no` or `off`.
+
+For example, this environment:
+
+```sh
+LNADDR_GATEWAY_DOMAIN=yourdomain.com
+LNADDR_GATEWAY_NODE=npub1node…
+LNADDR_GATEWAY_TRUSTED_PROXIES=127.0.0.1
+LNADDR_GATEWAY_RELAYS=wss://relay.contextvm.org,wss://relay.example.com
+LNADDR_GATEWAY_PER_IP_PER_MINUTE=20
+LNADDR_GATEWAY_ADMIN_LISTEN=127.0.0.1:8081
+```
+
+is this file:
+
+```toml
+domains = ["yourdomain.com"]
+trusted_proxies = ["127.0.0.1"]
+relays = ["wss://relay.contextvm.org", "wss://relay.example.com"]
+
+[[nodes]]
+pubkey = "npub1node…"
+
+[limits]
+per_ip_per_minute = 20
+
+[admin]
+listen = "127.0.0.1:8081"
 ```
 
 ## Domains
@@ -55,26 +194,6 @@ listen = "127.0.0.1:8081"              # the web interface; off when unset
 - With **several**, the request's `Host` (or `X-Forwarded-Host` from a trusted proxy) picks one from the list. Anything else gets `404`.
 - An address may be limited to some domains on the node (`domains`).
 - Callback URLs are `https://<domain>/.well-known/lnurlp/<name>/callback`, or `http://` for `.onion` domains. `scheme = "http"` forces http for local testing.
-
-## Environment variables
-
-| Variable | Meaning |
-| --- | --- |
-| `LNADDR_GATEWAY_CONFIG` | TOML file to read |
-| `LNADDR_GATEWAY_DATA_DIR` | keys and the admin token |
-| `LNADDR_GATEWAY_LISTEN` | `IP:port` or `unix:/path` (default `127.0.0.1:8080`; `0.0.0.0:8080` in the image) |
-| `LNADDR_GATEWAY_DOMAIN` / `_DOMAINS` | comma-separated |
-| `LNADDR_GATEWAY_NODE` / `_NODES` | comma-separated node keys, each serving every name it lists |
-| `LNADDR_GATEWAY_RELAYS` | comma-separated relay URLs |
-| `LNADDR_GATEWAY_TRUSTED_PROXIES` | comma-separated addresses or networks |
-| `LNADDR_GATEWAY_SOCKS5` | the proxy for relay connections (`host:port` for SOCKS5, or a `socks5://`, `http://` or `https://` URL) |
-| `LNADDR_GATEWAY_ADMINS` | comma-separated keys (npub or hex) that may sign in to the gateway from the network console |
-| `LNADDR_GATEWAY_REMOTE` | `on` to let them change the relays and proxies (off by default) |
-| `LNADDR_GATEWAY_PROXY_LOCKED` | `on` to keep the proxies host-only |
-| `LNADDR_GATEWAY_SCHEME` | `http` to build http callback URLs |
-| `LNADDR_GATEWAY_PER_IP_PER_MINUTE`, `_GLOBAL_PER_MINUTE`, `_TIMEOUT_SECS`, `_CACHE_SECS`, `_MAX_CONNECTIONS` | limits |
-| `LNADDR_GATEWAY_ADMIN_LISTEN`, `_ADMIN_SECURE_COOKIE` | the web interface |
-| `LNADDR_GATEWAY_LOG` | log filter |
 
 ## Relays and proxies
 
