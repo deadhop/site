@@ -88,7 +88,7 @@ Paste them where your host keeps its environment and restart the service; the pa
 
 ### Passkey operators
 
-Where the browser's password manager supports the WebAuthn PRF extension (Google Password Manager in Chrome, iCloud Keychain in Safari, some others), the setup page can create a passkey and make an operator key from it. The Nostr key is derived from the passkey each time you use it and kept in memory only. Two things to know:
+Where the browser's password manager supports the WebAuthn PRF extension (Google Password Manager in Chrome works; Safari and Firefox depend on the version and the password manager), the setup page can create a passkey and make an operator key from it. The Nostr key is derived from the passkey each time you use it and kept in memory only. Two things to know:
 
 - A passkey works only on the address it was made on. Create it on the dashboard's final address, over HTTPS.
 - It cannot be recovered or exported. Add a second operator, another passkey or a browser extension key.
