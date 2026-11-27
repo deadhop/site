@@ -74,9 +74,28 @@ The dashboard's own `config.json` keeps naming the original key (`serverPubkey`)
 - It shows the service key it talks to at the bottom, so customers can compare it with the one you publish.
 - It follows relay changes you make from the dashboard: the service writes its live relays to a shared `relays.json` that the page reads (Compose sets this up).
 
+## Set up from the dashboard
+
+A service that has never been set up (none of `DEADHOP_ELECTRUM`, `DEADHOP_ADMINS` and `DEADHOP_PUBLIC_INVOICING`, and no database yet) does not exit: it waits idle and writes `setup.json`, the names of the settings it lacks (never a value), next to the dashboard. The page then shows a setup instead of the sign-in, in five steps:
+
+1. **Network and wallet:** keep the key the wallet service generated, or paste your own (the page shows its first receive address to check in your wallet).
+2. **Chain backend:** your Electrum server, and the command that prints its certificate fingerprint.
+3. **Operators:** paste a public key, ask your browser extension for one, or create a passkey (below).
+4. **Access and relays:** public invoicing, relays, an optional name and SOCKS proxy.
+5. **Review and copy:** the settings as `.env` (Docker Compose), Coolify, compose `environment:`, systemd, shell `export` or a Kubernetes Secret.
+
+Paste them where your host keeps its environment and restart the service; the page then shows the sign-in. Nothing typed on the setup page is sent anywhere, so whoever opens it first cannot take the service over: applying the settings needs access to the host.
+
+### Passkey operators
+
+Where the browser's password manager supports the WebAuthn PRF extension (Google Password Manager in Chrome works; Safari and Firefox depend on the version and the password manager), the setup page can create a passkey and make an operator key from it. The Nostr key is derived from the passkey each time you use it and kept in memory only. Two things to know:
+
+- A passkey works only on the address it was made on. Create it on the dashboard's final address, over HTTPS.
+- It cannot be recovered or exported. Add a second operator, another passkey or a browser extension key.
+
 ## Sign in
 
-Use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser extension**. A key listed in `DEADHOP_ADMINS`, or added under **Operators**, gets the operator view. Use a key made only for this service.
+Choose **Sign in with passkey** if you made a passkey operator during setup (the button shows where the browser supports it). Or use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser extension**. A key listed in `DEADHOP_ADMINS`, or added under **Operators**, gets the operator view. Use a key made only for this service.
 
 Pasting a secret key also works; the page keeps it in memory only.
 

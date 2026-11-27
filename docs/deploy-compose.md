@@ -32,6 +32,8 @@ cd stack
 
 Compose reads a file named `.env` next to `compose.yaml`. It is in `.gitignore`.
 
+Not sure what to put in it? Skip this step and start the stack without a `.env`. The service waits in setup mode, and the dashboard asks a few questions and gives you the `.env` to paste: see [Set up from the dashboard](./dashboard.md#set-up-from-the-dashboard).
+
 ```sh
 # Your Electrum server: tls:// with a pinned certificate across a network,
 # or plain host:port on a network you trust (the service warns).
@@ -73,7 +75,7 @@ INFO deadhop::app: deadhop is serving pubkey=a0c6…bea5 network=bitcoin relays=
 INFO deadhop::app: first receive address (index 0): check that your wallet lists it address=bc1q…
 ```
 
-If a required setting is missing, the service logs which one and restarts until it is set.
+Started with none of `DEADHOP_ELECTRUM`, `DEADHOP_ADMINS` and `DEADHOP_PUBLIC_INVOICING` on an empty data volume, the service waits in **setup mode**: connected to nothing, it logs what is missing and the dashboard shows the setup page. If only some required settings are set, or one is wrong, the service logs which one and restarts until it is fixed.
 
 If nobody must learn where the service runs, set up [Hide the service](./hide.md) before this step.
 
