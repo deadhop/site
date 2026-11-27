@@ -61,6 +61,12 @@ For a customer to open that link, the dashboard must be reachable over HTTPS at 
 
 **Or send the payment details yourself.** Without a public dashboard, open the drop, **Copy address** and send it with the amount, or show the QR code. The service sees the payment either way; the customer just does not get the live status page.
 
+## Several services on one server
+
+Under **Keys**, **Add invoice key** gives another service its own address: a name, a permanent id, a colour, and the invoice key whose relays and routes it starts with. Copy its npub (or the ready `createDeadhop` snippet) into that service's checkout. Its invoices are booked to it, so **Invoices** can be filtered by key, the **Overview** shows each key's takings, and the **Ledger** totals every key for a period, archived keys included. All keys pay into the one wallet. Archive a key to stop it serving; its invoices stay, and **Restore** brings it back with the same npub. The relays each key uses are set under **Network**, one column per key.
+
+The dashboard's own `config.json` keeps naming the original key (`serverPubkey`): payment links open on it whichever key the invoice came in on.
+
 ## What the page does
 
 - It has a strict Content-Security-Policy and requests nothing but `config.json` and the relay websockets.
