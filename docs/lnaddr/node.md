@@ -136,7 +136,7 @@ One table per address. `NAME` is the part before the `@`: 1 to 64 characters of 
 | `min_sendable` | smallest payment, in **millisatoshis** (1000 = 1 sat), at least 1 | required |
 | `max_sendable` | largest payment, in millisatoshis, at least `min_sendable` and at most 10,000,000,000,000 | required |
 | `description` | what the payer's wallet shows, 1 to 640 printable characters | required |
-| `comment_allowed` | longest comment a payer may attach (LUD-12), 0 to 2000; 0 for none | `0` |
+| `comment_allowed` | longest comment a payer may attach (LUD-12), 0 to 2000; 0 for none. The comment is kept with the invoice (see [invoices and payments](#invoices-and-payments)), so raise it if a page tags payments with a reference | `0` |
 | `domains` | lower-case domains this address is served under | `[]`: any domain the gateway serves |
 
 phoenixd and LNbits make invoices in whole satoshis, so with them the range must hold at least one whole satoshi.
@@ -241,6 +241,22 @@ lnaddr-node check     print the configuration (no secrets) and make a test invoi
 lnaddr-node version
 ```
 
+## Invoices and payments
+
+The node keeps a record of every invoice it makes, with the payer's LUD-12 comment, in `invoices.jsonl` in the data directory. Admins read it over ContextVM; gateways only learn whether one invoice was paid (LUD-21, see [gateway configuration](./gateway.md#payment-verification-lud-21)).
+
+| Tool | Who | Arguments | Answer |
+| --- | --- | --- | --- |
+| `list_invoices` | admins | `status` (`settled`, the default; `pending`, `expired` or `all`), `since` (a Unix time), `cursor`, `limit` (100, at most 1000) | `invoices`: settled ones in the order the node saw them paid, the others in the order they were made; `next_cursor`, to pass as `cursor` for what comes after (none on an empty page: keep the one you had); `record_error` if invoices are not being recorded |
+| `lookup_invoice` | admins | `payment_hash` | one invoice: `payment_hash`, `name`, `domain`, `amount_msat`, `comment`, `pr`, `state`, `created_at`, `expires_at`, `settled_at`, `preimage` |
+| `verify_invoice` | gateways, admins | `name`, `domain`, `payment_hash` | `settled`, `preimage` (once settled), `pr` |
+
+- Before answering, the node asks the backend about invoices that may still be paid, at most every 2 seconds per invoice and at most 30 times a minute in all (past that, an invoice is answered as recorded until the next minute). It stops asking once an invoice is paid, or 5 minutes after it expired. A payment hash the node did not make never reaches the backend.
+- A preimage from the backend that does not hash to the payment hash is not believed: the call fails with `backend_failed`, and the node's last error says why.
+- To record payments for a supporter wall or a tip page, poll `list_invoices` from an admin key, passing the last `next_cursor` you got: the payer can close the tab before paying, and the payment still shows up here. The cursor follows the order the node saw payments in, so one it learns about late is not skipped; `since` filters by the backend's own payment time and can miss such a payment.
+- `lnaddr-node check` makes its test invoice without recording it, so it is safe to run next to the serving node.
+- With Core Lightning, the rune must allow `listinvoices` (see [Lightning backends](./backends.md#core-lightning-clnrest)).
+
 ## Remote settings
 
 With remote settings on, an admin key listed in `admins` can call `set_address`, `remove_address` and `set_limits`. The first change saves the whole address table to `remote.toml`, and from then on that table replaces the configured one. Delete `remote.toml` to go back to the configured addresses. `concurrent`, the backend and the keys are never remote.
@@ -277,6 +293,7 @@ The node protects its own way back in:
 | `remote.toml` | addresses and limits saved by an admin |
 | `network.json` | relays and proxies saved by an admin, as changes over the configuration (proxy passwords included, owner-only). Read and written only while remote settings are on; one that no longer fits the configuration stops the node at start with the reason. `reset_network` empties it; deleting it does the same at the next start. |
 | `audit.jsonl` | one JSON line per network change: when, which admin key (or `node` for what the node did itself, such as going back to the previous relays), what, and the change with proxy passwords hidden. Kept under 1 MiB: when an entry would pass that, the oldest entries are dropped until the log is at most half of it. |
+| `invoices.jsonl` | one JSON line per invoice made (address, amount, comment, invoice, expiry) and one per payment seen (preimage, time); owner-only. Rewritten when it doubles. An unpaid invoice is dropped an hour after it expired; at most 100,000 invoices are kept, the unpaid and then the oldest going first. A file others can read is left alone, and invoices are then made but not recorded (`list_invoices` says why). |
 
 Relay results (each health check and each reply sent) are kept in memory only, the last 20,000, for `get_relay_history`. They are gone after a restart.
 

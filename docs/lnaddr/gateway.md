@@ -100,7 +100,7 @@ These variables have no `LIMITS_` in their names.
 
 | TOML key | Environment variable | Value | Default |
 | --- | --- | --- | --- |
-| `limits.per_ip_per_minute` | `LNADDR_GATEWAY_PER_IP_PER_MINUTE` | invoices per client per minute (lookups: 4×), at least 1 | `30` |
+| `limits.per_ip_per_minute` | `LNADDR_GATEWAY_PER_IP_PER_MINUTE` | invoices per client per minute (lookups and verifications: 4× each), at least 1 | `30` |
 | `limits.global_per_minute` | `LNADDR_GATEWAY_GLOBAL_PER_MINUTE` | invoices per minute for all clients, at least 1 | `600` |
 | `limits.timeout_secs` | `LNADDR_GATEWAY_TIMEOUT_SECS` | the deadline for answering a wallet, 2 to 60 | `15` |
 | `limits.cache_secs` | `LNADDR_GATEWAY_CACHE_SECS` | how often each node's address list is refreshed, 5 to 3600 | `60` |
@@ -193,7 +193,28 @@ listen = "127.0.0.1:8081"
 - With **one** domain, every request is for it, whatever `Host` says. Proxies that rewrite `Host` (nginx's default) need nothing extra.
 - With **several**, the request's `Host` (or `X-Forwarded-Host` from a trusted proxy) picks one from the list. Anything else gets `404`.
 - An address may be limited to some domains on the node (`domains`).
-- Callback URLs are `https://<domain>/.well-known/lnurlp/<name>/callback`, or `http://` for `.onion` domains. `scheme = "http"` forces http for local testing.
+- Callback URLs are `https://<domain>/.well-known/lnurlp/<name>/callback`, or `http://` for `.onion` domains. `scheme = "http"` forces http for local testing. Verify URLs are built the same way.
+
+## Payment verification (LUD-21)
+
+The callback's answer carries a `verify` URL, `https://<domain>/.well-known/lnurlp/<name>/verify/<payment hash>`, when the node answers `verify_invoice` (nodes from before it do not, and then there is no `verify`):
+
+```json
+{ "pr": "lnbc210n1…", "routes": [], "verify": "https://pay.example/.well-known/lnurlp/alice/verify/e25b31b5…" }
+```
+
+`GET` it to learn whether the invoice was paid:
+
+```json
+{ "status": "OK", "settled": false, "preimage": null, "pr": "lnbc210n1…" }
+{ "status": "OK", "settled": true, "preimage": "386192ea…", "pr": "lnbc210n1…" }
+```
+
+- The answer is never cached (`Cache-Control: no-store`), so a CDN in front must pass it through.
+- An unknown or malformed payment hash, or one made for another address (name or domain), gets `{"status":"ERROR","reason":"Not found"}` (404). An unreachable node or backend gets `503`.
+- Verifications have their own rate budget per client (four times the invoice budget), so a wallet polling does not use up invoices. The node asks its backend about one invoice at most every 2 seconds, at most 30 times a minute in all, and never again once paid.
+- The gateway checks the node's answer before passing it on: the invoice must be for that payment hash, and a preimage must hash to it. A preimage is never passed on for an unpaid invoice.
+- The answer says nothing about the address or the payer's comment. Those are only in the node's [`list_invoices` and `lookup_invoice`](./node.md#invoices-and-payments), for admins.
 
 ## Relays and proxies
 
@@ -237,3 +258,5 @@ The gateway never stops for its network. A console server that cannot start, sto
 ## Health
 
 `GET /healthz` answers `{"status":"ok"}` (200) while at least one node answers, `{"status":"degraded"}` (503) otherwise, and nothing more.
+
+The gateway keeps no record of invoices or payments: the node keeps them (see [node configuration](./node.md#invoices-and-payments)).
