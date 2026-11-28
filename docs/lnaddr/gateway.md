@@ -211,8 +211,8 @@ The callback's answer carries a `verify` URL, `https://<domain>/.well-known/lnur
 ```
 
 - The answer is never cached (`Cache-Control: no-store`), so a CDN in front must pass it through.
-- An unknown or malformed payment hash, or one made for another address, gets `{"status":"ERROR","reason":"Not found"}` (404). An unreachable node or backend gets `503`.
-- Verifications have their own rate budget per client (four times the invoice budget), so a wallet polling does not use up invoices. The node asks its backend about one invoice at most every 2 seconds, and never again once paid.
+- An unknown or malformed payment hash, or one made for another address (name or domain), gets `{"status":"ERROR","reason":"Not found"}` (404). An unreachable node or backend gets `503`.
+- Verifications have their own rate budget per client (four times the invoice budget), so a wallet polling does not use up invoices. The node asks its backend about one invoice at most every 2 seconds, at most 30 times a minute in all, and never again once paid.
 - The gateway checks the node's answer before passing it on: the invoice must be for that payment hash, and a preimage must hash to it. A preimage is never passed on for an unpaid invoice.
 - The answer says nothing about the address or the payer's comment. Those are only in the node's [`list_invoices` and `lookup_invoice`](./node.md#invoices-and-payments), for admins.
 

@@ -30,7 +30,7 @@ The rule: **as long as one relay works and the node is up, invoices flow.** Ever
 ## Floods and abuse
 
 - The gateway rate-limits by client address, per minute: invoices, lookups and verifications each have their own budget (lookups get four times as much, since they are cached; verifications too, since wallets poll them).
-- A verification polled many times costs the backend one lookup every 2 seconds per invoice at most, none once the invoice is paid or long expired, and none for a payment hash the node did not make.
+- A verification polled many times costs the backend one lookup every 2 seconds per invoice at most, and the node makes at most 30 a minute in all; none once the invoice is paid or long expired, and none for a payment hash the node did not make. So polling wallets cannot use up a Core Lightning rune's `rate` that invoices need.
 - The node's invoice record is bounded: unpaid invoices go an hour after they expired, and at most 100,000 are kept.
 - The node rate-limits by calling key, globally and per key, whatever the gateway does.
 - The gateway holds at most `max_connections` open connections. A client that sends nothing, or idles on a kept-alive connection, is dropped after 10 s, so it cannot hold a slot (tested with one slot: a silent socket and an idle keep-alive client both give way).

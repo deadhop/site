@@ -26,7 +26,7 @@ Make a rune that can only call `invoice` and `listinvoices`, optionally rate-lim
 lightning-cli createrune restrictions='[["method=invoice","method=listinvoices"],["rate=60"]]'
 ```
 
-The alternatives inside one inner list are "or", the lists are "and". A rune made for `method=invoice` alone still makes invoices, but cannot see payments: LUD-21 `verify` and `list_invoices` then fail with `backend_failed`. Make a new rune to replace it.
+The alternatives inside one inner list are "or", the lists are "and". A rune made for `method=invoice` alone still makes invoices, but cannot see payments: LUD-21 `verify` and `list_invoices` then fail with `backend_failed`. Make a new rune to replace it. The node makes at most 30 lookups a minute, and they count against the rune's `rate` along with the invoices, so leave room for both.
 
 ```sh
 LNADDR_NODE_BACKEND=cln

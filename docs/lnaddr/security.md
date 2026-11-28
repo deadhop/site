@@ -29,7 +29,7 @@ Using an invoice-only credential matters most. See [Lightning backends](./backen
 - **Credentials in the clear stay local.** Plain `http://` to the backend is accepted only for loopback, private addresses, container names, `.local`, `.internal` and overlay hosts, unless `insecure_http` says otherwise.
 - **Pinned TLS.** LND and Core Lightning use self-signed certificates: give the certificate file (or its SHA-256), and only that exact certificate is accepted.
 - **Private files.** Keys, saved settings, the invoice record and secret files must be owner-only; a secret file others can read is refused, not used.
-- **Verification tells a gateway little.** `verify_invoice` answers only for an invoice the node made for that address, given its payment hash, and only with whether it was paid, its preimage once paid (which the payer's wallet learns by paying) and the invoice. The comment, the amount and every other invoice stay with the admins (`list_invoices`, `lookup_invoice`). Hashes the node did not make never reach the backend, and the backend is asked about one invoice at most every 2 seconds.
+- **Verification tells a gateway little.** `verify_invoice` answers only for an invoice the node made for that address (name and domain), given its payment hash, and only with whether it was paid, its preimage once paid (which the payer's wallet learns by paying) and the invoice. The comment, the amount and every other invoice stay with the admins (`list_invoices`, `lookup_invoice`). Hashes the node did not make never reach the backend, and the backend is asked about one invoice at most every 2 seconds and at most 30 times a minute in all.
 
 ## The gateway
 

@@ -247,13 +247,14 @@ The node keeps a record of every invoice it makes, with the payer's LUD-12 comme
 
 | Tool | Who | Arguments | Answer |
 | --- | --- | --- | --- |
-| `list_invoices` | admins | `status` (`settled`, the default; `pending`, `expired` or `all`), `since` (a Unix time), `cursor`, `limit` (100, at most 1000) | `invoices`, oldest first by when they were settled (or made, for the other statuses); `next_cursor` to pass as `cursor` for the next page; `record_error` if invoices are not being recorded |
+| `list_invoices` | admins | `status` (`settled`, the default; `pending`, `expired` or `all`), `since` (a Unix time), `cursor`, `limit` (100, at most 1000) | `invoices`: settled ones in the order the node saw them paid, the others in the order they were made; `next_cursor`, to pass as `cursor` for what comes after (none on an empty page: keep the one you had); `record_error` if invoices are not being recorded |
 | `lookup_invoice` | admins | `payment_hash` | one invoice: `payment_hash`, `name`, `domain`, `amount_msat`, `comment`, `pr`, `state`, `created_at`, `expires_at`, `settled_at`, `preimage` |
-| `verify_invoice` | gateways, admins | `name`, `payment_hash` | `settled`, `preimage` (once settled), `pr` |
+| `verify_invoice` | gateways, admins | `name`, `domain`, `payment_hash` | `settled`, `preimage` (once settled), `pr` |
 
-- Before answering, the node asks the backend about invoices that may still be paid, at most every 2 seconds per invoice. It stops asking once an invoice is paid, or 5 minutes after it expired. A payment hash the node did not make never reaches the backend.
+- Before answering, the node asks the backend about invoices that may still be paid, at most every 2 seconds per invoice and at most 30 times a minute in all (past that, an invoice is answered as recorded until the next minute). It stops asking once an invoice is paid, or 5 minutes after it expired. A payment hash the node did not make never reaches the backend.
 - A preimage from the backend that does not hash to the payment hash is not believed: the call fails with `backend_failed`, and the node's last error says why.
-- To record payments for a supporter wall or a tip page, poll `list_invoices` with the last `next_cursor` (or `since`) from an admin key: the payer can close the tab before paying, and the payment still shows up here.
+- To record payments for a supporter wall or a tip page, poll `list_invoices` from an admin key, passing the last `next_cursor` you got: the payer can close the tab before paying, and the payment still shows up here. The cursor follows the order the node saw payments in, so one it learns about late is not skipped; `since` filters by the backend's own payment time and can miss such a payment.
+- `lnaddr-node check` makes its test invoice without recording it, so it is safe to run next to the serving node.
 - With Core Lightning, the rune must allow `listinvoices` (see [Lightning backends](./backends.md#core-lightning-clnrest)).
 
 ## Remote settings
