@@ -14,6 +14,8 @@ LUD-16 makes a Lightning address an HTTPS endpoint on your domain. Two requests 
 
 Only step 2 needs the Lightning node. A node at home normally cannot be reached from the internet, and should not be.
 
+A third request is optional: the callback's answer carries a LUD-21 `verify` URL, and `GET <verify>` says whether the invoice was paid.
+
 ## The split
 
 | | `lnaddr-node` | `lnaddr-gateway` |
@@ -28,12 +30,15 @@ The two meet only through Nostr relays. Each request is a ContextVM (MCP over No
 
 ## The tools on the node
 
-The node is an MCP server with one key for gateways and admins. Gateways are shown and may call the first two tools; admins may call all of them. The list is filtered by caller, so a gateway never sees the rest.
+The node is an MCP server with one key for gateways and admins. Gateways are shown and may call the first three tools; admins may call all of them. The list is filtered by caller, so a gateway never sees the rest.
 
 | Tool | Who | What |
 | --- | --- | --- |
 | `list_addresses` | gateways, admins | every address with its range, description, comment length and domains; the network; the Lightning key that signed the last invoice |
 | `make_invoice` | gateways, admins | an invoice for `name@domain` and an amount, committing to the LUD-06 metadata |
+| `verify_invoice` | gateways, admins | LUD-21: whether an invoice this node made for an address was paid; only `settled`, the preimage once paid, and the invoice |
+| `list_invoices` | admins | the invoices this node made, oldest first, with each payer's comment: settled (the default), pending, expired or all, since a time, a page at a time |
+| `lookup_invoice` | admins | one invoice this node made, by payment hash, with its comment and whether it was paid |
 | `get_status` | admins | backend, counters, last error, uptime |
 | `get_config` | admins | the configuration in effect, secrets shown as `(set)` |
 | `set_address` / `remove_address` | admins | change the address table (when remote settings are on) |
@@ -50,7 +55,8 @@ Inputs refuse unknown fields; outputs have published JSON schemas.
 1. The wallet asks the gateway for `/.well-known/lnurlp/you`. The gateway answers **from its cache** of the node's `list_addresses`. Nothing crosses Nostr.
 2. The wallet calls back with an amount. The gateway checks the name, domain, amount and comment against the cached values, rate-limits the client, and calls `make_invoice` on the node.
 3. The node checks the caller's key, the request's timestamp, its **own** bounds and its own rate limits. It builds the metadata string itself, asks the backend for an invoice committing to its SHA-256, and checks the invoice it gets back.
-4. The gateway checks the invoice again (amount, description hash, network, expiry and, if pinned, the signing node key) and returns it to the wallet.
+4. The gateway checks the invoice again (amount, description hash, network, expiry and, if pinned, the signing node key) and returns it to the wallet, with a `verify` URL holding the invoice's payment hash.
+5. Optionally, the wallet (or a page that showed the invoice) polls the `verify` URL. The gateway calls `verify_invoice` on the node, which asks the backend whether the invoice was paid, at most every 2 seconds per invoice. The gateway checks that the answer is for that payment hash, and that a preimage hashes to it, before passing it on.
 
 Both sides build the metadata with the same function, so the string the wallet saw in step 1 is byte for byte the string the invoice commits to in step 3.
 
@@ -69,4 +75,5 @@ Any layer can switch a later source off with `sources = { file = false, env = fa
 
 - **Stateless calls.** The gateway's ContextVM client answers the MCP handshake locally and sends each call as one request event. Neither side keeps a session, so a restarted node is usable at once and there is no session to go stale.
 - **The node trusts nothing from the gateway.** The gateway is the box on the internet. The node enforces amounts, comments, domains and rates itself, so a compromised gateway can only ask for invoices the node would make anyway.
-- **One public prefix.** The callback lives under the address's own path (`/.well-known/lnurlp/<name>/callback`), so a reverse proxy forwards one location and nothing else.
+- **One public prefix.** The callback and the verify URL live under the address's own path (`/.well-known/lnurlp/<name>/callback`, `/.well-known/lnurlp/<name>/verify/<payment hash>`), so a reverse proxy forwards one location and nothing else.
+- **Payments are recorded where the money is.** The node keeps the invoices it made, and the comment that came with each, in its own data directory. The gateway keeps nothing: it asks the node each time.
