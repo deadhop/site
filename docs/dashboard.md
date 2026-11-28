@@ -88,14 +88,14 @@ Paste them where your host keeps its environment and restart the service; the pa
 
 ### Passkey operators
 
-Where the browser's password manager supports the WebAuthn PRF extension (Google Password Manager in Chrome works; Safari and Firefox depend on the version and the password manager), the setup page can create a passkey and make an operator key from it. The Nostr key is derived from the passkey each time you use it and kept in memory only. Two things to know:
+Where the browser's password manager supports the WebAuthn PRF extension (Google Password Manager in Chrome works; Safari and Firefox depend on the version and the password manager), the setup page, and later **Operators › Add a passkey**, can create a passkey and make an operator key from it. Operators checks the passkey once more before adding its key. The Nostr key is derived from the passkey each time you use it and kept in memory only. Two things to know:
 
 - A passkey works only on the address it was made on. Create it on the dashboard's final address, over HTTPS.
 - It cannot be recovered or exported. Add a second operator, another passkey or a browser extension key.
 
 ## Sign in
 
-Choose **Sign in with passkey** if you made a passkey operator during setup (the button shows where the browser supports it). Or use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser extension**. A key listed in `DEADHOP_ADMINS`, or added under **Operators**, gets the operator view. Use a key made only for this service.
+Choose **Sign in with passkey** if you made a passkey operator during setup or under **Operators** (the button shows where the browser supports it). Or use a browser extension that holds a Nostr key (NIP-07) and choose **Use browser extension**. A key listed in `DEADHOP_ADMINS`, or added under **Operators**, gets the operator view. Use a key made only for this service.
 
 Pasting a secret key also works; the page keeps it in memory only.
 
